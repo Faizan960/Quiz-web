@@ -65,6 +65,59 @@ function StyledInput({ id, placeholder, value, onChange, multiline }: {
   )
 }
 
+/* ─── option row (own component so useState is at top level) ─── */
+function OptionRow({ opt, oi, qId, onToggleCorrect, onChangeText, inputBase }: {
+  opt: AnswerOption; oi: number; qId: number
+  onToggleCorrect: () => void
+  onChangeText: (text: string) => void
+  inputBase: React.CSSProperties
+}) {
+  const [focused, setFocused] = useState(false)
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      <motion.button
+        id={`q-${qId}-correct-${oi}`}
+        whileTap={{ scale: 0.85 }}
+        onClick={onToggleCorrect}
+        title="Mark as correct answer"
+        style={{
+          flexShrink: 0, width: 30, height: 30, borderRadius: '50%',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: opt.isCorrect
+            ? 'linear-gradient(135deg, var(--pink), var(--purple))'
+            : 'var(--surface2)',
+          border: opt.isCorrect ? 'none' : '1px solid var(--border)',
+          cursor: 'pointer',
+          fontFamily: 'var(--font-display)', fontSize: 11, fontWeight: 800,
+          color: opt.isCorrect ? '#fff' : 'var(--muted)',
+          transition: 'background 0.2s ease',
+        }}
+      >
+        {opt.isCorrect ? <CheckCircle size={14} /> : LABELS[oi]}
+      </motion.button>
+
+      <input
+        id={`q-${qId}-opt-${oi}`}
+        type="text"
+        placeholder={`Option ${LABELS[oi]}`}
+        value={opt.text}
+        onChange={e => onChangeText(e.target.value)}
+        onFocus={() => setFocused(true)}
+        onBlur={() => setFocused(false)}
+        style={{
+          ...inputBase,
+          padding: '10px 14px',
+          borderRadius: 12,
+          borderColor: opt.isCorrect
+            ? 'rgba(6,214,160,0.4)'
+            : focused ? 'rgba(199,125,255,0.4)' : 'var(--border)',
+          background: opt.isCorrect ? 'rgba(6,214,160,0.06)' : 'var(--surface2)',
+        }}
+      />
+    </div>
+  )
+}
+
 /* ─── question card ──────────────────────────────────────────── */
 function QuestionCard({ q, index, onChange, onDelete }: {
   q: QuestionDraft; index: number
@@ -112,13 +165,16 @@ function QuestionCard({ q, index, onChange, onDelete }: {
           padding: '3px 12px', borderRadius: 100,
           background: 'linear-gradient(135deg, rgba(255,107,157,0.12), rgba(199,125,255,0.12))',
           border: '1px solid rgba(199,125,255,0.2)',
-          fontSize: 12, fontWeight: 700,
-          fontFamily: 'var(--font-body)',
-          background: 'linear-gradient(135deg, var(--pink), var(--purple))',
-          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text',
-        } as React.CSSProperties}>
-          Question {index + 1}
+        }}>
+          <span style={{
+            fontSize: 12, fontWeight: 700,
+            fontFamily: 'var(--font-body)',
+            background: 'linear-gradient(135deg, var(--pink), var(--purple))',
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+          } as React.CSSProperties}>
+            Question {index + 1}
+          </span>
         </div>
 
         <motion.button
@@ -167,53 +223,15 @@ function QuestionCard({ q, index, onChange, onDelete }: {
           }}>Answer Options <span style={{ color: 'var(--green)', fontWeight: 500, textTransform: 'none', fontSize: 10 }}>· tap ✓ to mark correct</span></label>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {q.options.map((opt, oi) => {
-              const [focused, setFocused] = useState(false)
-              return (
-                <div key={oi} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  {/* correct toggle */}
-                  <motion.button
-                    id={`q-${q.id}-correct-${oi}`}
-                    whileTap={{ scale: 0.85 }}
-                    onClick={() => setCorrect(oi)}
-                    title="Mark as correct answer"
-                    style={{
-                      flexShrink: 0, width: 30, height: 30, borderRadius: '50%',
-                      display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      background: opt.isCorrect
-                        ? 'linear-gradient(135deg, var(--pink), var(--purple))'
-                        : 'var(--surface2)',
-                      border: opt.isCorrect ? 'none' : '1px solid var(--border)',
-                      cursor: 'pointer',
-                      fontFamily: 'var(--font-display)', fontSize: 11, fontWeight: 800,
-                      color: opt.isCorrect ? '#fff' : 'var(--muted)',
-                      transition: 'background 0.2s ease',
-                    }}
-                  >
-                    {opt.isCorrect ? <CheckCircle size={14} /> : LABELS[oi]}
-                  </motion.button>
-
-                  <input
-                    id={`q-${q.id}-opt-${oi}`}
-                    type="text"
-                    placeholder={`Option ${LABELS[oi]}`}
-                    value={opt.text}
-                    onChange={e => setOptionText(oi, e.target.value)}
-                    onFocus={() => setFocused(true)}
-                    onBlur={() => setFocused(false)}
-                    style={{
-                      ...inputBase,
-                      padding: '10px 14px',
-                      borderRadius: 12,
-                      borderColor: opt.isCorrect
-                        ? 'rgba(6,214,160,0.4)'
-                        : focused ? 'rgba(199,125,255,0.4)' : 'var(--border)',
-                      background: opt.isCorrect ? 'rgba(6,214,160,0.06)' : 'var(--surface2)',
-                    }}
-                  />
-                </div>
-              )
-            })}
+            {q.options.map((opt, oi) => (
+              <OptionRow
+                key={oi}
+                opt={opt} oi={oi} qId={q.id}
+                inputBase={inputBase}
+                onToggleCorrect={() => setCorrect(oi)}
+                onChangeText={text => setOptionText(oi, text)}
+              />
+            ))}
           </div>
         </div>
       </div>
