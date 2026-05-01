@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, Trophy, Share2, RotateCcw, Clock, CheckCircle, XCircle } from 'lucide-react'
 
 /* ─── types ──────────────────────────────────────────────────── */

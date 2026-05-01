@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   Settings, Trophy, Crown, Play, Heart,
   Share2, ChevronRight, LogOut, Bell,

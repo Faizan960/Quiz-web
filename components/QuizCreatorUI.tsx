@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Trash2, Image as ImageIcon, Save, Eye, ChevronDown, CheckCircle, GripVertical } from 'lucide-react'
 import { BottomNav } from './BottomNav'
 

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Share2, Copy, RefreshCw, Download, Check } from 'lucide-react'
 
 /* ─── types ──────────────────────────────────────────────────── */

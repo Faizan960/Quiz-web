@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Sparkles, SlidersHorizontal, ChevronRight } from 'lucide-react'
 import { QuizCard } from './QuizCard'
 import { BottomNav } from './BottomNav'

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { X, Bookmark, Zap } from 'lucide-react'
 
 /* ─── types ──────────────────────────────────────────────────── */
