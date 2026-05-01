@@ -26,6 +26,9 @@ export const metadata: Metadata = {
     description: 'Make a quiz. Share with your people.',
     type: 'website',
   },
+  other: {
+    'google-adsense-account': 'ca-pub-2282396300191032',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
