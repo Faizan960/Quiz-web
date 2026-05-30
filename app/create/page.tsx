@@ -176,7 +176,7 @@ export default function CreatePage() {
   return (
     <div className="min-h-screen bg-background relative flex flex-col">
       {/* Background */}
-      <div className="absolute inset-0 z-0 pointer-events-none bg-pastel-gradient opacity-40" />
+      <div className="absolute inset-0 z-0 pointer-events-none bg-pastel-gradient opacity-60" />
 
       {/* Header */}
       <nav className="glass-panel sticky top-0 z-50 flex items-center justify-between px-6 py-4 md:px-10">
@@ -203,12 +203,13 @@ export default function CreatePage() {
           <AnimatePresence mode="wait">
             <motion.div
               key={step}
+              layout
               variants={slideVariants}
               initial="enter"
               animate="center"
               exit="exit"
               transition={{ duration: 0.4, ease: 'easeInOut' }}
-              className="glass-card p-8 md:p-10"
+              className="glass-card p-8 md:p-10 relative overflow-hidden"
             >
               {/* Step 0: Name & Bio */}
               {step === 0 && (
@@ -420,7 +421,7 @@ export default function CreatePage() {
               <button
                 onClick={() => canProceed() && setStep(s => s + 1)}
                 disabled={!canProceed()}
-                className={`flex items-center justify-center gap-2 flex-1 ${step === 0 ? 'max-w-[200px]' : ''} bg-zinc-900 text-white rounded-2xl py-4 font-bold transition-all shadow-lg shadow-zinc-900/20 ${!canProceed() ? 'opacity-50 cursor-not-allowed' : 'hover:bg-zinc-800'}`}
+                className={`flex items-center justify-center gap-2 flex-1 ${step === 0 ? 'max-w-[200px]' : ''} bg-gradient-to-r from-primary to-secondary text-white rounded-2xl py-4 font-bold transition-all shadow-lg shadow-primary/20 ${!canProceed() ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90 hover:scale-[1.02] active:scale-[0.98]'}`}
               >
                 Continue <ArrowRight className="w-5 h-5" />
               </button>
@@ -428,7 +429,7 @@ export default function CreatePage() {
               <button
                 onClick={handleCreate}
                 disabled={!canProceed() || loading}
-                className={`flex items-center justify-center gap-2 flex-1 bg-gradient-to-r from-primary to-secondary text-white rounded-2xl py-4 font-bold transition-all shadow-xl shadow-primary/30 ${(!canProceed() || loading) ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'}`}
+                className={`flex items-center justify-center gap-2 flex-1 bg-gradient-to-r from-primary to-secondary text-white rounded-2xl py-4 font-bold transition-all shadow-xl shadow-primary/30 ${(!canProceed() || loading) ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90 hover:scale-[1.02] active:scale-[0.98]'}`}
               >
                 {loading ? 'Creating...' : 'Create My Mirror'} <Sparkles className="w-5 h-5" />
               </button>
