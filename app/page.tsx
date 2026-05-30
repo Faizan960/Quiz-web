@@ -50,9 +50,10 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       {/* ── Background Blobs ───────────────────────────────── */}
-      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute top-[20%] right-[-10%] w-[40%] h-[60%] bg-secondary/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] left-[20%] w-[60%] h-[40%] bg-accent/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute inset-0 z-0 pointer-events-none bg-pastel-gradient opacity-60" />
+      <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/20 rounded-full blur-[120px] pointer-events-none animate-pulse-glow" />
+      <div className="absolute top-[20%] right-[-10%] w-[40%] h-[60%] bg-secondary/20 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-[20%] w-[60%] h-[40%] bg-accent/20 rounded-full blur-[120px] pointer-events-none animate-pulse-glow" />
 
       {/* ── Navbar ──────────────────────────────── */}
       <nav className="glass-panel sticky top-0 z-50 flex items-center justify-between px-6 py-4 md:px-12 mx-4 mt-4 rounded-3xl">
@@ -92,7 +93,7 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link 
               href="/create" 
-              className="flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-full font-bold text-lg hover:opacity-90 transition-opacity shadow-xl shadow-primary/30 w-full sm:w-auto"
+              className="flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-full font-bold text-lg hover:opacity-90 hover:scale-105 active:scale-95 transition-all shadow-xl hover:shadow-2xl hover:shadow-primary/40 shadow-primary/30 w-full sm:w-auto"
             >
               Get Started for Free <ArrowRight className="w-5 h-5" />
             </Link>
@@ -108,7 +109,8 @@ export default function HomePage() {
             className="mt-24 relative max-w-4xl mx-auto"
           >
             <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent z-10 pointer-events-none rounded-3xl" />
-            <div className="glass-card p-6 md:p-8 animate-float">
+            <div className="glass-card p-6 md:p-8 animate-float relative">
+              <div className="absolute inset-0 rounded-[24px] pointer-events-none animate-pulse-glow opacity-50" />
               <div className="flex items-center gap-6 mb-8">
                 <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-400 to-purple-400 flex items-center justify-center text-3xl shadow-lg text-white font-display font-bold">
                   S
@@ -211,7 +213,7 @@ export default function HomePage() {
         <p className="text-xl text-text-secondary mb-10">It takes 30 seconds. No sign-up required.</p>
         <Link 
           href="/create" 
-          className="inline-flex items-center justify-center gap-2 px-10 py-5 bg-zinc-900 text-white rounded-full font-bold text-lg hover:bg-zinc-800 transition-colors shadow-2xl shadow-zinc-900/20"
+          className="inline-flex items-center justify-center gap-2 px-10 py-5 bg-gradient-to-r from-primary to-secondary text-white rounded-full font-bold text-lg hover:opacity-90 hover:scale-105 active:scale-95 transition-all shadow-2xl hover:shadow-primary/40 shadow-primary/20"
         >
           Create Your Mirror <Sparkles className="w-5 h-5" />
         </Link>
