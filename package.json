@@ -14,8 +14,10 @@
   "dependencies": {
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.104.1",
+    "bcryptjs": "^3.0.3",
     "dotenv": "^17.4.2",
     "framer-motion": "^12.38.0",
+    "html2canvas": "^1.4.1",
     "lucide-react": "^1.11.0",
     "motion": "^12.38.0",
     "nanoid": "^5.1.9",
@@ -27,6 +29,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

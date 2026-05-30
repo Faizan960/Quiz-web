@@ -1,70 +1,93 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-:root {
-  --bg: #0A0A0F;
-  --surface: #12121A;
-  --surface2: #1A1A26;
-  --border: rgba(255, 255, 255, 0.07);
-  --pink: #FF6B9D;
-  --purple: #C77DFF;
-  --cyan: #00D4FF;
-  --yellow: #FFD60A;
-  --green: #06D6A0;
-  --red: #FF4D6D;
-  --text: #F0F0F5;
-  --muted: rgba(240, 240, 245, 0.45);
-  --font-display: var(--font-syne), sans-serif;
-  --font-body: var(--font-dm), sans-serif;
+@theme {
+  --color-primary: #818CF8;
+  --color-primary-light: #A5B4FC;
+  --color-secondary: #F472B6;
+  --color-accent: #34D399;
+  --color-surface: #FFFFFF;
+  --color-surface-hover: #F8FAFC;
+  --color-background: #FAFAFA;
+  
+  --font-display: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-dm), ui-sans-serif, system-ui, sans-serif;
 }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+@layer base {
+  :root {
+    --bg: #FAFAFA;
+    --surface: #FFFFFF;
+    --text-primary: #18181B; /* zinc-900 */
+    --text-secondary: #52525B; /* zinc-600 */
+    --text-muted: #A1A1AA; /* zinc-400 */
+    --border: rgba(0, 0, 0, 0.08);
+  }
 
-html, body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font-body);
-  -webkit-font-smoothing: antialiased;
+  body {
+    background-color: var(--bg);
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 }
 
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: var(--surface); }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
-::selection { background: rgba(255,107,157,0.3); color: var(--text); }
+@layer utilities {
+  .text-gradient {
+    background: linear-gradient(135deg, #818cf8 0%, #f472b6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .bg-pastel-gradient {
+    background: linear-gradient(135deg, rgba(129, 140, 248, 0.15), rgba(244, 114, 182, 0.15), rgba(52, 211, 153, 0.1));
+  }
+  
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+  }
 
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to   { opacity: 1; transform: translateY(0); }
+  .glass-card {
+    background: #FFFFFF;
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .glass-card:hover {
+    border-color: rgba(129, 140, 248, 0.3);
+    box-shadow: 0 15px 50px -10px rgba(129, 140, 248, 0.15), 0 4px 10px rgba(0, 0, 0, 0.02);
+    transform: translateY(-4px);
+  }
+  
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+.animate-float {
+  animation: float 5s ease-in-out infinite;
 }
 
-.animate-fade-up { animation: fadeUp 0.5s ease both; }
-.animate-fade-in { animation: fadeIn 0.4s ease both; }
-.delay-100 { animation-delay: 0.1s; }
-.delay-200 { animation-delay: 0.2s; }
-.delay-300 { animation-delay: 0.3s; }
-.delay-400 { animation-delay: 0.4s; }
-
-.gradient-text {
-  background: linear-gradient(135deg, var(--pink) 0%, var(--purple) 50%, var(--cyan) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(129, 140, 248, 0.2); }
+  50% { box-shadow: 0 0 40px rgba(129, 140, 248, 0.4), 0 0 60px rgba(244, 114, 182, 0.2); }
 }
-
-.gradient-pink {
-  background: linear-gradient(135deg, var(--pink), var(--purple));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.glass {
-  background: rgba(18,18,26,0.8);
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--border);
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
 }
