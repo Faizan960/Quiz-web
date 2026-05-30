@@ -123,23 +123,35 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-[100px] pointer-events-none" />
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.5, type: 'spring', bounce: 0.4 }}
           className="relative z-10 glass-card p-10 text-center max-w-md w-full"
         >
-          <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-emerald-500/20">
-            <Heart className="w-10 h-10 text-emerald-500" />
-          </div>
-          <h1 className="font-display text-3xl font-extrabold mb-3 text-text-primary">
+          <motion.div 
+            initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, type: 'spring' }}
+            className="w-20 h-20 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-pink-500/20 animate-pulse-glow"
+          >
+            <Heart className="w-10 h-10 text-pink-500" />
+          </motion.div>
+          <motion.h1 
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+            className="font-display text-3xl font-extrabold mb-3 text-text-primary"
+          >
             You&apos;re amazing!
           </h1>
-          <p className="text-text-secondary text-base leading-relaxed mb-8">
+          <motion.p 
+            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+            className="text-text-secondary text-base leading-relaxed mb-8"
+          >
             Your responses about <strong className="text-text-primary">{profile.display_name}</strong> have been saved.
             They&apos;ll help build their Social Mirror report.
-          </p>
-          <Link href="/create" className="flex items-center justify-center gap-2 w-full px-6 py-4 bg-zinc-900 text-white rounded-2xl font-bold transition-all shadow-lg shadow-zinc-900/20 hover:bg-zinc-800">
-            Create Your Own Mirror <Sparkles className="w-5 h-5" />
-          </Link>
+          </motion.p>
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
+            <Link href="/create" className="flex items-center justify-center gap-2 w-full px-6 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-2xl font-bold transition-all shadow-lg shadow-primary/30 hover:opacity-90 hover:scale-[1.02] active:scale-[0.98]">
+              Create Your Own Mirror <Sparkles className="w-5 h-5" />
+            </Link>
+          </motion.div>
         </motion.div>
       </div>
     )
@@ -156,7 +168,7 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
 
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
-        <div className="absolute inset-0 z-0 pointer-events-none bg-pastel-gradient opacity-40" />
+        <div className="absolute inset-0 z-0 pointer-events-none bg-pastel-gradient opacity-60" />
         
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -251,8 +263,8 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
         <div className="w-full h-1.5 bg-zinc-200">
           <motion.div
             animate={{ width: `${progress}%` }}
-            transition={{ duration: 0.3 }}
-            className="h-full bg-gradient-to-r from-primary to-secondary"
+            transition={{ type: "spring", stiffness: 100, damping: 20 }}
+            className="h-full bg-gradient-to-r from-primary to-secondary shadow-[0_0_10px_rgba(161,140,209,0.5)]"
           />
         </div>
         <div className="glass-panel flex items-center justify-between px-6 py-3 border-b-0 rounded-none">
@@ -293,12 +305,13 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
                 return (
                   <motion.button
                     key={i}
+                    whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => handleAnswer(question.id, opt.text, i)}
                     className={`
-                      w-full flex items-center gap-4 p-4 rounded-2xl border text-left transition-all duration-200
+                      w-full flex items-center gap-4 p-4 rounded-2xl border text-left transition-all duration-300
                       ${isSelected 
-                        ? 'bg-primary/5 border-primary shadow-[0_4px_20px_-10px_rgba(129,140,248,0.3)]' 
+                        ? 'bg-primary/10 border-primary shadow-[0_0_20px_rgba(161,140,209,0.3)] z-10 relative transform scale-[1.02]' 
                         : 'bg-white border-zinc-200 hover:border-primary/40 hover:bg-zinc-50'}
                     `}
                   >
