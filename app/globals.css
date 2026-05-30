@@ -1,13 +1,13 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #818CF8;
-  --color-primary-light: #A5B4FC;
-  --color-secondary: #F472B6;
-  --color-accent: #34D399;
+  --color-primary: #a18cd1; /* Pastel purple */
+  --color-primary-light: #fbc2eb; /* Pastel pink */
+  --color-secondary: #ffb199; /* Pastel peach */
+  --color-accent: #a8edea; /* Pastel mint */
   --color-surface: #FFFFFF;
-  --color-surface-hover: #F8FAFC;
-  --color-background: #FAFAFA;
+  --color-surface-hover: #Fdfcff;
+  --color-background: #faf9fd;
   
   --font-display: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
   --font-body: var(--font-dm), ui-sans-serif, system-ui, sans-serif;
@@ -15,12 +15,12 @@
 
 @layer base {
   :root {
-    --bg: #FAFAFA;
+    --bg: #faf9fd;
     --surface: #FFFFFF;
-    --text-primary: #18181B; /* zinc-900 */
-    --text-secondary: #52525B; /* zinc-600 */
-    --text-muted: #A1A1AA; /* zinc-400 */
-    --border: rgba(0, 0, 0, 0.08);
+    --text-primary: #2d3748; /* softer dark grey */
+    --text-secondary: #718096;
+    --text-muted: #a0aec0;
+    --border: rgba(161, 140, 209, 0.15); /* Pastel border */
   }
 
   body {
@@ -34,36 +34,40 @@
 
 @layer utilities {
   .text-gradient {
-    background: linear-gradient(135deg, #818cf8 0%, #f472b6 100%);
+    background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
   
   .bg-pastel-gradient {
-    background: linear-gradient(135deg, rgba(129, 140, 248, 0.15), rgba(244, 114, 182, 0.15), rgba(52, 211, 153, 0.1));
+    background: linear-gradient(120deg, rgba(161, 140, 209, 0.12), rgba(251, 194, 235, 0.12), rgba(168, 237, 234, 0.12));
+    background-size: 200% 200%;
+    animation: gradientShift 15s ease infinite;
   }
   
   .glass-panel {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(32px);
+    -webkit-backdrop-filter: blur(32px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 8px 32px rgba(161, 140, 209, 0.05);
   }
 
   .glass-card {
-    background: #FFFFFF;
-    border: 1px solid var(--border);
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
     border-radius: 24px;
-    box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02);
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 10px 40px -10px rgba(161, 140, 209, 0.1), inset 0 1px 0 rgba(255, 255, 255, 1);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .glass-card:hover {
-    border-color: rgba(129, 140, 248, 0.3);
-    box-shadow: 0 15px 50px -10px rgba(129, 140, 248, 0.15), 0 4px 10px rgba(0, 0, 0, 0.02);
-    transform: translateY(-4px);
+    border-color: rgba(161, 140, 209, 0.4);
+    box-shadow: 0 15px 50px -10px rgba(161, 140, 209, 0.25), inset 0 1px 0 rgba(255, 255, 255, 1);
+    transform: translateY(-4px) scale(1.01);
   }
   
   .hide-scrollbar::-webkit-scrollbar {
@@ -73,20 +77,42 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+  
+  /* Custom scrollbar for webkit */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.02);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(161, 140, 209, 0.3);
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(161, 140, 209, 0.5);
+  }
 }
 
 /* Animations */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-12px); }
 }
 .animate-float {
-  animation: float 5s ease-in-out infinite;
+  animation: float 6s ease-in-out infinite;
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(129, 140, 248, 0.2); }
-  50% { box-shadow: 0 0 40px rgba(129, 140, 248, 0.4), 0 0 60px rgba(244, 114, 182, 0.2); }
+  0%, 100% { box-shadow: 0 0 25px rgba(161, 140, 209, 0.2); }
+  50% { box-shadow: 0 0 45px rgba(161, 140, 209, 0.5), 0 0 65px rgba(251, 194, 235, 0.3); }
 }
 .animate-pulse-glow {
   animation: pulse-glow 3s ease-in-out infinite;
