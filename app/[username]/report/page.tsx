@@ -170,7 +170,7 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
 
   return (
     <div className="min-h-screen bg-background relative flex flex-col">
-      <div className="absolute inset-0 z-0 pointer-events-none bg-pastel-gradient opacity-30" />
+      <div className="absolute inset-0 z-0 pointer-events-none bg-pastel-gradient opacity-60" />
 
       {/* Header */}
       <nav className="glass-panel sticky top-0 z-50 flex items-center justify-between px-6 py-4 md:px-10">
@@ -202,7 +202,7 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
         )}
 
         {/* Tab Switcher */}
-        <div className="flex bg-white p-1.5 rounded-2xl border border-zinc-200 shadow-sm mb-8">
+        <div className="flex bg-white p-1.5 rounded-2xl border border-zinc-200 shadow-sm mb-8 relative">
           {[
             { id: 'report' as TabType, label: 'Report', icon: <BarChart3 className="w-4 h-4" /> },
             { id: 'roast' as TabType, label: 'Roast', icon: <Flame className="w-4 h-4" /> },
@@ -211,13 +211,22 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
-              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-all ${
+              className={`flex-1 relative flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-colors duration-300 ${
                 tab === t.id 
-                  ? 'bg-zinc-900 text-white shadow-md' 
+                  ? 'text-white' 
                   : 'text-text-secondary hover:bg-zinc-50'
               }`}
             >
-              {t.icon} {t.label}
+              {tab === t.id && (
+                <motion.div
+                  layoutId="activeTab"
+                  className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-xl shadow-md"
+                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                />
+              )}
+              <span className="relative z-10 flex items-center gap-2">
+                {t.icon} {t.label}
+              </span>
             </button>
           ))}
         </div>
@@ -260,7 +269,7 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
                           <motion.div
                             initial={{ width: 0 }}
                             animate={{ width: `${score}%` }}
-                            transition={{ delay: 0.3 + i * 0.1, duration: 0.8, ease: 'easeOut' }}
+                            transition={{ delay: 0.3 + i * 0.1, duration: 1.2, type: 'spring', bounce: 0.3 }}
                             className="h-full rounded-full"
                             style={{ background: DIMENSION_COLORS[dim] ?? '#818CF8' }}
                           />
@@ -422,14 +431,14 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
                   <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-sm mx-auto">
                     <button 
                       onClick={handleDownloadCard} 
-                      className="flex-1 flex items-center justify-center gap-2 py-4 bg-zinc-900 text-white rounded-2xl font-bold hover:bg-zinc-800 transition-colors shadow-lg"
+                      className="flex-1 flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-2xl font-bold hover:opacity-90 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/30"
                     >
                       <Download className="w-5 h-5" /> Download
                     </button>
                     <a
                       href={`https://wa.me/?text=Check%20out%20my%20Social%20Mirror%20card%21%20🪞%20${encodeURIComponent(typeof window !== 'undefined' ? window.location.origin + '/' + username : '')}`}
                       target="_blank" rel="noopener noreferrer"
-                      className="flex-1 flex items-center justify-center gap-2 py-4 bg-white border border-zinc-200 text-zinc-800 rounded-2xl font-bold hover:bg-zinc-50 transition-colors shadow-sm"
+                      className="flex-1 flex items-center justify-center gap-2 py-4 bg-white border border-zinc-200 text-zinc-800 rounded-2xl font-bold hover:bg-zinc-50 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm hover:border-primary/30"
                     >
                       <Share2 className="w-5 h-5" /> Share
                     </a>
