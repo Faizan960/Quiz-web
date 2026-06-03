@@ -3,13 +3,13 @@
 import { useState, useEffect, use, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
-import { ArrowLeft, ArrowRight, Check, User, Sparkles, Heart, Share2, Camera, ShieldCheck, Clipboard } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, User, Sparkles, Heart, Share2, Camera } from 'lucide-react'
 
 function Confetti() {
   const [pieces, setPieces] = useState<{ id: number; left: string; delay: string; size: string; color: string }[]>([])
   
   useEffect(() => {
-    const colors = ['#7c3aed', '#a78bfa', '#db2777', '#06b6d4', '#8B5CF6', '#EC4899', '#34D399', '#F59E0B']
+    const colors = ['#7c3aed', '#8b5cf6', '#ec4899', '#0ea5e9', '#ffb703', '#fb8500', '#2ec4b6']
     const newPieces = Array.from({ length: 45 }).map((_, i) => ({
       id: i,
       left: `${Math.random() * 100}%`,
@@ -169,8 +169,8 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center relative overflow-hidden">
-        <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-70" />
-        <div className="w-12 h-12 bg-surface border border-white/5 rounded-2xl flex items-center justify-center text-2xl shadow-2xl animate-pulse-glow">
+        <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-80" />
+        <div className="w-12 h-12 bg-surface border border-border rounded-2xl flex items-center justify-center text-2xl shadow-sm animate-pulse-glow">
           🪞
         </div>
       </div>
@@ -181,7 +181,7 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
   if (error || !profile) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4 text-center px-6 relative overflow-hidden">
-        <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-70" />
+        <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-80" />
         <div className="text-4xl mb-2">😕</div>
         <h1 className="font-display text-xl font-bold text-text-primary">Profile not found</h1>
         <p className="text-text-secondary text-xs font-semibold">{error || 'This mirror doesn\'t exist.'}</p>
@@ -208,18 +208,18 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
         <Confetti />
-        <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-70" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-accent/5 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-80" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
         
         <motion.div
           initial={{ opacity: 0, scale: 0.96, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.5, type: 'spring', bounce: 0.4 }}
-          className="relative z-10 glass-card p-6 md:p-8 text-center max-w-md w-full border border-white/5 shadow-2xl"
+          className="relative z-10 glass-card p-6 md:p-8 text-center max-w-md w-full border border-border shadow-md bg-surface"
         >
           <motion.div 
             initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, type: 'spring' }}
-            className="w-12 h-12 bg-pink-950/20 border border-pink-500/20 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-sm animate-pulse-glow"
+            className="w-12 h-12 bg-pink-50 border border-pink-200 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-sm"
           >
             <Heart className="w-6 h-6 text-secondary" />
           </motion.div>
@@ -233,7 +233,7 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
           
           <motion.p 
             initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-            className="text-text-secondary text-xs md:text-sm leading-relaxed mb-6 font-medium"
+            className="text-text-secondary text-xs md:text-sm leading-relaxed mb-6 font-semibold"
           >
             Your responses about <strong className="text-text-primary">{profile.display_name}</strong> have been saved.
             They will help generate their Social Mirror report.
@@ -245,16 +245,16 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
               initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="p-4 rounded-xl bg-surface/65 border border-white/5 mb-6 text-left shadow-inner"
+              className="p-4 rounded-xl bg-background border border-border mb-6 text-left shadow-inner"
             >
-              <div className="text-[9px] font-bold text-text-secondary uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <Sparkles className="w-3 h-3 text-accent animate-pulse" /> Teaser Preview
+              <div className="text-[9px] font-bold text-text-secondary uppercase tracking-wider mb-2 flex items-center gap-1.5 font-display">
+                <Sparkles className="w-3 h-3 text-primary animate-pulse" /> Teaser Preview
               </div>
               <p className="text-xs text-text-secondary leading-relaxed font-semibold">
                 {teaser.total_responses >= 3 ? (
                   <>
                     Based on {teaser.total_responses} responses, {teaser.display_name} might be a{" "}
-                    <span className="blur-teaser inline-block px-1.5 py-0.5 rounded bg-white/10 text-white font-extrabold select-none">
+                    <span className="blur-teaser inline-block px-1.5 py-0.5 rounded bg-zinc-200 text-text-primary font-extrabold select-none">
                       {teaser.archetype}
                     </span>
                     . Your answers just shifted their scores!
@@ -270,7 +270,7 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
 
           <div className="space-y-3 relative z-10">
             <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
-              <Link href="/create" className="flex items-center justify-center gap-1.5 w-full px-5 py-3.5 bg-gradient-to-r from-primary to-secondary text-white rounded-xl text-xs md:text-sm font-bold transition-all shadow-md hover:opacity-95 hover:scale-[1.01] active:scale-[0.99] cursor-pointer">
+              <Link href="/create" className="flex items-center justify-center gap-1.5 w-full px-5 py-3.5 bg-gradient-to-r from-primary to-secondary text-white rounded-xl text-xs md:text-sm font-bold transition-all shadow-sm hover:opacity-95 hover:scale-[1.01] active:scale-[0.99] cursor-pointer">
                 Create Your Own Mirror <Sparkles className="w-4 h-4" />
               </Link>
             </motion.div>
@@ -280,7 +280,7 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7 }}
               onClick={handleShareStory}
-              className="flex items-center justify-center gap-1.5 w-full px-5 py-3.5 bg-surface border border-white/5 text-text-primary rounded-xl text-xs md:text-sm font-bold transition-all hover:bg-surface-hover hover:border-white/10 hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+              className="flex items-center justify-center gap-1.5 w-full px-5 py-3.5 bg-background border border-border text-text-primary rounded-xl text-xs md:text-sm font-bold transition-all hover:bg-surface-hover hover:border-primary/20 hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
             >
               <Camera className="w-4 h-4 text-secondary" /> Share to Instagram Story
             </motion.button>
@@ -292,9 +292,9 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 8 }}
-                className="absolute bottom-4 left-4 right-4 bg-zinc-950/95 border border-white/10 text-white text-[11px] font-bold py-2.5 px-3 rounded-xl shadow-xl z-20 flex items-center justify-center gap-1.5"
+                className="absolute bottom-4 left-4 right-4 bg-zinc-900 border border-zinc-700 text-white text-[11px] font-bold py-2.5 px-3 rounded-xl shadow-md z-20 flex items-center justify-center gap-1.5"
               >
-                <Share2 className="w-3.5 h-3.5 text-accent" /> Link & sticker text copied to clipboard!
+                <Share2 className="w-3.5 h-3.5 text-accent animate-pulse" /> Link & sticker text copied to clipboard!
               </motion.div>
             )}
           </AnimatePresence>
@@ -314,8 +314,8 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
 
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
-        <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-70" />
-        <div className="absolute inset-0 z-0 pointer-events-none bg-pastel-gradient opacity-50" />
+        <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-80" />
+        <div className="absolute inset-0 z-0 pointer-events-none bg-pastel-gradient opacity-90" />
         
         <motion.div
           initial={{ opacity: 0, y: 15 }}
@@ -323,16 +323,16 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
           className="relative z-10 w-full max-w-md text-center"
         >
           {/* Avatar */}
-          <div className="w-20 h-20 rounded-2xl mx-auto mb-5 bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-3xl font-display font-black text-white shadow-lg shadow-primary/15">
+          <div className="w-20 h-20 rounded-3xl mx-auto mb-5 bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-3xl font-display font-black text-white shadow-lg shadow-primary/10">
             {initials}
           </div>
 
-          <h1 className="font-display text-2xl md:text-3xl font-black mb-2 text-text-primary">
+          <h1 className="font-display text-2xl md:text-3xl font-black mb-2 text-text-primary leading-tight">
             Answer about <span className="text-gradient">{profile.display_name}</span>
           </h1>
 
           {profile.bio && (
-            <p className="text-text-secondary text-sm italic mb-3 font-medium">
+            <p className="text-text-secondary text-sm italic mb-3 font-semibold">
               &quot;{profile.bio}&quot;
             </p>
           )}
@@ -342,7 +342,7 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
           </p>
 
           {/* Identity toggle */}
-          <div className="glass-card p-5 mb-6.5 text-left border border-white/5 shadow-md">
+          <div className="glass-card p-5 mb-6.5 text-left border border-border shadow-sm bg-surface">
             <div className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-3">
               How do you want to respond?
             </div>
@@ -351,8 +351,8 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
                 onClick={() => setIsAnonymous(true)}
                 className={`flex-1 py-3 px-3.5 rounded-xl text-xs md:text-sm font-bold transition-all border flex items-center justify-center gap-1.5 cursor-pointer ${
                   isAnonymous 
-                    ? 'bg-primary/20 border-primary text-primary-light shadow-sm' 
-                    : 'bg-surface border-white/5 text-text-secondary hover:bg-surface-hover'
+                    ? 'bg-primary/10 border-primary text-primary shadow-sm' 
+                    : 'bg-background border-border text-text-secondary hover:bg-surface-hover'
                 }`}
               >
                 🕶️ Anonymous
@@ -361,8 +361,8 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
                 onClick={() => setIsAnonymous(false)}
                 className={`flex-1 py-3 px-3.5 rounded-xl text-xs md:text-sm font-bold transition-all border flex items-center justify-center gap-1.5 cursor-pointer ${
                   !isAnonymous 
-                    ? 'bg-primary/20 border-primary text-primary-light shadow-sm' 
-                    : 'bg-surface border-white/5 text-text-secondary hover:bg-surface-hover'
+                    ? 'bg-primary/10 border-primary text-primary shadow-sm' 
+                    : 'bg-background border-border text-text-secondary hover:bg-surface-hover'
                 }`}
               >
                 <User className="w-3.5 h-3.5" /> With Name
@@ -371,7 +371,7 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
             {!isAnonymous && (
               <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-3 overflow-hidden">
                 <input
-                  className="w-full bg-surface border border-white/5 rounded-xl px-3.5 py-3 text-xs md:text-sm text-text-primary font-bold focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all outline-none"
+                  className="w-full bg-background border border-border rounded-xl px-3.5 py-3 text-xs md:text-sm text-text-primary font-bold focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all outline-none"
                   type="text"
                   placeholder="Enter your name"
                   value={respondentName}
@@ -386,7 +386,7 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
             disabled={!isAnonymous && !respondentName.trim()}
             className={`flex items-center justify-center gap-1.5 w-full py-3.5 rounded-xl text-xs md:text-sm font-black text-white transition-all shadow-md cursor-pointer ${
               (!isAnonymous && !respondentName.trim()) 
-                ? 'bg-zinc-800 text-zinc-500 shadow-none cursor-not-allowed' 
+                ? 'bg-zinc-100 text-zinc-400 border border-zinc-200 cursor-not-allowed' 
                 : 'bg-gradient-to-r from-primary to-secondary hover:opacity-95'
             }`}
           >
@@ -401,25 +401,25 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
   if (!question) return null
 
   return (
-    <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
+    <div className="min-h-screen bg-background flex flex-col relative overflow-hidden text-text-primary">
       {/* Background */}
-      <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-70" />
-      <div className="absolute inset-0 z-0 pointer-events-none bg-pastel-gradient opacity-30" />
+      <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-80" />
+      <div className="absolute inset-0 z-0 pointer-events-none bg-pastel-gradient opacity-90" />
 
       {/* Progress Bar */}
       <div className="sticky top-0 z-50">
-        <div className="w-full h-1 bg-zinc-950">
+        <div className="w-full h-1 bg-zinc-200/60">
           <motion.div
             animate={{ width: `${progress}%` }}
             transition={{ type: "spring", stiffness: 100, damping: 20 }}
-            className="h-full bg-gradient-to-r from-primary to-secondary shadow-[0_0_8px_rgba(124,58,237,0.5)]"
+            className="h-full bg-gradient-to-r from-primary to-secondary shadow-[0_0_8px_rgba(124,58,237,0.15)]"
           />
         </div>
-        <div className="glass-panel flex items-center justify-between px-6 py-3 border-b-0 rounded-none border-white/5">
+        <div className="glass-panel flex items-center justify-between px-6 py-3 border-b border-border">
           <span className="text-[10px] md:text-xs font-bold text-text-secondary">
             {Object.keys(answers).length}/{questions.length} answered
           </span>
-          <span className="text-[10px] md:text-xs font-black text-primary-light">
+          <span className="text-[10px] md:text-xs font-bold text-primary font-display">
             for {profile.display_name}
           </span>
         </div>
@@ -437,7 +437,7 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
             className="w-full max-w-xl"
           >
             {/* Question number */}
-            <div className="inline-flex px-3.5 py-1 rounded-full bg-primary/10 border border-primary/25 text-[10px] font-bold text-primary-light mb-5">
+            <div className="inline-flex px-3.5 py-1 rounded-full bg-primary/10 border border-primary/25 text-[10px] font-bold text-primary mb-5 font-display">
               Question {currentQ + 1}
             </div>
 
@@ -460,16 +460,16 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
                     className={`
                       w-full flex items-center gap-3.5 p-4 rounded-xl border text-left transition-all duration-300 cursor-pointer
                       ${isSelected 
-                        ? 'bg-primary/15 border-primary shadow-[0_0_15px_rgba(124,58,237,0.15)] z-10 relative' 
-                        : 'bg-surface border-white/5 hover:border-primary/25 hover:bg-surface-hover'}
+                        ? 'bg-primary/10 border-primary shadow-sm z-10 relative' 
+                        : 'bg-surface border-border hover:border-primary/20 hover:bg-surface-hover'}
                     `}
                   >
                     <div className={`
                       w-8.5 h-8.5 rounded-lg flex-shrink-0 flex items-center justify-center text-xs font-black transition-colors relative
-                      ${isSelected ? 'bg-primary text-white shadow-sm' : 'bg-surface-hover border border-white/5 text-text-secondary'}
+                      ${isSelected ? 'bg-primary text-white shadow-sm' : 'bg-background border border-border text-text-secondary'}
                     `}>
                       {isSelected ? (
-                        <Check className="w-4 h-4 animate-scaleUp" />
+                        <Check className="w-4 h-4" />
                       ) : (
                         <span>{letter}</span>
                       )}
@@ -477,7 +477,7 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
                         {i + 1}
                       </span>
                     </div>
-                    <span className={`text-sm md:text-base font-semibold ${isSelected ? 'text-primary-light font-bold' : 'text-text-primary'}`}>
+                    <span className={`text-sm md:text-base font-semibold ${isSelected ? 'text-primary font-bold' : 'text-text-primary'}`}>
                       {opt.text}
                     </span>
                   </motion.button>
@@ -490,7 +490,7 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
               {currentQ > 0 && (
                 <button
                   onClick={() => setCurrentQ(q => q - 1)}
-                  className="flex items-center justify-center gap-1.5 flex-1 max-w-[120px] bg-surface border border-white/5 text-text-secondary hover:bg-surface-hover hover:border-white/10 rounded-xl py-3.5 text-xs md:text-sm font-bold transition-all shadow-sm cursor-pointer"
+                  className="flex items-center justify-center gap-1.5 flex-1 max-w-[120px] bg-background border border-border text-text-secondary hover:bg-surface hover:border-primary/20 rounded-xl py-3.5 text-xs md:text-sm font-bold transition-all shadow-sm cursor-pointer"
                 >
                   <ArrowLeft className="w-4 h-4" /> Prev
                 </button>
@@ -502,7 +502,7 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
                   className={`flex items-center justify-center gap-1.5 flex-1 rounded-xl py-3.5 text-xs md:text-sm font-bold transition-all shadow-md cursor-pointer ${
                     answers[question.id] 
                       ? 'bg-gradient-to-r from-primary to-secondary text-white hover:opacity-95' 
-                      : 'bg-zinc-800 text-zinc-500 cursor-not-allowed shadow-none'
+                      : 'bg-zinc-100 text-zinc-400 border border-zinc-200 cursor-not-allowed shadow-none'
                   }`}
                 >
                   Next <ArrowRight className="w-4 h-4" />
@@ -520,15 +520,15 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
                   {submitting ? 'Submitting...' : 'Submit Responses'} <Sparkles className="w-4 h-4" />
                 </button>
               ) : (
-                <button disabled className="flex-1 bg-zinc-800 text-zinc-500 rounded-xl py-3.5 text-xs md:text-sm font-bold cursor-not-allowed">
+                <button disabled className="flex-1 bg-zinc-100 text-zinc-400 border border-zinc-200 rounded-xl py-3.5 text-xs md:text-sm font-bold cursor-not-allowed">
                   Answer all questions
                 </button>
               )}
             </div>
             
             {/* Keyboard tips */}
-            <div className="hidden sm:block text-center mt-6 text-[10px] text-text-muted font-medium">
-              💡 Tip: Use keyboard keys <span className="px-1.5 py-0.5 rounded bg-zinc-800 font-bold border border-white/5">A</span> - <span className="px-1.5 py-0.5 rounded bg-zinc-800 font-bold border border-white/5">D</span> or <span className="px-1.5 py-0.5 rounded bg-zinc-800 font-bold border border-white/5">1</span> - <span className="px-1.5 py-0.5 rounded bg-zinc-800 font-bold border border-white/5">4</span> to answer quickly.
+            <div className="hidden sm:block text-center mt-6 text-[10px] text-text-muted font-bold">
+              💡 Tip: Use keyboard keys <span className="px-1.5 py-0.5 rounded bg-zinc-100 font-bold border border-border text-zinc-800">A</span> - <span className="px-1.5 py-0.5 rounded bg-zinc-100 font-bold border border-border text-zinc-800">D</span> or <span className="px-1.5 py-0.5 rounded bg-zinc-100 font-bold border border-border text-zinc-800">1</span> - <span className="px-1.5 py-0.5 rounded bg-zinc-100 font-bold border border-border text-zinc-800">4</span> to answer quickly.
             </div>
           </motion.div>
         </AnimatePresence>
@@ -536,4 +536,3 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
     </div>
   )
 }
-

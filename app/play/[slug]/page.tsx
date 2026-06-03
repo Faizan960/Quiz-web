@@ -36,12 +36,12 @@ function AdSlot({ code }: { code?: string | null }) {
     return (
       <div 
         dangerouslySetInnerHTML={{ __html: code }} 
-        className="my-6 w-full overflow-hidden rounded-2xl border border-white/5 bg-surface/30 p-4 text-center shadow-inner" 
+        className="my-6 w-full overflow-hidden rounded-2xl border border-border bg-surface p-4 text-center shadow-inner" 
       />
     )
   }
   return (
-    <div className="my-6 p-4 rounded-2xl border border-dashed border-white/5 bg-surface/20 text-center text-[10px] text-text-muted font-bold tracking-widest uppercase select-none">
+    <div className="my-6 p-4 rounded-2xl border border-dashed border-border bg-surface text-center text-[10px] text-text-muted font-bold tracking-widest uppercase select-none">
       Ad Space
     </div>
   )
@@ -182,12 +182,12 @@ export default function PlayPage() {
   if (loadingQuiz) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
-        <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-70" />
+        <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-80" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] bg-primary/5 rounded-full blur-[90px] pointer-events-none" />
         
         <div className="relative z-10 text-center">
-          <div className="text-4xl mb-4 animate-float text-primary-light">🎯</div>
-          <div className="w-12 h-1 bg-zinc-900 rounded-full mx-auto overflow-hidden relative">
+          <div className="text-4xl mb-4 animate-float text-primary">🎯</div>
+          <div className="w-12 h-1.5 bg-zinc-200/60 rounded-full mx-auto overflow-hidden relative">
             <div className="absolute h-full w-1/2 bg-gradient-to-r from-primary to-secondary rounded-full animate-shimmer" style={{ left: 0 }} />
           </div>
           <p className="text-text-secondary text-xs font-bold uppercase tracking-wider mt-4">Loading quiz...</p>
@@ -200,18 +200,18 @@ export default function PlayPage() {
   if (notFound || !quiz) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden text-text-primary">
-        <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-70" />
-        <div className="relative z-10 w-full max-w-sm glass-card p-8 text-center border border-white/5 shadow-2xl">
-          <div className="w-14 h-14 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 text-rose-400">
+        <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-80" />
+        <div className="relative z-10 w-full max-w-sm glass-card p-8 text-center border border-border shadow-md bg-surface">
+          <div className="w-14 h-14 bg-rose-50 border border-rose-200 rounded-2xl flex items-center justify-center mx-auto mb-6 text-rose-500">
             <AlertTriangle className="w-6 h-6" />
           </div>
           <h2 className="font-display text-2xl font-black mb-3">Quiz Not Found</h2>
-          <p className="text-text-secondary text-xs leading-relaxed mb-6 font-medium">
+          <p className="text-text-secondary text-xs leading-relaxed mb-6 font-semibold">
             This trivia challenge might have been deleted, or the URL contains a typo. Check your link and try again.
           </p>
           <Link 
             href="/" 
-            className="inline-flex items-center gap-1 text-xs text-primary-light hover:text-white transition-colors font-bold"
+            className="inline-flex items-center gap-1 text-xs text-primary hover:text-primary-light transition-colors font-bold"
           >
             <ArrowLeft className="w-4 h-4" /> Back to Home
           </Link>
@@ -234,17 +234,17 @@ export default function PlayPage() {
   return (
     <div className="min-h-screen bg-background relative flex flex-col text-text-primary overflow-x-hidden">
       {/* Background Dots Grid */}
-      <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-75" />
-      <div className="absolute inset-0 z-0 pointer-events-none bg-pastel-gradient opacity-50" />
+      <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-90" />
+      <div className="absolute inset-0 z-0 pointer-events-none bg-pastel-gradient opacity-95" />
 
       {/* Navbar */}
-      <nav className="glass-panel sticky top-0 z-50 flex items-center justify-between px-6 py-4 md:px-10 border-b border-white/5">
+      <nav className="glass-panel sticky top-0 z-50 flex items-center justify-between px-6 py-4 md:px-10 border-b border-border">
         <Link href="/" className="flex items-center gap-2">
-          <span className="text-lg drop-shadow-[0_0_8px_rgba(124,58,237,0.4)]">✦</span>
+          <span className="text-lg">✦</span>
           <span className="text-gradient font-display font-black text-sm md:text-base tracking-tight">Quizly</span>
         </Link>
         {phase === 'playing' && (
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold bg-primary/10 border border-primary/20 text-primary-light">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold bg-primary/10 border border-primary/20 text-primary">
             <Trophy className="w-3.5 h-3.5" />
             <span>Score: {score}</span>
           </div>
@@ -264,7 +264,7 @@ export default function PlayPage() {
               className="w-full"
             >
               <div className="text-center mb-8">
-                <div className="w-16 h-16 bg-primary/10 border border-primary/20 rounded-3xl flex items-center justify-center mx-auto mb-6 text-primary-light shadow-lg">
+                <div className="w-16 h-16 bg-primary/10 border border-primary/20 rounded-3xl flex items-center justify-center mx-auto mb-6 text-primary shadow-sm">
                   <Gamepad2 className="w-8 h-8" />
                 </div>
                 <h1 className="font-display text-3xl font-black tracking-tight mb-2 leading-tight">
@@ -273,16 +273,16 @@ export default function PlayPage() {
                 <p className="text-text-secondary text-xs font-bold uppercase tracking-wider mb-5">
                   by {quiz.creator_name}
                 </p>
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-950/60 border border-white/5 text-[10px] font-bold text-text-muted">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-background border border-border text-[10px] font-bold text-text-secondary shadow-sm">
                   <span>{quiz.questions.length} Questions</span>
-                  <span className="w-1 h-1 bg-white/10 rounded-full" />
+                  <span className="w-1 h-1 bg-zinc-300 rounded-full" />
                   <span>Leaderboard Enabled</span>
                 </div>
               </div>
 
               {ads?.player_start_enabled && <AdSlot code={ads.player_start_code as string} />}
 
-              <div className="glass-card p-6 md:p-8 border border-white/5 shadow-2xl mb-6">
+              <div className="glass-card p-6 md:p-8 border border-border shadow-md mb-6 bg-surface">
                 <div className="space-y-5">
                   <div>
                     <label className="block text-[10px] font-black text-text-secondary uppercase tracking-widest mb-2.5">
@@ -293,7 +293,7 @@ export default function PlayPage() {
                       onChange={e => setPlayerName(e.target.value)}
                       onKeyDown={e => e.key === 'Enter' && handleStart()}
                       placeholder="e.g. Captain Trivia"
-                      className="w-full bg-surface border border-white/5 rounded-2xl px-5 py-4 text-text-primary placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/15 transition-all outline-none font-semibold text-sm shadow-inner"
+                      className="w-full bg-background border border-border rounded-2xl px-5 py-4 text-text-primary placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all outline-none font-bold text-sm shadow-inner"
                       autoFocus
                     />
                   </div>
@@ -303,8 +303,8 @@ export default function PlayPage() {
                     disabled={!playerName.trim()}
                     className={`w-full py-4 rounded-2xl font-black text-sm transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer ${
                       playerName.trim() 
-                        ? 'bg-gradient-to-r from-primary to-secondary text-white hover:opacity-95 hover:scale-[1.01] active:scale-[0.99] shadow-primary/15' 
-                        : 'bg-zinc-800 text-zinc-500 cursor-not-allowed shadow-none'
+                        ? 'bg-gradient-to-r from-primary to-secondary text-white hover:opacity-95 hover:scale-[1.01] active:scale-[0.99] shadow-primary/10 border-0' 
+                        : 'bg-zinc-100 text-zinc-400 border border-zinc-200 cursor-not-allowed shadow-none'
                     }`}
                   >
                     Start Trivia 🚀
@@ -328,13 +328,13 @@ export default function PlayPage() {
                   <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest">
                     Question {current + 1} of {quiz.questions.length}
                   </span>
-                  <span className="text-xs font-bold text-primary-light">
+                  <span className="text-xs font-bold text-primary">
                     {playerName}
                   </span>
                 </div>
                 
                 {/* Progress bar */}
-                <div className="w-full h-1.5 bg-zinc-950 rounded-full border border-white/3 overflow-hidden">
+                <div className="w-full h-1.5 bg-zinc-200/60 rounded-full border border-border overflow-hidden">
                   <motion.div 
                     className="h-full rounded-full bg-gradient-to-r from-primary to-secondary"
                     initial={{ width: `${(current / quiz.questions.length) * 100}%` }}
@@ -357,16 +357,16 @@ export default function PlayPage() {
                   const isIncorrect = isSelected && !isCorrect
                   const showAnswers = selected !== null
 
-                  let optionClass = "group w-full flex items-center justify-between p-4.5 rounded-2xl border text-left font-semibold transition-all duration-300 relative overflow-hidden "
+                  let optionClass = "group w-full flex items-center justify-between p-4.5 rounded-2xl border text-left font-bold transition-all duration-300 relative overflow-hidden "
                   if (!showAnswers) {
-                    optionClass += "bg-surface border-white/5 hover:border-primary/40 hover:bg-surface-hover hover:translate-x-1.5 text-text-primary cursor-pointer"
+                    optionClass += "bg-surface border-border hover:border-primary/25 hover:bg-surface-hover hover:translate-x-1.5 text-text-primary cursor-pointer"
                   } else {
                     if (isCorrect) {
-                      optionClass += "bg-emerald-950/15 border-emerald-500/40 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.1)]"
+                      optionClass += "bg-emerald-50 border-emerald-300 text-emerald-600 shadow-sm"
                     } else if (isIncorrect) {
-                      optionClass += "bg-rose-950/15 border-rose-500/40 text-rose-300 shadow-[0_0_15px_rgba(239,68,68,0.1)]"
+                      optionClass += "bg-pink-50 border-rose-300 text-rose-500 shadow-sm"
                     } else {
-                      optionClass += "bg-surface/30 border-white/3 text-text-muted opacity-40 cursor-default"
+                      optionClass += "bg-zinc-50 border-zinc-200 text-zinc-400 opacity-40 cursor-default"
                     }
                   }
 
@@ -383,21 +383,21 @@ export default function PlayPage() {
                             ? 'bg-emerald-500 text-white' 
                             : showAnswers && isIncorrect 
                               ? 'bg-rose-500 text-white' 
-                              : 'bg-zinc-950 text-text-secondary border border-white/5'
+                              : 'bg-background text-text-secondary border border-border'
                         }`}>
                           {['A', 'B', 'C', 'D'][idx]}
                         </span>
-                        <span className="text-sm md:text-base pr-4 leading-normal">{opt}</span>
+                        <span className="text-sm md:text-base pr-4 leading-normal font-semibold">{opt}</span>
                       </div>
 
                       {showAnswers && isCorrect && (
-                        <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+                        <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
                       )}
                       {showAnswers && isIncorrect && (
-                        <XCircle className="w-5 h-5 text-rose-400 shrink-0" />
+                        <XCircle className="w-5 h-5 text-rose-500 shrink-0" />
                       )}
                       {!showAnswers && (
-                        <span className="text-[10px] text-text-muted font-bold font-mono px-1.5 py-0.5 rounded bg-zinc-900 border border-white/5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                        <span className="text-[10px] text-text-muted font-bold font-mono px-1.5 py-0.5 rounded bg-zinc-100 border border-border opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
                           {['A', 'B', 'C', 'D'][idx]}
                         </span>
                       )}
@@ -418,8 +418,8 @@ export default function PlayPage() {
               className="w-full space-y-6"
             >
               {/* Score card summary */}
-              <div className="glass-card p-6 md:p-8 text-center border border-white/5 shadow-2xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-4 opacity-[0.02] pointer-events-none">
+              <div className="glass-card p-6 md:p-8 text-center border border-border shadow-md bg-surface relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none">
                   <Star className="w-40 h-40 text-primary animate-pulse" />
                 </div>
 
@@ -430,7 +430,7 @@ export default function PlayPage() {
                       cx="80"
                       cy="80"
                       r={radius}
-                      className="stroke-zinc-950 fill-none"
+                      className="stroke-zinc-100 fill-none"
                       strokeWidth="8"
                     />
                     <motion.circle
@@ -462,7 +462,7 @@ export default function PlayPage() {
                 </p>
 
                 {/* Share Deck */}
-                <div className="border-t border-white/5 pt-5 mt-5">
+                <div className="border-t border-border pt-5 mt-5">
                   <div className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-3.5">
                     Share your rank with friends
                   </div>
@@ -471,23 +471,23 @@ export default function PlayPage() {
                       onClick={handleCopy} 
                       className={`px-4.5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
                         copied 
-                          ? 'bg-emerald-950/20 border border-emerald-500/25 text-emerald-400' 
-                          : 'bg-surface border border-white/5 hover:border-white/10 hover:bg-surface-hover text-text-primary shadow-sm'
+                          ? 'bg-emerald-50 border border-emerald-250 text-emerald-600' 
+                          : 'bg-background border border-border hover:bg-surface text-text-primary shadow-sm'
                       }`}
                     >
-                      <Copy className="w-3.5 h-3.5 text-primary-light" />
+                      <Copy className="w-3.5 h-3.5 text-primary" />
                       <span>{copied ? 'Copied score!' : 'Copy Score'}</span>
                     </button>
                     <button 
                       onClick={() => window.open(`https://twitter.com/intent/tweet?text=I scored ${score}/${quiz.questions.length} on "${quiz.title}"! Try it and beat my rank: ${quizUrl}`)} 
-                      className="px-4.5 py-2.5 bg-[#1DA1F2]/10 border border-[#1DA1F2]/25 text-[#1DA1F2] rounded-xl text-xs font-bold hover:bg-[#1DA1F2]/15 transition-all flex items-center gap-1.5 cursor-pointer"
+                      className="px-4.5 py-2.5 bg-[#1DA1F2]/5 border border-[#1DA1F2]/15 text-[#1DA1F2] rounded-xl text-xs font-bold hover:bg-[#1DA1F2]/10 transition-all flex items-center gap-1.5 cursor-pointer"
                     >
                       <Share2 className="w-3.5 h-3.5" />
                       <span>Post on X</span>
                     </button>
                     <button 
                       onClick={() => window.open(`https://wa.me/?text=I scored ${score}/${quiz.questions.length} on "${quiz.title}"! Try it and beat my rank: ${quizUrl}`)} 
-                      className="px-4.5 py-2.5 bg-[#25D366]/10 border border-[#25D366]/25 text-[#25D366] rounded-xl text-xs font-bold hover:bg-[#25D366]/15 transition-all flex items-center gap-1.5 cursor-pointer"
+                      className="px-4.5 py-2.5 bg-[#25D366]/5 border border-[#25D366]/15 text-[#25D366] rounded-xl text-xs font-bold hover:bg-[#25D366]/10 transition-all flex items-center gap-1.5 cursor-pointer"
                     >
                       <span>WhatsApp</span>
                     </button>
@@ -496,14 +496,14 @@ export default function PlayPage() {
               </div>
 
               {/* ── Leaderboard panel ────────────────────── */}
-              <div className="glass-card p-6 border border-white/5 shadow-xl">
+              <div className="glass-card p-6 border border-border shadow-sm bg-surface">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shadow-inner">
+                  <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center">
                     <Trophy className="w-4.5 h-4.5 animate-pulse" />
                   </div>
                   <div>
                     <h3 className="font-display text-base font-bold text-text-primary">Leaderboard Rankings</h3>
-                    <p className="text-[10px] text-text-secondary font-medium">Global scores for {quiz.title}</p>
+                    <p className="text-[10px] text-text-secondary font-semibold">Global scores for {quiz.title}</p>
                   </div>
                 </div>
 
@@ -525,21 +525,21 @@ export default function PlayPage() {
                           key={rank} 
                           className={`flex items-center justify-between p-3.5 rounded-xl border transition-all ${
                             isYou 
-                              ? 'bg-primary/10 border-primary/25 shadow-inner' 
-                              : 'bg-surface/50 border-white/5'
+                              ? 'bg-primary/5 border-primary/30 shadow-inner' 
+                              : 'bg-background border-border'
                           }`}
                         >
                           <div className="flex items-center gap-3.5 min-w-0">
                             {/* Rank Indicator */}
                             <div className={`w-7 h-7 rounded-lg flex items-center justify-center font-display text-[10px] font-black ${
-                              rank < 3 ? 'bg-zinc-950' : 'text-text-muted font-mono'
+                              rank < 3 ? 'bg-zinc-100 border border-border' : 'text-text-secondary font-mono'
                             }`}>
                               {rank < 3 ? MEDALS[rank] : `#${rank + 1}`}
                             </div>
 
                             <div className="min-w-0">
                               <div className={`font-bold text-sm truncate flex items-center gap-1.5 ${
-                                isYou ? 'text-primary-light' : 'text-text-primary'
+                                isYou ? 'text-primary' : 'text-text-primary'
                               }`}>
                                 {entry.player_name}
                                 {isYou && (
@@ -548,7 +548,7 @@ export default function PlayPage() {
                                   </span>
                                 )}
                               </div>
-                              <div className="text-[10px] text-text-muted flex items-center gap-1.5 mt-0.5 font-medium">
+                              <div className="text-[10px] text-text-muted flex items-center gap-1.5 mt-0.5 font-semibold">
                                 <Clock className="w-3 h-3 text-text-muted" />
                                 <span>{fmtTime(entry.time_taken_sec)}</span>
                               </div>
@@ -559,16 +559,16 @@ export default function PlayPage() {
                             <span className="text-xs font-black text-text-primary">
                               {entry.score} / {entry.total}
                             </span>
-                            <div className="w-16 h-1 bg-zinc-900 rounded-full mt-1.5 overflow-hidden border border-white/3">
+                            <div className="w-16 h-1 bg-zinc-100 rounded-full mt-1.5 overflow-hidden border border-zinc-200/60">
                               <div 
                                 className="h-full rounded-full" 
                                 style={{
                                   width: `${entryPct}%`,
                                   background: isYou
-                                    ? 'linear-gradient(90deg, #7c3aed, #db2777)'
+                                    ? 'linear-gradient(90deg, #7c3aed, #ec4899)'
                                     : rank === 0
                                       ? 'linear-gradient(90deg, #fbbf24, #f59e0b)'
-                                      : '#71717a'
+                                      : '#8e8e93'
                                 }}
                               />
                             </div>
@@ -584,13 +584,13 @@ export default function PlayPage() {
               <div className="flex flex-col sm:flex-row gap-3 pt-4">
                 <Link 
                   href="/create" 
-                  className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-primary to-secondary text-white font-bold text-xs text-center hover:opacity-95 transition-all shadow-md shadow-primary/10 flex items-center justify-center gap-1 cursor-pointer"
+                  className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-primary to-secondary text-white font-bold text-xs text-center hover:opacity-95 transition-all shadow-md shadow-primary/10 flex items-center justify-center gap-1 cursor-pointer border-0"
                 >
                   Create Your Own Quiz <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link 
                   href="/" 
-                  className="flex-1 py-3.5 rounded-xl bg-surface border border-white/5 text-text-secondary hover:text-white hover:bg-surface-hover hover:border-white/10 font-bold text-xs text-center transition-all shadow-sm cursor-pointer"
+                  className="flex-1 py-3.5 rounded-xl bg-background border border-border text-text-secondary hover:bg-surface font-bold text-xs text-center transition-all shadow-sm cursor-pointer"
                 >
                   Browse Home
                 </Link>

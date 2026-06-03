@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { 
   Lock, Eye, EyeOff, BarChart3, Megaphone, ShieldAlert, Users, Settings, LogOut, 
-  ArrowLeft, ArrowRight, ShieldCheck, Star, Ban, ShieldAlert as ReportIcon, Check, Settings2, AppWindow
+  ArrowLeft, ArrowRight, Star, Ban, Settings2
 } from 'lucide-react'
 
 const ADMIN_TOKEN_KEY = 'quizly_admin_token'
@@ -151,20 +151,20 @@ export default function AdminPage() {
   if (!token) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden text-text-primary">
-        <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-70" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-90" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] pointer-events-none animate-pulse-glow" />
         
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative z-10 w-full max-w-sm glass-card p-8 text-center border border-white/5 shadow-2xl"
+          className="relative z-10 w-full max-w-md glass-card p-10 text-center border border-border shadow-xl bg-surface"
         >
-          <div className="w-12 h-12 bg-primary/10 border border-primary/25 rounded-2xl flex items-center justify-center mx-auto mb-5 text-primary-light shadow-sm">
-            <Lock className="w-5 h-5" />
+          <div className="w-14 h-14 bg-primary/10 border border-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-6 text-primary shadow-sm">
+            <Lock className="w-6 h-6 animate-float" />
           </div>
           
-          <h1 className="font-display text-2xl font-black mb-1.5 text-text-primary">Quizly Admin</h1>
-          <p className="text-text-secondary text-xs mb-8 font-medium">
+          <h1 className="font-display text-3xl font-black mb-2 text-text-primary tracking-tight">Admin Gate</h1>
+          <p className="text-text-secondary text-xs mb-8 font-semibold">
             Protected area. Please input credentials to authenticate.
           </p>
 
@@ -174,16 +174,16 @@ export default function AdminPage() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="p-3 mb-5 rounded-xl bg-rose-950/15 border border-rose-500/20 text-rose-300 text-xs font-semibold flex items-center gap-2 text-left"
+                className="p-4 mb-6 rounded-2xl bg-rose-50 border border-rose-200/50 text-rose-500 text-xs font-bold flex items-center gap-2 text-left shadow-sm"
               >
                 <span>⚠️ {loginError}</span>
               </motion.div>
             )}
           </AnimatePresence>
 
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div className="text-left">
-              <label className="block text-[10px] font-black text-text-secondary uppercase tracking-widest mb-2">
+              <label className="block text-[10px] font-black text-text-secondary uppercase tracking-widest mb-2.5">
                 Admin Password
               </label>
               <div className="relative">
@@ -193,12 +193,12 @@ export default function AdminPage() {
                   onChange={e => setPassword(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && handleLogin()}
                   placeholder="••••••••"
-                  className="w-full bg-surface border border-white/5 rounded-2xl px-5 py-3.5 pr-12 text-text-primary placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/15 transition-all outline-none text-sm shadow-inner"
+                  className="w-full bg-background border border-border rounded-2xl px-5 py-4 pr-12 text-text-primary placeholder:text-text-muted focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all outline-none text-sm font-semibold shadow-inner"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary transition-colors cursor-pointer"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary transition-colors cursor-pointer p-1"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
@@ -207,13 +207,13 @@ export default function AdminPage() {
 
             <button
               onClick={handleLogin}
-              className="w-full py-4 bg-gradient-to-r from-primary to-secondary hover:opacity-95 text-white font-black text-xs md:text-sm rounded-2xl transition-all shadow-md shadow-primary/10 flex items-center justify-center gap-1.5 cursor-pointer"
+              className="w-full py-4.5 bg-gradient-to-r from-primary to-secondary hover:opacity-95 hover:scale-[1.01] active:scale-[0.99] text-white font-black text-xs md:text-sm rounded-2xl transition-all shadow-md shadow-primary/10 flex items-center justify-center gap-2 cursor-pointer border-0"
             >
               Sign In <ArrowRight className="w-4 h-4" />
             </button>
           </div>
 
-          <Link href="/" className="inline-flex items-center gap-1 mt-6 text-xs text-text-muted hover:text-text-primary transition-colors font-bold cursor-pointer">
+          <Link href="/" className="inline-flex items-center gap-1.5 mt-8 text-xs text-text-secondary hover:text-text-primary transition-colors font-bold cursor-pointer hover:-translate-x-0.5 duration-200">
             <ArrowLeft className="w-3.5 h-3.5" /> Back to home
           </Link>
         </motion.div>
@@ -225,18 +225,22 @@ export default function AdminPage() {
 
   /* ── ADMIN SYSTEM VIEW ────────────────────────── */
   return (
-    <div className="min-h-screen bg-background relative flex flex-col md:flex-row text-text-primary">
+    <div className="min-h-screen bg-background relative flex flex-col md:flex-row text-text-primary overflow-x-hidden">
       {/* Background patterns */}
-      <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-50" />
+      <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-75" />
+      <div className="absolute inset-0 z-0 pointer-events-none bg-pastel-gradient opacity-90" />
 
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-64 bg-surface border-r border-white/5 p-6 h-screen sticky top-0 overflow-y-auto z-20">
-        <div className="flex items-center gap-2 mb-8 px-2">
-          <span className="text-xl drop-shadow-[0_0_8px_rgba(124,58,237,0.4)]">✦</span>
-          <span className="text-gradient font-display font-black text-lg tracking-tight">Quizly Admin</span>
+      <aside className="hidden md:flex flex-col w-68 bg-surface border-r border-border p-6 h-screen sticky top-0 overflow-y-auto z-25">
+        <div className="flex items-center gap-2.5 mb-10 px-3 py-1">
+          <span className="text-2xl animate-float">🪞</span>
+          <div className="flex flex-col">
+            <span className="text-gradient font-display font-black text-lg tracking-tight leading-none">Social Mirror</span>
+            <span className="text-[9px] text-text-muted font-black tracking-widest uppercase mt-1">Admin Dashboard</span>
+          </div>
         </div>
 
-        <nav className="flex-1 space-y-1">
+        <nav className="flex-1 space-y-1.5">
           {NAV.map(item => {
             const Icon = item.icon
             const active = tab === item.id
@@ -244,39 +248,39 @@ export default function AdminPage() {
               <button
                 key={item.id}
                 onClick={() => setTab(item.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
+                className={`w-full flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-xs md:text-sm font-bold transition-all cursor-pointer border ${
                   active 
-                    ? 'bg-primary/10 border-l-2 border-primary text-primary-light font-bold' 
-                    : 'text-text-secondary hover:bg-surface-hover/50 hover:text-text-primary'
+                    ? 'bg-primary/5 border-primary/20 text-primary shadow-sm' 
+                    : 'text-text-secondary hover:bg-surface-hover hover:text-text-primary border-transparent'
                 }`}
               >
-                <Icon className={`w-4 h-4 ${active ? 'text-primary-light' : 'text-text-secondary'}`} />
+                <Icon className={`w-4 h-4 transition-transform duration-300 ${active ? 'text-primary scale-110' : 'text-text-secondary'}`} />
                 <span>{item.label}</span>
               </button>
             )
           })}
         </nav>
 
-        <div className="pt-6 border-t border-white/5 mt-auto">
+        <div className="pt-6 border-t border-border mt-auto">
           <button 
             onClick={logout}
-            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-rose-400 hover:bg-rose-950/15 transition-all cursor-pointer"
+            className="w-full flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-xs md:text-sm font-bold text-rose-500 hover:bg-rose-50/50 hover:border-rose-100 border border-transparent transition-all cursor-pointer"
           >
-            <LogOut className="w-4 h-4 text-rose-400" />
-            <span>Logout</span>
+            <LogOut className="w-4 h-4 text-rose-500" />
+            <span>Logout Portal</span>
           </button>
         </div>
       </aside>
 
       {/* Mobile Top Header */}
-      <header className="md:hidden glass-panel flex items-center justify-between px-6 py-4 border-b border-white/5 sticky top-0 z-40 w-full">
+      <header className="md:hidden glass-panel flex items-center justify-between px-6 py-4 border-b border-border sticky top-0 z-40 w-full">
         <div className="flex items-center gap-2">
-          <span className="text-lg">✦</span>
-          <span className="text-gradient font-display font-black text-sm tracking-tight">Quizly Admin</span>
+          <span className="text-lg">🪞</span>
+          <span className="text-gradient font-display font-black text-sm tracking-tight">Social Mirror Admin</span>
         </div>
         <button 
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="text-text-primary p-1.5 bg-surface-hover/80 rounded-lg border border-white/5"
+          className="text-text-primary p-2 bg-background rounded-xl border border-border cursor-pointer transition-all hover:bg-zinc-50"
         >
           <Settings2 className="w-4.5 h-4.5" />
         </button>
@@ -289,9 +293,9 @@ export default function AdminPage() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="md:hidden fixed top-[57px] left-0 w-full bg-surface border-b border-white/5 z-30 shadow-2xl p-5"
+            className="md:hidden fixed top-[57px] left-0 w-full bg-surface border-b border-border z-30 shadow-2xl p-5"
           >
-            <nav className="space-y-1">
+            <nav className="space-y-1.5">
               {NAV.map(item => {
                 const Icon = item.icon
                 const active = tab === item.id
@@ -302,10 +306,10 @@ export default function AdminPage() {
                       setTab(item.id)
                       setMobileMenuOpen(false)
                     }}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all ${
+                    className={`w-full flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-xs font-bold transition-all cursor-pointer border ${
                       active 
-                        ? 'bg-primary/10 text-primary-light' 
-                        : 'text-text-secondary'
+                        ? 'bg-primary/5 border-primary/20 text-primary' 
+                        : 'text-text-secondary hover:bg-zinc-50 border-transparent'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -318,10 +322,10 @@ export default function AdminPage() {
                   logout()
                   setMobileMenuOpen(false)
                 }}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold text-rose-400"
+                className="w-full flex items-center gap-3.5 px-4.5 py-3.5 rounded-2xl text-xs font-bold text-rose-500 hover:bg-rose-50 border border-transparent cursor-pointer"
               >
                 <LogOut className="w-4 h-4" />
-                <span>Logout</span>
+                <span>Logout Portal</span>
               </button>
             </nav>
           </motion.div>
@@ -329,12 +333,14 @@ export default function AdminPage() {
       </AnimatePresence>
 
       {/* Main Panel Content Area */}
-      <main className="flex-1 overflow-hidden relative z-10 flex flex-col">
+      <main className="flex-1 overflow-hidden relative z-10 flex flex-col bg-background/20">
         {/* Dashboard Top bar */}
-        <div className="hidden md:flex items-center justify-between px-8 py-5 border-b border-white/5 bg-surface/50 backdrop-blur-xl">
-          <div className="flex items-center gap-2">
-            <ActiveIcon className="w-5 h-5 text-primary-light" />
-            <h2 className="font-display text-base font-bold tracking-tight">
+        <div className="hidden md:flex items-center justify-between px-8 py-5 border-b border-border bg-surface/50 backdrop-blur-xl">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 bg-primary/5 border border-primary/10 rounded-xl">
+              <ActiveIcon className="w-4.5 h-4.5 text-primary" />
+            </div>
+            <h2 className="font-display text-base font-extrabold tracking-tight">
               {NAV.find(n => n.id === tab)?.label}
             </h2>
           </div>
@@ -344,7 +350,7 @@ export default function AdminPage() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0 }}
-                className="text-xs font-bold text-emerald-400 bg-emerald-950/20 border border-emerald-500/25 px-3 py-1 rounded-full shadow-inner"
+                className="text-xs font-bold text-emerald-600 bg-emerald-50 border border-emerald-200/60 px-4 py-1.5 rounded-full shadow-inner"
               >
                 {saveMsg}
               </motion.div>
@@ -358,18 +364,23 @@ export default function AdminPage() {
           {tab === 'dashboard' && (
             <div className="space-y-6">
               {/* Stat Grid */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
                 {[
-                  { label: 'Total Quizzes', num: quizzes.length.toLocaleString(), color: 'text-primary-light', bg: 'bg-primary/5' },
-                  { label: 'Total Plays', num: quizzes.reduce((acc, q) => acc + (q.total_plays || 0), 0).toLocaleString(), color: 'text-secondary', bg: 'bg-secondary/5' },
-                  { label: 'Active Users', num: users.filter(u => !u.is_banned).length.toLocaleString(), color: 'text-accent', bg: 'bg-accent/5' },
-                  { label: 'Reported Quizzes', num: quizzes.filter(q => q.is_reported).length.toString(), color: 'text-amber-400', bg: 'bg-amber-400/5' },
+                  { label: 'Total Quizzes', num: quizzes.length.toLocaleString(), color: 'text-primary', desc: 'Active mirrors' },
+                  { label: 'Total Plays', num: quizzes.reduce((acc, q) => acc + (q.total_plays || 0), 0).toLocaleString(), color: 'text-secondary', desc: 'Friend answers' },
+                  { label: 'Active Users', num: users.filter(u => !u.is_banned).length.toLocaleString(), color: 'text-accent', desc: 'Creators registered' },
+                  { label: 'Reported Quizzes', num: quizzes.filter(q => q.is_reported).length.toString(), color: 'text-amber-500', desc: 'Awaiting moderation' },
                 ].map((stat, i) => (
-                  <div key={i} className="glass-card p-5 border border-white/5 shadow-md flex flex-col justify-between">
-                    <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-4">
-                      {stat.label}
-                    </span>
-                    <span className={`font-display text-2xl sm:text-3xl font-black ${stat.color}`}>
+                  <div key={i} className="glass-card p-6 border border-border shadow-sm flex flex-col justify-between bg-surface group hover:border-primary/20">
+                    <div>
+                      <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest block mb-1">
+                        {stat.label}
+                      </span>
+                      <span className="text-[11px] text-text-muted font-medium">
+                        {stat.desc}
+                      </span>
+                    </div>
+                    <span className={`font-display text-3xl sm:text-4xl font-black mt-6 ${stat.color} tracking-tight`}>
                       {stat.num}
                     </span>
                   </div>
@@ -377,39 +388,54 @@ export default function AdminPage() {
               </div>
 
               {/* Plays Weekly Graph */}
-              <div className="glass-card p-5 md:p-7 border border-white/5 shadow-md">
-                <div className="flex justify-between items-center mb-5">
-                  <h3 className="font-display text-sm md:text-base font-bold text-text-primary">
-                    Plays This Week
-                  </h3>
-                  <span className="text-[10px] font-bold text-text-muted bg-zinc-950 px-2.5 py-1 rounded-full border border-white/3 uppercase tracking-wider">
-                    Mock Data
+              <div className="glass-card p-6 md:p-8 border border-border shadow-sm bg-surface">
+                <div className="flex justify-between items-center mb-6">
+                  <div>
+                    <h3 className="font-display text-base font-bold text-text-primary">
+                      Engagement Volume
+                    </h3>
+                    <p className="text-xs text-text-secondary font-medium">
+                      Daily submissions activity and response rates
+                    </p>
+                  </div>
+                  <span className="text-[9px] font-extrabold text-primary bg-primary/5 px-3 py-1 rounded-full border border-primary/10 uppercase tracking-widest">
+                    Live Demo Data
                   </span>
                 </div>
                 
                 {/* Visual Graphic Representation */}
-                <div className="flex items-end justify-between gap-3 h-44 mt-6 pt-4 px-2 bg-zinc-950/40 rounded-2xl border border-white/5 p-4">
-                  {WEEK.map((v, i) => {
-                    const heightPct = `${(v / maxW) * 100}%`
-                    return (
-                      <div key={i} className="flex-1 flex flex-col items-center gap-2 group h-full justify-end">
-                        <div className="relative w-full flex justify-center">
-                          {/* Tooltip */}
-                          <span className="absolute -top-7 scale-0 group-hover:scale-100 bg-primary px-1.5 py-0.5 rounded text-[9px] font-bold text-white transition-all pointer-events-none z-10">
-                            {v} plays
-                          </span>
-                          {/* Bar */}
-                          <motion.div
-                            initial={{ height: 0 }}
-                            animate={{ height: heightPct }}
-                            transition={{ duration: 0.8, delay: i * 0.05 }}
-                            className="w-full sm:w-8 rounded-t-lg bg-gradient-to-t from-primary to-secondary opacity-75 group-hover:opacity-100 transition-opacity"
-                          />
+                <div className="relative pt-6 px-4 bg-background rounded-3xl border border-border p-6 shadow-inner">
+                  {/* Grid Lines */}
+                  <div className="absolute inset-0 flex flex-col justify-between pointer-events-none p-6 py-10 opacity-30">
+                    <div className="w-full border-t border-dashed border-border" />
+                    <div className="w-full border-t border-dashed border-border" />
+                    <div className="w-full border-t border-dashed border-border" />
+                  </div>
+                  
+                  <div className="relative z-10 flex items-end justify-between gap-3 sm:gap-6 h-48">
+                    {WEEK.map((v, i) => {
+                      const heightPct = `${(v / maxW) * 80}%`
+                      return (
+                        <div key={i} className="flex-1 flex flex-col items-center gap-3.5 group h-full justify-end">
+                          <div className="relative w-full flex justify-center items-end h-full">
+                            {/* Tooltip */}
+                            <div className="absolute bottom-full mb-2 scale-0 group-hover:scale-100 bg-text-primary px-2.5 py-1.5 rounded-xl text-[10px] font-bold text-white transition-all duration-200 pointer-events-none z-20 shadow-md flex flex-col items-center">
+                              <span className="whitespace-nowrap">{v} plays</span>
+                              <div className="w-2 h-2 bg-text-primary rotate-45 -translate-y-1 absolute top-full" />
+                            </div>
+                            {/* Bar */}
+                            <motion.div
+                              initial={{ height: 0 }}
+                              animate={{ height: heightPct }}
+                              transition={{ duration: 0.8, delay: i * 0.05 }}
+                              className="w-full sm:w-10 rounded-t-2xl bg-gradient-to-t from-primary/80 to-secondary opacity-90 group-hover:opacity-100 transition-all duration-300 shadow-sm cursor-pointer"
+                            />
+                          </div>
+                          <span className="text-[10px] text-text-secondary font-black tracking-wider uppercase">{DAYS[i]}</span>
                         </div>
-                        <span className="text-[10px] sm:text-xs text-text-muted font-bold tracking-wider">{DAYS[i]}</span>
-                      </div>
-                    )
-                  })}
+                      )
+                    })}
+                  </div>
                 </div>
               </div>
             </div>
@@ -418,38 +444,38 @@ export default function AdminPage() {
           {/* ── AD MANAGER TAB ─────────────────────── */}
           {tab === 'ads' && ads && (
             <div className="space-y-6">
-              <div className="glass-card p-6 border border-white/5 shadow-md">
-                <h3 className="font-display text-sm md:text-base font-bold text-text-primary mb-5 flex items-center gap-2">
-                  <Megaphone className="w-4 h-4 text-primary-light" /> Toggle Active Ad Slots
+              <div className="glass-card p-6 md:p-8 border border-border shadow-sm bg-surface">
+                <h3 className="font-display text-base font-bold text-text-primary mb-6 flex items-center gap-2.5">
+                  <Megaphone className="w-5 h-5 text-primary" /> Active Advertisement Slots
                 </h3>
                 
-                <div className="divide-y divide-white/5">
+                <div className="divide-y divide-border/60">
                   {[
-                    { key: 'home_banner', label: 'Home Banner Ad', desc: 'Sits at the top of the main home page header.' },
-                    { key: 'home_bottom', label: 'Home Bottom Ad', desc: 'Appears at the footer zone beneath public grids.' },
-                    { key: 'player_start', label: 'Trivia Quiz Start Ad', desc: 'Triggered when entering player name wizard.' },
-                    { key: 'result_page', label: 'End Results Page Ad', desc: 'Highest CTR slot displayed with leaderboard scores.' },
-                    { key: 'between_q', label: 'Interstitial Question Ad', desc: 'Shows every 3rd question during playing states.' },
+                    { key: 'home_banner', label: 'Home Banner Ad', desc: 'Prominent header banner displayed at the landing hero boundary.' },
+                    { key: 'home_bottom', label: 'Home Bottom Ad', desc: 'Appears at the footer zone beneath all public dashboards.' },
+                    { key: 'player_start', label: 'Trivia Quiz Start Ad', desc: 'Displays when a new participant enters the onboarding wizard.' },
+                    { key: 'result_page', label: 'End Results Page Ad', desc: 'Shown adjacent to high-traffic scoring profiles and identity cards.' },
+                    { key: 'between_q', label: 'Interstitial Question Ad', desc: 'Appears sequentially after every 3rd question responds.' },
                   ].map(slot => (
-                    <div key={slot.key} className="flex items-center justify-between py-4">
+                    <div key={slot.key} className="flex items-center justify-between py-5.5 first:pt-0 last:pb-0">
                       <div className="pr-4">
                         <div className="text-sm font-bold text-text-primary">{slot.label}</div>
-                        <div className="text-xs text-text-muted mt-0.5">{slot.desc}</div>
+                        <div className="text-xs text-text-secondary mt-1 font-medium">{slot.desc}</div>
                       </div>
 
                       {/* Custom Switch Component */}
                       <div 
                         onClick={() => setAds(prev => prev ? { ...prev, [`${slot.key}_enabled`]: !prev[`${slot.key}_enabled`] } : null)}
-                        className={`w-11 h-6 rounded-full cursor-pointer transition-all relative border shrink-0 ${
+                        className={`w-12 h-6.5 rounded-full cursor-pointer transition-all duration-300 relative border shrink-0 ${
                           ads?.[`${slot.key}_enabled`] 
-                            ? 'bg-primary border-primary' 
-                            : 'bg-zinc-950 border-white/10'
+                            ? 'bg-gradient-to-r from-primary to-secondary border-primary/20 animate-pulse-glow' 
+                            : 'bg-zinc-100 border-zinc-200'
                         }`}
                       >
                         <motion.div 
-                          className="w-4.5 h-4.5 rounded-full bg-white absolute top-0.5"
-                          animate={{ left: ads[`${slot.key}_enabled`] ? '22px' : '2px' }}
-                          transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                          className="w-5 h-5 rounded-full bg-white absolute top-0.5 shadow-sm"
+                          animate={{ left: ads[`${slot.key}_enabled`] ? '24px' : '2px' }}
+                          transition={{ type: "spring", stiffness: 600, damping: 30 }}
                         />
                       </div>
                     </div>
@@ -457,22 +483,22 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              <div className="glass-card p-6 border border-white/5 shadow-md space-y-5">
+              <div className="glass-card p-6 md:p-8 border border-border shadow-sm space-y-6 bg-surface">
                 <div>
-                  <h3 className="font-display text-sm md:text-base font-bold text-text-primary">AdSense Snippets</h3>
-                  <p className="text-xs text-text-secondary mt-1">Configure individual script codes generated by Google AdSense below.</p>
+                  <h3 className="font-display text-base font-bold text-text-primary">AdSense Scripts</h3>
+                  <p className="text-xs text-text-secondary mt-1.5 font-medium">Configure specific script integration snippets generated by your Google AdSense accounts.</p>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-5">
                   {[
-                    { key: 'home_banner_code', label: 'Home Banner Code' },
-                    { key: 'home_bottom_code', label: 'Home Bottom Code' },
-                    { key: 'result_page_code', label: 'Result Page Code' },
-                    { key: 'player_start_code', label: 'Player Start Code' },
-                    { key: 'between_q_code', label: 'Between Questions Code' },
-                    { key: 'adsense_publisher_id', label: 'Publisher ID (ca-pub-XXXX)' },
+                    { key: 'home_banner_code', label: 'Home Banner HTML Script' },
+                    { key: 'home_bottom_code', label: 'Home Bottom HTML Script' },
+                    { key: 'result_page_code', label: 'Result Page HTML Script' },
+                    { key: 'player_start_code', label: 'Player Start HTML Script' },
+                    { key: 'between_q_code', label: 'Between Questions HTML Script' },
+                    { key: 'adsense_publisher_id', label: 'Publisher ID (ca-pub-XXXXXXXXXXXXXXXX)' },
                   ].map(field => (
-                    <div key={field.key} className="space-y-2">
+                    <div key={field.key} className="space-y-2.5">
                       <label className="block text-[10px] font-black text-text-secondary uppercase tracking-widest">
                         {field.label}
                       </label>
@@ -481,16 +507,16 @@ export default function AdminPage() {
                         value={(ads?.[field.key] as string) ?? ''}
                         placeholder={field.key.includes('publisher') ? 'ca-pub-XXXXXXXXXXXXXXXX' : '<ins class="adsbygoogle" ...'}
                         onChange={e => setAds(prev => prev ? { ...prev, [field.key]: e.target.value } : null)}
-                        className="w-full bg-zinc-950 border border-white/5 rounded-xl px-4 py-3 text-text-primary text-xs font-mono placeholder:text-text-muted focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all outline-none resize-y"
+                        className="w-full bg-background border border-border rounded-2xl px-5 py-4 text-text-primary text-xs font-mono placeholder:text-text-muted focus:border-primary/50 focus:ring-4 focus:ring-primary/5 transition-all outline-none resize-y shadow-inner"
                       />
                     </div>
                   ))}
 
-                  <div className="pt-2">
+                  <div className="pt-3">
                     <button 
                       onClick={saveAds} 
                       disabled={saving}
-                      className="px-6 py-3.5 bg-gradient-to-r from-primary to-secondary hover:opacity-95 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50"
+                      className="px-6 py-4 bg-gradient-to-r from-primary to-secondary hover:opacity-95 hover:scale-[1.01] active:scale-[0.99] text-white font-bold text-xs rounded-2xl shadow-md transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 border-0"
                     >
                       {saving ? 'Saving changes...' : 'Save Advertising Configurations'}
                     </button>
@@ -502,72 +528,72 @@ export default function AdminPage() {
 
           {/* ── MODERATION TAB ─────────────────────── */}
           {tab === 'quizzes' && (
-            <div className="glass-card border border-white/5 shadow-xl overflow-hidden">
-              <div className="p-6 border-b border-white/5">
-                <h3 className="font-display text-sm md:text-base font-bold text-text-primary">
-                  Manage Quizzes
+            <div className="glass-card border border-border shadow-sm overflow-hidden bg-surface">
+              <div className="p-6 border-b border-border bg-surface/50 backdrop-blur-md">
+                <h3 className="font-display text-base font-bold text-text-primary">
+                  Moderate Content Listings
                 </h3>
-                <p className="text-xs text-text-secondary mt-0.5">Moderate trivia listings, ban inappropriate content or feature entries.</p>
+                <p className="text-xs text-text-secondary mt-1.5 font-medium">Moderate live public trivia indices, ban offensive content or toggle features.</p>
               </div>
 
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-zinc-950/40 border-b border-white/5">
-                      <th className="px-6 py-4 text-[10px] font-black text-text-secondary uppercase tracking-widest">Title</th>
-                      <th className="px-6 py-4 text-[10px] font-black text-text-secondary uppercase tracking-widest">Creator</th>
-                      <th className="px-6 py-4 text-[10px] font-black text-text-secondary uppercase tracking-widest">Total Plays</th>
-                      <th className="px-6 py-4 text-[10px] font-black text-text-secondary uppercase tracking-widest">Reported</th>
-                      <th className="px-6 py-4 text-[10px] font-black text-text-secondary uppercase tracking-widest">Status</th>
-                      <th className="px-6 py-4 text-[10px] font-black text-text-secondary uppercase tracking-widest text-right">Actions</th>
+                    <tr className="bg-background/80 border-b border-border">
+                      <th className="px-6 py-4.5 text-[10px] font-black text-text-secondary uppercase tracking-widest">Title</th>
+                      <th className="px-6 py-4.5 text-[10px] font-black text-text-secondary uppercase tracking-widest">Creator</th>
+                      <th className="px-6 py-4.5 text-[10px] font-black text-text-secondary uppercase tracking-widest">Total Plays</th>
+                      <th className="px-6 py-4.5 text-[10px] font-black text-text-secondary uppercase tracking-widest">Reported</th>
+                      <th className="px-6 py-4.5 text-[10px] font-black text-text-secondary uppercase tracking-widest">Status</th>
+                      <th className="px-6 py-4.5 text-[10px] font-black text-text-secondary uppercase tracking-widest text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/3">
+                  <tbody className="divide-y divide-border/60">
                     {quizzes.map(q => (
-                      <tr key={q.id} className="hover:bg-white/[0.01] transition-colors">
+                      <tr key={q.id} className="hover:bg-surface-hover transition-colors">
                         <td className="px-6 py-4 text-sm font-bold text-text-primary">{q.title}</td>
                         <td className="px-6 py-4 text-xs font-semibold text-text-secondary">{q.creator_name}</td>
                         <td className="px-6 py-4 text-xs font-medium text-text-muted">{(q.total_plays || 0).toLocaleString()}</td>
                         <td className="px-6 py-4 text-xs">
                           {q.is_reported ? (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[9px] font-black bg-amber-950/20 border border-amber-500/20 text-amber-400">
-                              <ReportIcon className="w-3 h-3" /> Reported
+                            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[9px] font-black bg-amber-50 border border-amber-200/60 text-amber-600">
+                              <ShieldAlert className="w-3 h-3" /> Reported
                             </span>
                           ) : (
-                            <span className="text-text-muted font-bold">—</span>
+                            <span className="text-text-muted font-bold text-[10px]">—</span>
                           )}
                         </td>
                         <td className="px-6 py-4 text-xs">
-                          <span className={`inline-flex px-2 py-0.5 rounded-full text-[9px] font-bold ${
+                          <span className={`inline-flex px-3 py-1 rounded-full text-[9px] font-bold border ${
                             q.is_banned 
-                              ? 'bg-rose-950/20 border border-rose-500/20 text-rose-400' 
-                              : 'bg-emerald-950/20 border border-emerald-500/20 text-emerald-400'
+                              ? 'bg-rose-50 border-rose-200 text-rose-500' 
+                              : 'bg-emerald-50 border-emerald-200 text-emerald-600'
                           }`}>
                             {q.is_banned ? 'Banned' : 'Active'}
                           </span>
                         </td>
                         <td className="px-6 py-4 text-right">
-                          <div className="flex justify-end gap-2">
+                          <div className="flex justify-end gap-2.5">
                             <button 
                               onClick={() => modQuiz(q.id, q.is_banned ? 'unban' : 'ban')}
-                              className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ${
+                              className={`px-3.5 py-2 rounded-xl text-[10px] font-black border transition-all cursor-pointer flex items-center gap-1.5 ${
                                 q.is_banned
-                                  ? 'bg-emerald-950/20 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-950/30'
-                                  : 'bg-rose-950/20 border border-rose-500/20 text-rose-400 hover:bg-rose-950/30'
+                                  ? 'bg-emerald-50 border-emerald-200/50 text-emerald-600 hover:bg-emerald-100/70'
+                                  : 'bg-rose-50 border-rose-200/50 text-rose-500 hover:bg-rose-100/70'
                               }`}
                             >
-                              <Ban className="w-3 h-3" />
+                              <Ban className="w-3.5 h-3.5" />
                               {q.is_banned ? 'Unban' : 'Ban'}
                             </button>
                             <button 
                               onClick={() => modQuiz(q.id, q.is_featured ? 'unfeature' : 'feature')}
-                              className={`px-3 py-1.5 rounded-lg text-[10px] font-bold border transition-all cursor-pointer flex items-center gap-1 ${
+                              className={`px-3.5 py-2 rounded-xl text-[10px] font-black border transition-all cursor-pointer flex items-center gap-1.5 ${
                                 q.is_featured
-                                  ? 'bg-amber-950/20 border-amber-500/20 text-amber-400'
-                                  : 'bg-zinc-950 border-white/5 hover:bg-zinc-900 text-text-secondary hover:text-text-primary'
+                                  ? 'bg-amber-50 border-amber-200 text-amber-600'
+                                  : 'bg-background border-border hover:bg-zinc-50 text-text-secondary hover:text-text-primary'
                               }`}
                             >
-                              <Star className="w-3 h-3" />
+                              <Star className={`w-3.5 h-3.5 ${q.is_featured ? 'fill-amber-500 text-amber-500' : ''}`} />
                               {q.is_featured ? 'Featured' : 'Feature'}
                             </button>
                           </div>
@@ -576,7 +602,7 @@ export default function AdminPage() {
                     ))}
                     {quizzes.length === 0 && (
                       <tr>
-                        <td colSpan={6} className="px-6 py-8 text-center text-xs text-text-muted font-medium">
+                        <td colSpan={6} className="px-6 py-12 text-center text-xs text-text-muted font-bold">
                           No trivia quizzes are currently registered in the database.
                         </td>
                       </tr>
@@ -589,36 +615,36 @@ export default function AdminPage() {
 
           {/* ── USERS TAB ──────────────────────────── */}
           {tab === 'users' && (
-            <div className="glass-card border border-white/5 shadow-xl overflow-hidden">
-              <div className="p-6 border-b border-white/5">
-                <h3 className="font-display text-sm md:text-base font-bold text-text-primary">
-                  Manage Users
+            <div className="glass-card border border-border shadow-sm overflow-hidden bg-surface">
+              <div className="p-6 border-b border-border bg-surface/50 backdrop-blur-md">
+                <h3 className="font-display text-base font-bold text-text-primary">
+                  Manage User Accounts
                 </h3>
-                <p className="text-xs text-text-secondary mt-0.5">Revoke, suspend or activate user dashboard credentials.</p>
+                <p className="text-xs text-text-secondary mt-1.5 font-medium">Revoke, suspend or activate user profile credentials.</p>
               </div>
 
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="bg-zinc-950/40 border-b border-white/5">
-                      <th className="px-6 py-4 text-[10px] font-black text-text-secondary uppercase tracking-widest">Username</th>
-                      <th className="px-6 py-4 text-[10px] font-black text-text-secondary uppercase tracking-widest">Quizzes Created</th>
-                      <th className="px-6 py-4 text-[10px] font-black text-text-secondary uppercase tracking-widest">Joined Date</th>
-                      <th className="px-6 py-4 text-[10px] font-black text-text-secondary uppercase tracking-widest">Status</th>
-                      <th className="px-6 py-4 text-[10px] font-black text-text-secondary uppercase tracking-widest text-right">Actions</th>
+                    <tr className="bg-background/80 border-b border-border">
+                      <th className="px-6 py-4.5 text-[10px] font-black text-text-secondary uppercase tracking-widest">Username</th>
+                      <th className="px-6 py-4.5 text-[10px] font-black text-text-secondary uppercase tracking-widest">Quizzes Created</th>
+                      <th className="px-6 py-4.5 text-[10px] font-black text-text-secondary uppercase tracking-widest">Joined Date</th>
+                      <th className="px-6 py-4.5 text-[10px] font-black text-text-secondary uppercase tracking-widest">Status</th>
+                      <th className="px-6 py-4.5 text-[10px] font-black text-text-secondary uppercase tracking-widest text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/3">
+                  <tbody className="divide-y divide-border/60">
                     {users.map(u => (
-                      <tr key={u.id} className="hover:bg-white/[0.01] transition-colors">
+                      <tr key={u.id} className="hover:bg-surface-hover transition-colors">
                         <td className="px-6 py-4 text-sm font-bold text-text-primary">{u.username}</td>
                         <td className="px-6 py-4 text-xs font-semibold text-text-secondary">{u.total_quizzes ?? 0}</td>
                         <td className="px-6 py-4 text-xs font-medium text-text-muted">{new Date(u.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}</td>
                         <td className="px-6 py-4 text-xs">
-                          <span className={`inline-flex px-2 py-0.5 rounded-full text-[9px] font-bold ${
+                          <span className={`inline-flex px-3 py-1 rounded-full text-[9px] font-bold border ${
                             u.is_banned 
-                              ? 'bg-rose-950/20 border border-rose-500/20 text-rose-400' 
-                              : 'bg-emerald-950/20 border border-emerald-500/20 text-emerald-400'
+                              ? 'bg-rose-50 border-rose-200 text-rose-500' 
+                              : 'bg-emerald-50 border-emerald-200 text-emerald-600'
                           }`}>
                             {u.is_banned ? 'Banned' : 'Active'}
                           </span>
@@ -626,13 +652,13 @@ export default function AdminPage() {
                         <td className="px-6 py-4 text-right">
                           <button 
                             onClick={() => modUser(u.id, u.is_banned ? 'unban' : 'ban')}
-                            className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all cursor-pointer flex items-center gap-1 ml-auto ${
+                            className={`px-3.5 py-2 rounded-xl text-[10px] font-black border transition-all cursor-pointer flex items-center gap-1.5 ml-auto ${
                               u.is_banned
-                                ? 'bg-emerald-950/20 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-950/30'
-                                : 'bg-rose-950/20 border border-rose-500/20 text-rose-400 hover:bg-rose-950/30'
+                                ? 'bg-emerald-50 border-emerald-200/50 text-emerald-600 hover:bg-emerald-100/70'
+                                : 'bg-rose-50 border-rose-200/50 text-rose-500 hover:bg-rose-100/70'
                             }`}
                           >
-                            <Ban className="w-3 h-3" />
+                            <Ban className="w-3.5 h-3.5" />
                             {u.is_banned ? 'Activate' : 'Ban User'}
                           </button>
                         </td>
@@ -640,7 +666,7 @@ export default function AdminPage() {
                     ))}
                     {users.length === 0 && (
                       <tr>
-                        <td colSpan={5} className="px-6 py-8 text-center text-xs text-text-muted font-medium">
+                        <td colSpan={5} className="px-6 py-12 text-center text-xs text-text-muted font-bold">
                           No users found.
                         </td>
                       </tr>
@@ -653,38 +679,38 @@ export default function AdminPage() {
 
           {/* ── SETTINGS TAB ───────────────────────── */}
           {tab === 'settings' && (
-            <div className="glass-card p-6 border border-white/5 shadow-xl space-y-6">
+            <div className="glass-card p-6 md:p-8 border border-border shadow-sm space-y-6 bg-surface">
               <div>
-                <h3 className="font-display text-sm md:text-base font-bold text-text-primary">
-                  Site Configurations
+                <h3 className="font-display text-base font-bold text-text-primary">
+                  Server Configurations
                 </h3>
-                <p className="text-xs text-text-secondary mt-1">
+                <p className="text-xs text-text-secondary mt-1.5 font-medium">
                   Adjust global environment variables config. These configurations are read-only client-side.
                 </p>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-5">
                 {[
                   { label: 'App URL', val: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000' },
-                  { label: 'App Display Name', val: process.env.NEXT_PUBLIC_APP_NAME || 'Quizly' },
+                  { label: 'App Display Name', val: process.env.NEXT_PUBLIC_APP_NAME || 'Social Mirror' },
                 ].map((item, i) => (
-                  <div key={i} className="space-y-2">
+                  <div key={i} className="space-y-2.5">
                     <label className="block text-[10px] font-black text-text-secondary uppercase tracking-widest">
                       {item.label}
                     </label>
                     <input 
                       value={item.val} 
                       readOnly 
-                      className="w-full bg-zinc-950/60 border border-white/5 text-text-muted rounded-xl px-4 py-3.5 text-xs font-semibold cursor-not-allowed outline-none select-all" 
+                      className="w-full bg-background border border-border text-text-secondary rounded-2xl px-5 py-4 text-xs font-semibold cursor-not-allowed outline-none select-all shadow-inner" 
                     />
                   </div>
                 ))}
               </div>
 
-              <div className="p-4 bg-primary/5 rounded-2xl border border-primary/10 text-xs text-text-secondary leading-relaxed flex gap-3">
-                <span className="text-base shrink-0">💡</span>
+              <div className="p-5 bg-primary/5 rounded-3xl border border-primary/10 text-xs text-text-secondary leading-relaxed flex gap-3.5 font-semibold">
+                <span className="text-lg shrink-0">💡</span>
                 <div>
-                  To override these constants or replace the admin credential gate secrets, update <code className="text-primary-light font-bold font-mono">ADMIN_PASSWORD</code> and <code className="text-primary-light font-bold font-mono">ADMIN_SECRET_TOKEN</code> values within the <code className="text-primary-light font-bold font-mono">.env.local</code> settings file directly and reload the server wrapper.
+                  To override these constants or replace the admin credential gate secrets, update <code className="text-primary font-black font-mono">ADMIN_PASSWORD</code> and <code className="text-primary font-black font-mono font-semibold bg-primary/5 px-1.5 py-0.5 rounded">ADMIN_SECRET_TOKEN</code> values within the <code className="text-primary font-black font-mono">.env.local</code> settings file directly and reload the server wrapper.
                 </div>
               </div>
             </div>
