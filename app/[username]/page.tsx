@@ -139,7 +139,7 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
             className="font-display text-3xl font-extrabold mb-3 text-text-primary"
           >
             You&apos;re amazing!
-          </h1>
+          </motion.h1>
           <motion.p 
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
             className="text-text-secondary text-base leading-relaxed mb-8"

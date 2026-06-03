@@ -9,6 +9,11 @@
   --color-surface-hover: #Fdfcff;
   --color-background: #faf9fd;
   
+  --color-text-primary: #2d3748; /* softer dark grey */
+  --color-text-secondary: #718096;
+  --color-text-muted: #a0aec0;
+  --color-border: rgba(161, 140, 209, 0.15); /* Pastel border */
+  
   --font-display: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
   --font-body: var(--font-dm), ui-sans-serif, system-ui, sans-serif;
 }
@@ -17,10 +22,10 @@
   :root {
     --bg: #faf9fd;
     --surface: #FFFFFF;
-    --text-primary: #2d3748; /* softer dark grey */
+    --text-primary: #2d3748;
     --text-secondary: #718096;
     --text-muted: #a0aec0;
-    --border: rgba(161, 140, 209, 0.15); /* Pastel border */
+    --border: rgba(161, 140, 209, 0.15);
   }
 
   body {
