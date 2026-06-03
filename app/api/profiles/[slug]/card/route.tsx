@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/server'
 import bcrypt from 'bcryptjs'
 import satori from 'satori'
 import { Resvg } from '@resvg/resvg-js'
@@ -24,19 +24,27 @@ const DIMENSION_COLORS: Record<string, string> = {
   innovation: '#6366F1',
 }
 
+// Module-level caches for font assets
+let cachedFontBold: ArrayBuffer | null = null
+let cachedFontRegular: ArrayBuffer | null = null
+
 // Fetch a font file for satori rendering
 async function loadFont(): Promise<ArrayBuffer> {
+  if (cachedFontBold) return cachedFontBold
   // Use Inter from Google Fonts (static weight 700)
   const fontUrl = 'https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuFuYMZhrib2Bg-4.ttf'
   const res = await fetch(fontUrl)
-  return res.arrayBuffer()
+  cachedFontBold = await res.arrayBuffer()
+  return cachedFontBold
 }
 
 async function loadFontRegular(): Promise<ArrayBuffer> {
+  if (cachedFontRegular) return cachedFontRegular
   // Inter 400
   const fontUrl = 'https://fonts.gstatic.com/s/inter/v18/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuDyfMZhrib2Bg-4.ttf'
   const res = await fetch(fontUrl)
-  return res.arrayBuffer()
+  cachedFontRegular = await res.arrayBuffer()
+  return cachedFontRegular
 }
 
 // GET /api/profiles/[slug]/card?pin=xxx — generate Social Identity Card as PNG
@@ -52,7 +60,7 @@ export async function GET(
       return new Response('PIN required', { status: 401 })
     }
 
-    const supabase = await createClient()
+    const supabase = createAdminClient()
 
     // 1. Get profile
     const { data: profile, error: profileError } = await supabase

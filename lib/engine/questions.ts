@@ -458,6 +458,7 @@ export function getQuestionsForProfile(
   maxQuestions = 12
 ): { text: string; category: QuestionCategory; options: QuestionOption[] }[] {
   const selected: { text: string; category: QuestionCategory; options: QuestionOption[] }[] = []
+  if (categories.length === 0) return selected
 
   // Calculate how many questions per category
   const perCategory = Math.ceil(maxQuestions / categories.length)

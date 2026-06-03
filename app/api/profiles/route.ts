@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/server'
 import bcrypt from 'bcryptjs'
 import { getQuestionsForProfile } from '@/lib/engine/questions'
 import type { CreateProfilePayload, QuestionCategory } from '@/types/social-mirror'
@@ -11,8 +11,9 @@ function generateSlug(name: string): string {
     .trim()
     .replace(/\s+/g, '-')
     .slice(0, 30)
+  const safeBase = base || 'user'
   const suffix = Math.random().toString(36).slice(2, 6)
-  return `${base}-${suffix}`
+  return `${safeBase}-${suffix}`
 }
 
 // POST /api/profiles — create a new profile + generate questions
@@ -31,7 +32,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Select at least one category' }, { status: 400 })
     }
 
-    const supabase = await createClient()
+    const supabase = createAdminClient()
     const slug = generateSlug(display_name)
     const pinHash = await bcrypt.hash(pin, 10)
 
@@ -99,7 +100,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'slug is required' }, { status: 400 })
   }
 
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   const { data, error } = await supabase
     .from('sm_profiles')

@@ -107,27 +107,9 @@ ALTER TABLE public.sm_responses  ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.sm_answers    ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.sm_reports    ENABLE ROW LEVEL SECURITY;
 
--- Profiles: anyone can read active ones, insert is open (we validate via API)
-CREATE POLICY "sm_profiles_read"    ON public.sm_profiles FOR SELECT USING (is_active = TRUE);
-CREATE POLICY "sm_profiles_insert"  ON public.sm_profiles FOR INSERT WITH CHECK (TRUE);
-CREATE POLICY "sm_profiles_update"  ON public.sm_profiles FOR UPDATE USING (TRUE);
-
--- Questions: anyone can read (friends need to see them), insert via API
-CREATE POLICY "sm_questions_read"   ON public.sm_questions FOR SELECT USING (TRUE);
-CREATE POLICY "sm_questions_insert" ON public.sm_questions FOR INSERT WITH CHECK (TRUE);
-
--- Responses: anyone can insert (friends answering), read via API with pin
-CREATE POLICY "sm_responses_read"   ON public.sm_responses FOR SELECT USING (TRUE);
-CREATE POLICY "sm_responses_insert" ON public.sm_responses FOR INSERT WITH CHECK (TRUE);
-
--- Answers: same as responses
-CREATE POLICY "sm_answers_read"     ON public.sm_answers FOR SELECT USING (TRUE);
-CREATE POLICY "sm_answers_insert"   ON public.sm_answers FOR INSERT WITH CHECK (TRUE);
-
--- Reports: read/insert via API
-CREATE POLICY "sm_reports_read"     ON public.sm_reports FOR SELECT USING (TRUE);
-CREATE POLICY "sm_reports_insert"   ON public.sm_reports FOR INSERT WITH CHECK (TRUE);
-CREATE POLICY "sm_reports_update"   ON public.sm_reports FOR UPDATE USING (TRUE);
+-- Note: We enable RLS but do not define any public SELECT/INSERT/UPDATE policies
+-- for anon/authenticated users. All database reads and writes are securely proxied
+-- through Next.js server-side API routes using the Supabase Service Role client.
 
 -- ─────────────────────────────────────────────────
 -- FUNCTIONS & TRIGGERS
@@ -135,7 +117,11 @@ CREATE POLICY "sm_reports_update"   ON public.sm_reports FOR UPDATE USING (TRUE)
 
 -- Auto-increment total_responses when a new response is added
 CREATE OR REPLACE FUNCTION public.sm_increment_responses()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
 BEGIN
   UPDATE public.sm_profiles
   SET total_responses = total_responses + 1,
@@ -143,7 +129,7 @@ BEGIN
   WHERE id = NEW.profile_id;
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 CREATE OR REPLACE TRIGGER on_sm_response_created
   AFTER INSERT ON public.sm_responses

@@ -324,7 +324,7 @@ export default function CreatePage() {
                     What are you into?
                   </h1>
                   <p className="text-text-secondary text-xs md:text-sm mb-6.5 font-medium">
-                    Choose interests. The AI will weave these directly into custom questions.
+                    Pick your interests. We use these to personalize your report.
                   </p>
 
                   <div className="flex flex-wrap gap-2 max-h-[220px] overflow-y-auto pr-1">

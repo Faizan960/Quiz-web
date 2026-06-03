@@ -16,7 +16,7 @@ const FEATURES = [
   {
     icon: <Flame className="w-6 h-6 text-secondary" />,
     title: 'Roast Mode',
-    desc: 'An brutally accurate, humor-packed roast woven from your specific interest profile.',
+    desc: 'A brutally accurate, humor-packed roast woven from your specific interest profile.',
     colSpan: 'md:col-span-1',
     bg: 'border-secondary/10 hover:border-secondary/30 bg-secondary/2'
   },

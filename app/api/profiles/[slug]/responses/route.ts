@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/server'
 import { v4 as uuidv4 } from 'uuid'
 import type { SubmitResponsePayload } from '@/types/social-mirror'
 
@@ -17,7 +17,7 @@ export async function POST(
       return NextResponse.json({ error: 'No answers provided' }, { status: 400 })
     }
 
-    const supabase = await createClient()
+    const supabase = createAdminClient()
 
     // Get profile
     const { data: profile, error: profileError } = await supabase
@@ -41,7 +41,7 @@ export async function POST(
       return NextResponse.json({ error: qErr.message }, { status: 500 })
     }
 
-    const validIds = new Set((validQuestions ?? []).map(q => q.id))
+    const validIds = new Set((validQuestions ?? []).map((q: { id: string }) => q.id))
     if (answers.some(a => !validIds.has(a.question_id))) {
       return NextResponse.json({ error: 'Invalid question_id in answers' }, { status: 400 })
     }
@@ -103,7 +103,7 @@ export async function GET(
 ) {
   const { slug } = await params
   const pin = request.nextUrl.searchParams.get('pin')
-  const supabase = await createClient()
+  const supabase = createAdminClient()
 
   const { data: profile } = await supabase
     .from('sm_profiles')

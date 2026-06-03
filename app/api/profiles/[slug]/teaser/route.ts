@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/server'
 import { generateReport } from '@/lib/engine/analyzer'
 import type { SmQuestion, SmAnswer } from '@/types/social-mirror'
 
@@ -11,7 +11,7 @@ export async function GET(
 ) {
   try {
     const { slug } = await params
-    const supabase = await createClient()
+    const supabase = createAdminClient()
 
     const { data: profile, error: profileError } = await supabase
       .from('sm_profiles')
@@ -44,7 +44,7 @@ export async function GET(
       .select('id')
       .eq('profile_id', profile.id)
 
-    const responseIds = (responses ?? []).map(r => r.id)
+    const responseIds = (responses ?? []).map((r: { id: string }) => r.id)
 
     let allAnswers: SmAnswer[] = []
     if (responseIds.length > 0) {
