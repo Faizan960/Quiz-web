@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
-import { ArrowRight, ArrowLeft, Check, Copy, Share2, Sparkles, Brain, Heart, Briefcase, Zap, GraduationCap, Lock, ShieldCheck, Eye, EyeOff } from 'lucide-react'
+import { ArrowRight, ArrowLeft, Check, Copy, Sparkles, Brain, Heart, Briefcase, Zap, GraduationCap, Lock, ShieldCheck, Eye, EyeOff } from 'lucide-react'
 
 const INTEREST_OPTIONS = [
   '💻 Tech', '🎨 Art', '🎵 Music', '📚 Books', '🎮 Gaming',
@@ -93,8 +93,8 @@ export default function CreatePage() {
       if (!res.ok) throw new Error(data.error || 'Something went wrong')
 
       setResult({ slug: data.slug, url: data.url })
-    } catch (err: any) {
-      setError(err.message || 'Failed to create profile')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to create profile')
     } finally {
       setLoading(false)
     }

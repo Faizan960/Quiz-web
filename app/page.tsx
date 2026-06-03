@@ -69,12 +69,27 @@ export default function HomePage() {
   const [mirrorsCount, setMirrorsCount] = useState(142380)
   const [previewTab, setPreviewTab] = useState<'card' | 'roast' | 'compliment'>('card')
 
+  const [particles, setParticles] = useState<{ id: number; left: string; top: string; duration: number }[]>([])
+
   useEffect(() => {
-    setMounted(true)
+    const t = setTimeout(() => setMounted(true), 0)
+    
+    const generated = Array.from({ length: 12 }).map((_, i) => ({
+      id: i,
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      duration: 7 + Math.random() * 5,
+    }))
+    setParticles(generated)
+
     const interval = setInterval(() => {
       setMirrorsCount(prev => prev + Math.floor(Math.random() * 3) + 1)
     }, 2000)
-    return () => clearInterval(interval)
+    
+    return () => {
+      clearInterval(interval)
+      clearTimeout(t)
+    }
   }, [])
 
   return (
@@ -88,13 +103,13 @@ export default function HomePage() {
       {/* Floating Sparkles in Background */}
       {mounted && (
         <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden">
-          {Array.from({ length: 12 }).map((_, i) => (
+          {particles.map((p) => (
             <motion.div
-              key={i}
+              key={p.id}
               className="absolute w-1 h-1 rounded-full bg-primary-light/35"
               style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
+                left: p.left,
+                top: p.top,
               }}
               animate={{
                 y: [0, -35, 0],
@@ -102,7 +117,7 @@ export default function HomePage() {
                 scale: [0.8, 1.3, 0.8],
               }}
               transition={{
-                duration: 7 + Math.random() * 5,
+                duration: p.duration,
                 repeat: Infinity,
                 ease: 'easeInOut',
               }}

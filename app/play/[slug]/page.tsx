@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Trophy, Clock, ArrowRight, Share2, Copy, CheckCircle2, XCircle, Gamepad2, ArrowLeft, RefreshCw, BarChart3, AlertTriangle, Sparkles, Star } from 'lucide-react'
+import { Trophy, Clock, ArrowRight, Share2, Copy, CheckCircle2, XCircle, Gamepad2, ArrowLeft, AlertTriangle, Star } from 'lucide-react'
 
 type Question = {
   id: string
@@ -61,7 +61,7 @@ export default function PlayPage() {
   const slug = params.slug as string
 
   const [quiz, setQuiz]         = useState<Quiz | null>(null)
-  const [ads, setAds]           = useState<any>(null)
+  const [ads, setAds]           = useState<Record<string, string | boolean | null> | null>(null)
   const [loadingQuiz, setLoadingQuiz] = useState(true)
   const [notFound, setNotFound] = useState(false)
 
@@ -221,7 +221,6 @@ export default function PlayPage() {
   }
 
   const q = quiz.questions[current]
-  const progress = (current / quiz.questions.length) * 100
   const pct = Math.round((score / quiz.questions.length) * 100)
   
   const resultMsg = pct >= 80 ? '👑 Mastermind Rank!'

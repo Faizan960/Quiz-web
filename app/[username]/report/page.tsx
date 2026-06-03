@@ -133,7 +133,7 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
   const [tab, setTab] = useState<TabType>('report')
   const [responseCount, setResponseCount] = useState(0)
   const [revealStep, setRevealStep] = useState(0)
-  const [timeline, setTimeline] = useState<any[] | null>(null)
+  const [timeline, setTimeline] = useState<Array<{ id: string; created_at: string; respondent_name: string; is_anonymous: boolean }> | null>(null)
 
   // Fetch response count on load
   useEffect(() => {
@@ -180,8 +180,8 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
           setTimeout(() => setRevealStep(i), i * 350)
         }
       }
-    } catch (err: any) {
-      setError(err.message || 'Something went wrong')
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
       setLoading(false)
       setRegenerating(false)

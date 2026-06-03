@@ -21,15 +21,33 @@ const NAV = [
 const WEEK = [65, 120, 88, 210, 175, 340, 280]
 const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
 
+type AdminQuiz = {
+  id: string
+  title: string
+  creator_name: string
+  total_plays: number
+  is_reported: boolean
+  is_banned: boolean
+  is_featured: boolean
+}
+
+type AdminUser = {
+  id: string
+  username: string
+  total_quizzes: number
+  created_at: string
+  is_banned: boolean
+}
+
 export default function AdminPage() {
   const [token, setToken]     = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loginError, setLoginError] = useState('')
   const [tab, setTab]         = useState('dashboard')
-  const [ads, setAds]         = useState<any>(null)
-  const [quizzes, setQuizzes] = useState<any[]>([])
-  const [users, setUsers]     = useState<any[]>([])
+  const [ads, setAds]         = useState<Record<string, string | boolean | null> | null>(null)
+  const [quizzes, setQuizzes] = useState<AdminQuiz[]>([])
+  const [users, setUsers]     = useState<AdminUser[]>([])
   const [saving, setSaving]   = useState(false)
   const [saveMsg, setSaveMsg] = useState('')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -37,7 +55,10 @@ export default function AdminPage() {
   // Check for saved token
   useEffect(() => {
     const saved = localStorage.getItem(ADMIN_TOKEN_KEY)
-    if (saved) setToken(saved)
+    if (saved) {
+      const t = setTimeout(() => setToken(saved), 0)
+      return () => clearTimeout(t)
+    }
   }, [])
 
   // Load data when logged in
@@ -418,9 +439,9 @@ export default function AdminPage() {
 
                       {/* Custom Switch Component */}
                       <div 
-                        onClick={() => setAds((prev: any) => ({ ...prev, [`${slot.key}_enabled`]: !prev[`${slot.key}_enabled`] }))}
+                        onClick={() => setAds(prev => prev ? { ...prev, [`${slot.key}_enabled`]: !prev[`${slot.key}_enabled`] } : null)}
                         className={`w-11 h-6 rounded-full cursor-pointer transition-all relative border shrink-0 ${
-                          ads[`${slot.key}_enabled`] 
+                          ads?.[`${slot.key}_enabled`] 
                             ? 'bg-primary border-primary' 
                             : 'bg-zinc-950 border-white/10'
                         }`}
@@ -457,9 +478,9 @@ export default function AdminPage() {
                       </label>
                       <textarea
                         rows={field.key.includes('code') ? 2 : 1}
-                        value={ads[field.key] ?? ''}
+                        value={(ads?.[field.key] as string) ?? ''}
                         placeholder={field.key.includes('publisher') ? 'ca-pub-XXXXXXXXXXXXXXXX' : '<ins class="adsbygoogle" ...'}
-                        onChange={e => setAds((prev: any) => ({ ...prev, [field.key]: e.target.value }))}
+                        onChange={e => setAds(prev => prev ? { ...prev, [field.key]: e.target.value } : null)}
                         className="w-full bg-zinc-950 border border-white/5 rounded-xl px-4 py-3 text-text-primary text-xs font-mono placeholder:text-text-muted focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all outline-none resize-y"
                       />
                     </div>

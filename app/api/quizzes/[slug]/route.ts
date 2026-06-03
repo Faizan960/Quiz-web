@@ -20,6 +20,6 @@ export async function GET(
     return NextResponse.json({ error: 'Quiz not found' }, { status: 404 })
   }
 
-  data.questions = data.questions.sort((a: any, b: any) => a.order_num - b.order_num)
+  data.questions = data.questions.sort((a: { order_num: number }, b: { order_num: number }) => a.order_num - b.order_num)
   return NextResponse.json({ quiz: data })
 }

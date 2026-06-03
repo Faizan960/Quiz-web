@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, use } from 'react'
+import { useState, useEffect, use, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { ArrowLeft, ArrowRight, Check, User, Sparkles, Heart, Share2, Camera, ShieldCheck, Clipboard } from 'lucide-react'
@@ -17,7 +17,8 @@ function Confetti() {
       size: `${Math.random() * 8 + 6}px`,
       color: colors[Math.floor(Math.random() * colors.length)],
     }))
-    setPieces(newPieces)
+    const t = setTimeout(() => setPieces(newPieces), 0)
+    return () => clearTimeout(t)
   }, [])
 
   return (
@@ -100,7 +101,7 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
     }
   }, [submitted, username])
 
-  const handleAnswer = (questionId: string, optionText: string, optionIndex: number) => {
+  const handleAnswer = useCallback((questionId: string, optionText: string, optionIndex: number) => {
     setAnswers(prev => ({ ...prev, [questionId]: { value: optionText, index: optionIndex } }))
     // Auto-advance after short delay
     setTimeout(() => {
@@ -108,7 +109,7 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
         setCurrentQ(q => q + 1)
       }
     }, 400)
-  }
+  }, [currentQ, questions.length])
 
   // Keyboard navigation shortcuts
   const question = questions[currentQ]
@@ -131,7 +132,7 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [started, submitted, currentQ, question])
+  }, [started, submitted, currentQ, question, handleAnswer])
 
   const handleSubmit = async () => {
     setSubmitting(true)
