@@ -3,19 +3,19 @@
 import { useState, useEffect, use } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
-import { Lock, Download, Share2, Target, MessageCircle, BarChart3, Flame, Heart, ArrowLeft, CheckCircle2, Sparkles, ArrowRight, Camera } from 'lucide-react'
+import { Lock, Download, Share2, Target, MessageCircle, BarChart3, Flame, Heart, ArrowLeft, CheckCircle2, Sparkles, ArrowRight, Camera, Eye, EyeOff, ShieldCheck } from 'lucide-react'
 import type { ReportData } from '@/types/social-mirror'
 
 const DIMENSION_COLORS: Record<string, string> = {
   leadership: '#8B5CF6',
   creativity: '#EC4899',
-  empathy: '#34D399',
+  empathy: '#10B981',
   ambition: '#F59E0B',
   humor: '#FB923C',
   trustworthiness: '#06B6D4',
-  intelligence: '#818CF8',
+  intelligence: '#6366F1',
   charisma: '#F472B6',
-  resilience: '#10B981',
+  resilience: '#34D399',
   loyalty: '#A78BFA',
   confidence: '#FBBF24',
 }
@@ -44,8 +44,8 @@ function RadarChart({ scores }: { scores: Record<string, number> }) {
   const gridLevels = [0.25, 0.5, 0.75, 1]
 
   return (
-    <div className="flex flex-col items-center justify-center p-2">
-      <svg width="280" height="280" className="overflow-visible select-none">
+    <div className="flex flex-col items-center justify-center p-2 relative">
+      <svg width="280" height="280" className="overflow-visible select-none drop-shadow-[0_0_15px_rgba(124,58,237,0.15)]">
         {/* Grid Hexagons */}
         {gridLevels.map((lvl, index) => {
           const gridPoints = dims.map((_, i) => {
@@ -59,9 +59,9 @@ function RadarChart({ scores }: { scores: Record<string, number> }) {
               key={index}
               points={gridPoints}
               fill="none"
-              stroke="rgba(157, 78, 221, 0.18)"
-              strokeWidth="1"
-              strokeDasharray={lvl < 1 ? "3 3" : "none"}
+              stroke="rgba(255, 255, 255, 0.05)"
+              strokeWidth="1.2"
+              strokeDasharray={lvl < 1 ? "4 4" : "none"}
             />
           )
         })}
@@ -70,8 +70,8 @@ function RadarChart({ scores }: { scores: Record<string, number> }) {
         {points.map((p, i) => {
           const ox = cx + r * Math.cos(p.angle)
           const oy = cy + r * Math.sin(p.angle)
-          const lx = cx + (r + 18) * Math.cos(p.angle)
-          const ly = cy + (r + 12) * Math.sin(p.angle)
+          const lx = cx + (r + 16) * Math.cos(p.angle)
+          const ly = cy + (r + 10) * Math.sin(p.angle)
 
           let textAnchor: "middle" | "start" | "end" = "middle"
           if (Math.cos(p.angle) > 0.1) textAnchor = "start"
@@ -79,12 +79,12 @@ function RadarChart({ scores }: { scores: Record<string, number> }) {
 
           return (
             <g key={i}>
-              <line x1={cx} y1={cy} x2={ox} y2={oy} stroke="rgba(157, 78, 221, 0.18)" strokeWidth="1" />
+              <line x1={cx} y1={cy} x2={ox} y2={oy} stroke="rgba(255, 255, 255, 0.05)" strokeWidth="1" />
               <text
                 x={lx}
                 y={ly}
                 textAnchor={textAnchor}
-                className="text-[10px] md:text-xs font-bold fill-zinc-400 capitalize font-display"
+                className="text-[9px] font-bold fill-zinc-400 capitalize font-display tracking-tight"
                 alignmentBaseline="middle"
               >
                 {p.label}
@@ -96,9 +96,9 @@ function RadarChart({ scores }: { scores: Record<string, number> }) {
         {/* Filled Data Polygon */}
         <polygon
           points={pointsStr}
-          fill="rgba(157, 78, 221, 0.25)"
-          stroke="#9d4edd"
-          strokeWidth="2.5"
+          fill="rgba(124, 58, 237, 0.2)"
+          stroke="#7c3aed"
+          strokeWidth="2"
           className="transition-all duration-1000 ease-out"
         />
 
@@ -108,14 +108,14 @@ function RadarChart({ scores }: { scores: Record<string, number> }) {
             key={i}
             cx={p.x}
             cy={p.y}
-            r="4"
-            fill="#9d4edd"
-            stroke="#060210"
+            r="3.5"
+            fill="#7c3aed"
+            stroke="#07050f"
             strokeWidth="1.5"
           />
         ))}
 
-        <circle cx={cx} cy={cy} r="3" fill="rgba(157, 78, 221, 0.3)" />
+        <circle cx={cx} cy={cy} r="3.5" fill="rgba(124, 58, 237, 0.4)" />
       </svg>
     </div>
   )
@@ -124,6 +124,7 @@ function RadarChart({ scores }: { scores: Record<string, number> }) {
 export default function ReportPage({ params }: { params: Promise<{ username: string }> }) {
   const { username } = use(params)
   const [pin, setPin] = useState('')
+  const [showPin, setShowPin] = useState(false)
   const [pinSubmitted, setPinSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [regenerating, setRegenerating] = useState(false)
@@ -176,7 +177,7 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
       if (!isRegen) {
         // Staggered reveal animation
         for (let i = 1; i <= 6; i++) {
-          setTimeout(() => setRevealStep(i), i * 400)
+          setTimeout(() => setRevealStep(i), i * 350)
         }
       }
     } catch (err: any) {
@@ -232,48 +233,58 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
   if (!pinSubmitted) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden text-text-primary">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
+        <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-70" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
         
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative z-10 w-full max-w-sm glass-card p-8 text-center border border-white/5 shadow-2xl"
+          className="relative z-10 w-full max-w-sm glass-card p-6 md:p-8 text-center border border-white/5 shadow-2xl"
         >
-          <div className="w-16 h-16 bg-primary/10 border border-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-6 text-primary-light shadow-sm">
-            <Lock className="w-8 h-8" />
+          <div className="w-12 h-12 bg-primary/10 border border-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-5 text-primary-light shadow-sm">
+            <Lock className="w-5 h-5" />
           </div>
           
-          <h1 className="font-display text-2xl font-black mb-2 text-text-primary">Unlock Your Report</h1>
-          <p className="text-text-secondary text-sm mb-6 font-medium">
-            Enter the PIN you set when creating your mirror.
+          <h1 className="font-display text-xl md:text-2xl font-black mb-2 text-text-primary">Unlock Your Report</h1>
+          <p className="text-text-secondary text-xs mb-6 font-medium">
+            Enter the access PIN you set during creation.
           </p>
 
           {/* Response count */}
           <div className={`
-            inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold mb-8 transition-colors border
+            inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold mb-7 border
             ${responseCount >= 3 ? 'bg-emerald-950/20 text-accent border-emerald-500/20' : 'bg-secondary/10 text-secondary border-secondary/20'}
           `}>
-            {responseCount >= 3 ? <CheckCircle2 className="w-4 h-4" /> : <span className="text-base">⏳</span>} 
-            {responseCount} response{responseCount !== 1 ? 's' : ''} collected
-            {responseCount < 3 && <span className="opacity-75 font-medium ml-1">({3 - responseCount} more needed)</span>}
+            {responseCount >= 3 ? <CheckCircle2 className="w-3.5 h-3.5" /> : <span className="text-xs">⏳</span>} 
+            <span>{responseCount} response{responseCount !== 1 ? 's' : ''} collected</span>
+            {responseCount < 3 && <span className="opacity-75 font-semibold">({3 - responseCount} more needed)</span>}
           </div>
 
           <div className="space-y-4">
-            <input
-              className="w-full bg-surface border border-white/5 rounded-2xl px-5 py-4 text-text-primary font-black tracking-[0.3em] focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-center text-xl shadow-inner"
-              type="password"
-              placeholder="••••"
-              value={pin}
-              onChange={e => setPin(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleUnlock(false)}
-              autoFocus
-            />
+            <div className="relative">
+              <input
+                className="w-full bg-surface border border-white/5 rounded-2xl px-5 py-3.5 text-text-primary font-black tracking-[0.3em] focus:border-primary focus:ring-2 focus:ring-primary/15 transition-all outline-none text-center text-lg shadow-inner"
+                type={showPin ? 'text' : 'password'}
+                placeholder="••••"
+                value={pin}
+                onChange={e => setPin(e.target.value.replace(/\D/g, '').slice(0, 8))}
+                onKeyDown={e => e.key === 'Enter' && handleUnlock(false)}
+                autoFocus
+              />
+              <button 
+                onClick={() => setShowPin(!showPin)} 
+                className="absolute right-4.5 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary transition-colors cursor-pointer"
+                type="button"
+              >
+                {showPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
 
             {error && (
               <motion.div
-                initial={{ opacity: 0, y: 8 }}
+                initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="p-3 rounded-xl bg-secondary/10 border border-secondary/20 text-secondary text-sm font-semibold"
+                className="p-3 rounded-xl bg-secondary/10 border border-secondary/20 text-secondary text-xs font-semibold"
               >
                 {error}
               </motion.div>
@@ -282,7 +293,7 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
             <button
               onClick={() => handleUnlock(false)}
               disabled={loading || !pin.trim()}
-              className={`w-full py-4 rounded-2xl font-black transition-all shadow-lg ${
+              className={`w-full py-3.5 rounded-2xl font-black text-xs md:text-sm transition-all shadow-md cursor-pointer ${
                 (loading || !pin.trim())
                   ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed shadow-none'
                   : 'bg-gradient-to-r from-primary to-secondary text-white hover:opacity-95'
@@ -292,8 +303,8 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
             </button>
           </div>
 
-          <Link href={`/${username}`} className="inline-flex items-center gap-1.5 mt-6 text-sm text-text-secondary hover:text-text-primary transition-colors font-bold">
-            <ArrowLeft className="w-4 h-4" /> Back to share link
+          <Link href={`/${username}`} className="inline-flex items-center gap-1 mt-6 text-xs text-text-secondary hover:text-text-primary transition-colors font-bold cursor-pointer">
+            <ArrowLeft className="w-3.5 h-3.5" /> Back to share link
           </Link>
         </motion.div>
       </div>
@@ -308,50 +319,53 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
     .slice(0, 6)
 
   return (
-    <div className="min-h-screen bg-background relative flex flex-col text-text-primary">
-      <div className="absolute inset-0 z-0 pointer-events-none bg-pastel-gradient opacity-60" />
+    <div className="min-h-screen bg-background relative flex flex-col text-text-primary overflow-x-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-75" />
+      <div className="absolute inset-0 z-0 pointer-events-none bg-pastel-gradient opacity-50" />
 
       {/* Header */}
-      <nav className="glass-panel sticky top-0 z-50 flex items-center justify-between px-6 py-4 md:px-10 border-white/5">
+      <nav className="glass-panel sticky top-0 z-50 flex items-center justify-between px-6 py-4 md:px-10 border-b border-white/5">
         <Link href="/" className="flex items-center gap-2">
-          <span className="text-xl drop-shadow-[0_0_8px_rgba(157,78,221,0.4)]">🪞</span>
-          <span className="text-gradient font-display font-extrabold text-lg">Social Mirror</span>
+          <span className="text-lg drop-shadow-[0_0_8px_rgba(124,58,237,0.4)]">🪞</span>
+          <span className="text-gradient font-display font-black text-sm md:text-base tracking-tight">Social Mirror</span>
         </Link>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           <button
             onClick={() => handleUnlock(true)}
             disabled={regenerating}
-            className="px-4 py-2 rounded-full bg-primary/20 border border-primary/30 text-xs font-bold text-primary-light flex items-center gap-1.5 shadow-sm hover:bg-primary/30 transition-colors"
+            className="px-3.5 py-1.5 rounded-xl bg-primary/10 border border-primary/25 text-[10px] font-bold text-primary-light flex items-center gap-1 shadow-sm hover:bg-primary/20 transition-colors cursor-pointer"
           >
-            <Sparkles className={`w-3.5 h-3.5 ${regenerating ? 'animate-spin' : ''}`} />
-            {regenerating ? 'Syncing...' : 'Regenerate'}
+            <Sparkles className={`w-3 h-3 ${regenerating ? 'animate-spin' : ''}`} />
+            {regenerating ? 'Syncing...' : 'Sync Data'}
           </button>
-          <div className="px-4 py-2 rounded-full bg-accent/20 border border-accent/30 text-xs font-bold text-accent flex items-center gap-1.5 shadow-sm">
-            <BarChart3 className="w-3.5 h-3.5" /> {report.response_count} responses
+          <div className="px-3.5 py-1.5 rounded-xl bg-accent/10 border border-accent/25 text-[10px] font-bold text-accent flex items-center gap-1 shadow-sm">
+            <BarChart3 className="w-3 h-3" /> {report.response_count} responses
           </div>
         </div>
       </nav>
 
       <main className="flex-1 max-w-3xl mx-auto w-full px-6 py-12 relative z-10">
+        
         {/* Archetype Hero */}
         {revealStep >= 1 && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            initial={{ opacity: 0, scale: 0.95, y: 15 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            className="text-center mb-16"
+            className="text-center mb-12"
           >
-            <div className="text-6xl md:text-8xl mb-6 drop-shadow-[0_0_20px_rgba(157,78,221,0.35)]">{report.archetype_emoji}</div>
-            <div className="font-display text-4xl md:text-6xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-4">
+            <div className="text-5xl md:text-7xl mb-5 drop-shadow-[0_0_15px_rgba(124,58,237,0.25)]">{report.archetype_emoji}</div>
+            <div className="font-display text-3xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-3.5 tracking-tight leading-tight">
               {report.archetype}
             </div>
-            <p className="text-text-secondary text-base md:text-lg leading-relaxed max-w-lg mx-auto font-medium">
+            <p className="text-text-secondary text-xs sm:text-sm md:text-base leading-relaxed max-w-lg mx-auto font-medium">
               {report.archetype_description}
             </p>
           </motion.div>
         )}
 
         {/* Tab Switcher */}
-        <div className="flex bg-surface p-1.5 rounded-2xl border border-white/5 shadow-inner mb-8 relative">
+        <div className="flex bg-surface/65 p-1 rounded-2xl border border-white/5 shadow-inner mb-8 relative">
           {[
             { id: 'report' as TabType, label: 'Report', icon: <BarChart3 className="w-4 h-4" /> },
             { id: 'roast' as TabType, label: 'Roast', icon: <Flame className="w-4 h-4" /> },
@@ -360,20 +374,20 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
-              className={`flex-1 relative flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-colors duration-300 ${
+              className={`flex-1 relative flex items-center justify-center gap-1.5 py-3 rounded-xl text-xs md:text-sm font-bold transition-colors duration-300 cursor-pointer ${
                 tab === t.id 
                   ? 'text-white' 
-                  : 'text-text-secondary hover:bg-surface-hover'
+                  : 'text-text-secondary hover:bg-surface-hover/50'
               }`}
             >
               {tab === t.id && (
                 <motion.div
                   layoutId="activeTab"
-                  className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-xl shadow-lg"
-                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-xl shadow-md"
+                  transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
                 />
               )}
-              <span className="relative z-10 flex items-center gap-2">
+              <span className="relative z-10 flex items-center gap-1.5">
                 {t.icon} {t.label}
               </span>
             </button>
@@ -385,47 +399,47 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
           {tab === 'report' && (
             <motion.div
               key="report"
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -16 }}
-              className="space-y-6"
+              exit={{ opacity: 0, y: -10 }}
+              className="space-y-5"
             >
               {/* Scores */}
               {revealStep >= 2 && (
                 <motion.div
-                  initial={{ opacity: 0, y: 16 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="glass-card p-6 md:p-8 border border-white/5 shadow-2xl"
+                  className="glass-card p-5 md:p-7 border border-white/5 shadow-xl"
                 >
-                  <h3 className="font-display text-xl font-bold mb-6 flex items-center gap-2 text-text-primary">
-                    <BarChart3 className="w-5 h-5 text-primary-light" /> Your Personality Radar
+                  <h3 className="font-display text-base md:text-lg font-bold mb-5 flex items-center gap-1.5 text-text-primary">
+                    <BarChart3 className="w-4.5 h-4.5 text-primary-light" /> Character Dimension Radar
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
                     {/* Radar Chart */}
                     <RadarChart scores={report.scores} />
 
                     {/* Score Bars */}
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       {topScores.map(([dim, score], i) => (
                         <motion.div
                           key={dim}
-                          initial={{ opacity: 0, x: -20 }}
+                          initial={{ opacity: 0, x: -15 }}
                           animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: i * 0.1 }}
+                          transition={{ delay: i * 0.08 }}
                         >
-                          <div className="flex justify-between items-end mb-1.5">
-                            <span className="text-xs font-bold text-text-secondary capitalize">{dim}</span>
-                            <span className="text-sm font-extrabold" style={{ color: DIMENSION_COLORS[dim] ?? '#818CF8' }}>
+                          <div className="flex justify-between items-end mb-1">
+                            <span className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">{dim}</span>
+                            <span className="text-xs font-black" style={{ color: DIMENSION_COLORS[dim] ?? '#a78bfa' }}>
                               {score}%
                             </span>
                           </div>
-                          <div className="w-full h-2 bg-zinc-950 rounded-full overflow-hidden border border-white/2">
+                          <div className="w-full h-1.5 bg-zinc-950 rounded-full overflow-hidden border border-white/3">
                             <motion.div
                               initial={{ width: 0 }}
                               animate={{ width: `${score}%` }}
-                              transition={{ delay: 0.3 + i * 0.1, duration: 1.2, type: 'spring', bounce: 0.3 }}
+                              transition={{ delay: 0.25 + i * 0.08, duration: 1, type: 'spring', bounce: 0.25 }}
                               className="h-full rounded-full"
-                              style={{ background: DIMENSION_COLORS[dim] ?? '#818CF8' }}
+                              style={{ background: DIMENSION_COLORS[dim] ?? '#a78bfa' }}
                             />
                           </div>
                         </motion.div>
@@ -435,22 +449,22 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
                 </motion.div>
               )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {/* Strengths */}
                 {revealStep >= 3 && (
                   <motion.div
-                    initial={{ opacity: 0, y: 16 }}
+                    initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="glass-card p-6 md:p-8 border border-white/5"
+                    className="glass-card p-5 md:p-6 border border-white/5"
                   >
-                    <h3 className="font-display text-xl font-bold mb-4 flex items-center gap-2 text-text-primary">
-                      <Sparkles className="w-5 h-5 text-accent" /> Strengths
+                    <h3 className="font-display text-base font-bold mb-4.5 flex items-center gap-1.5 text-text-primary">
+                      <Sparkles className="w-4.5 h-4.5 text-accent" /> Key Strengths
                     </h3>
-                    <div className="space-y-3">
+                    <div className="space-y-2.5">
                       {report.strengths.map((s, i) => (
-                        <div key={i} className="flex items-start gap-3 p-4 rounded-2xl bg-emerald-950/20 border border-emerald-500/20 text-emerald-200 text-sm font-medium">
-                          <CheckCircle2 className="w-5 h-5 text-accent shrink-0" />
-                          {s}
+                        <div key={i} className="flex items-start gap-2.5 p-3 rounded-xl bg-emerald-950/10 border border-emerald-500/15 text-emerald-300 text-xs md:text-sm font-semibold">
+                          <CheckCircle2 className="w-4 h-4 text-accent shrink-0 mt-0.5" />
+                          <span>{s}</span>
                         </div>
                       ))}
                     </div>
@@ -460,18 +474,18 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
                 {/* Weaknesses */}
                 {revealStep >= 4 && (
                   <motion.div
-                    initial={{ opacity: 0, y: 16 }}
+                    initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="glass-card p-6 md:p-8 border border-white/5"
+                    className="glass-card p-5 md:p-6 border border-white/5"
                   >
-                    <h3 className="font-display text-xl font-bold mb-4 flex items-center gap-2 text-text-primary">
-                      <Target className="w-5 h-5 text-secondary" /> Growth Areas
+                    <h3 className="font-display text-base font-bold mb-4.5 flex items-center gap-1.5 text-text-primary">
+                      <Target className="w-4.5 h-4.5 text-secondary" /> Growth Areas
                     </h3>
-                    <div className="space-y-3">
+                    <div className="space-y-2.5">
                       {report.weaknesses.map((w, i) => (
-                        <div key={i} className="flex items-start gap-3 p-4 rounded-2xl bg-secondary/10 border border-secondary/20 text-secondary text-sm font-medium">
-                          <ArrowRight className="w-5 h-5 text-secondary shrink-0" />
-                          {w}
+                        <div key={i} className="flex items-start gap-2.5 p-3 rounded-xl bg-secondary/5 border border-secondary/15 text-secondary text-xs md:text-sm font-semibold">
+                          <ArrowRight className="w-4 h-4 text-secondary shrink-0 mt-0.5" />
+                          <span>{w}</span>
                         </div>
                       ))}
                     </div>
@@ -482,31 +496,31 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
               {/* Hidden Talent + Friend Impression */}
               {revealStep >= 5 && (
                 <motion.div
-                  initial={{ opacity: 0, y: 16 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="grid grid-cols-1 md:grid-cols-2 gap-6"
+                  className="grid grid-cols-1 md:grid-cols-2 gap-5"
                 >
-                  <div className="glass-card p-6 md:p-8 relative overflow-hidden group border border-white/5">
-                    <div className="absolute top-0 right-0 p-4 opacity-5 transform translate-x-4 -translate-y-4 group-hover:scale-110 transition-transform duration-500">
-                      <Sparkles className="w-24 h-24 text-primary" />
+                  <div className="glass-card p-5 md:p-6 relative overflow-hidden group border border-white/5">
+                    <div className="absolute top-0 right-0 p-4 opacity-[0.03] transform translate-x-3 -translate-y-3 group-hover:scale-105 transition-transform duration-500 pointer-events-none">
+                      <Sparkles className="w-20 h-20 text-primary" />
                     </div>
-                    <div className="w-12 h-12 bg-primary/20 text-primary-light rounded-xl flex items-center justify-center mb-4">
-                      <Target className="w-6 h-6" />
+                    <div className="w-9 h-9 bg-primary/10 text-primary-light rounded-xl flex items-center justify-center mb-3.5">
+                      <Target className="w-4.5 h-4.5" />
                     </div>
-                    <div className="text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">Hidden Talent</div>
-                    <div className="text-sm md:text-base text-text-primary font-medium leading-relaxed relative z-10">
+                    <div className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1.5">Hidden Talent</div>
+                    <div className="text-xs md:text-sm text-text-primary font-semibold leading-relaxed relative z-10">
                       {report.hidden_talent}
                     </div>
                   </div>
-                  <div className="glass-card p-6 md:p-8 relative overflow-hidden group border border-white/5">
-                    <div className="absolute top-0 right-0 p-4 opacity-5 transform translate-x-4 -translate-y-4 group-hover:scale-110 transition-transform duration-500">
-                      <MessageCircle className="w-24 h-24 text-pink-500" />
+                  <div className="glass-card p-5 md:p-6 relative overflow-hidden group border border-white/5">
+                    <div className="absolute top-0 right-0 p-4 opacity-[0.03] transform translate-x-3 -translate-y-3 group-hover:scale-105 transition-transform duration-500 pointer-events-none">
+                      <MessageCircle className="w-20 h-20 text-pink-500" />
                     </div>
-                    <div className="w-12 h-12 bg-secondary/20 text-secondary rounded-xl flex items-center justify-center mb-4">
-                      <MessageCircle className="w-6 h-6" />
+                    <div className="w-9 h-9 bg-secondary/10 text-secondary rounded-xl flex items-center justify-center mb-3.5">
+                      <MessageCircle className="w-4.5 h-4.5" />
                     </div>
-                    <div className="text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">Friend Impression</div>
-                    <div className="text-sm md:text-base text-text-primary font-medium leading-relaxed relative z-10">
+                    <div className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1.5">Friend Impression</div>
+                    <div className="text-xs md:text-sm text-text-primary font-semibold leading-relaxed relative z-10">
                       {report.friend_impression}
                     </div>
                   </div>
@@ -516,14 +530,14 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
               {/* Timeline Section */}
               {revealStep >= 5 && timeline && timeline.length > 0 && (
                 <motion.div
-                  initial={{ opacity: 0, y: 16 }}
+                  initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="glass-card p-6 md:p-8 border border-white/5"
+                  className="glass-card p-5 md:p-7 border border-white/5 shadow-md"
                 >
-                  <h3 className="font-display text-xl font-bold mb-6 flex items-center gap-2 text-text-primary">
-                    <CheckCircle2 className="w-5 h-5 text-accent" /> Response History
+                  <h3 className="font-display text-base md:text-lg font-bold mb-5 flex items-center gap-1.5 text-text-primary">
+                    <CheckCircle2 className="w-4.5 h-4.5 text-accent" /> Submission History
                   </h3>
-                  <div className="relative border-l-2 border-white/5 ml-4 pl-6 space-y-6">
+                  <div className="relative border-l border-white/5 ml-3 pl-5 space-y-5">
                     {timeline.map((item) => {
                       const date = new Date(item.created_at).toLocaleDateString(undefined, {
                         month: 'short',
@@ -534,12 +548,12 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
                       return (
                         <div key={item.id} className="relative">
                           {/* Timeline bullet */}
-                          <div className="absolute -left-[31px] top-1 w-4.5 h-4.5 rounded-full border-4 border-background bg-primary shadow-sm" />
+                          <div className="absolute -left-[24.5px] top-1 w-2.5 h-2.5 rounded-full border border-background bg-primary shadow-sm" />
                           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
-                            <span className="text-sm font-bold text-text-primary">
+                            <span className="text-xs md:text-sm font-semibold text-text-primary">
                               {item.is_anonymous ? '🕶️ An anonymous friend' : `👤 ${item.respondent_name}`} completed the mirror
                             </span>
-                            <span className="text-xs font-semibold text-text-muted">{date}</span>
+                            <span className="text-[10px] md:text-xs font-bold text-text-muted">{date}</span>
                           </div>
                         </div>
                       )
@@ -551,44 +565,47 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
               {/* Social Identity Card */}
               {revealStep >= 6 && (
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
+                  initial={{ opacity: 0, scale: 0.96 }}
                   animate={{ opacity: 1, scale: 1 }}
                   className="pt-6"
                 >
-                  <h3 className="font-display text-xl font-bold mb-6 flex items-center gap-2 text-text-primary">
-                    <Share2 className="w-5 h-5 text-primary-light" /> Your Social Identity Card
+                  <h3 className="font-display text-base md:text-lg font-bold mb-5 flex items-center gap-1.5 text-text-primary">
+                    <Share2 className="w-4.5 h-4.5 text-primary-light" /> Social Identity Card
                   </h3>
 
-                  {/* Server-Side Card Preview */}
-                  <div className="flex flex-col items-center gap-6 mb-8">
-                    <div className="relative group overflow-hidden rounded-3xl border border-white/5 shadow-2xl max-w-xs w-full aspect-[3/4]">
+                  {/* Server-Side Card Preview with hover tilt animation */}
+                  <div className="flex flex-col items-center gap-6 mb-7">
+                    <motion.div 
+                      whileHover={{ scale: 1.025, rotateY: 3, rotateX: -3 }}
+                      className="relative overflow-hidden rounded-2xl border border-white/5 shadow-2xl max-w-xs w-full aspect-[3/4] cursor-pointer tilt-card"
+                    >
                       <img 
                         src={`/api/profiles/${username}/card?pin=${encodeURIComponent(pin)}`}
                         alt="Social Identity Card"
                         className="w-full h-full object-cover select-none"
                       />
-                    </div>
+                    </motion.div>
                   </div>
 
                   {/* Actions */}
-                  <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto relative z-10">
+                  <div className="grid grid-cols-3 gap-2.5 max-w-md mx-auto relative z-10">
                     <button 
                       onClick={() => handleDownloadCard('standard')} 
-                      className="flex-1 flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-2xl font-bold hover:opacity-95 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/20"
+                      className="flex items-center justify-center gap-1.5 py-3.5 bg-gradient-to-r from-primary to-secondary text-white rounded-xl text-xs font-bold hover:opacity-95 hover:scale-[1.01] active:scale-[0.99] transition-all shadow-md shadow-primary/15 cursor-pointer"
                     >
-                      <Download className="w-5 h-5" /> Card
+                      <Download className="w-4 h-4" /> Card
                     </button>
                     <button 
                       onClick={() => handleDownloadCard('story')} 
-                      className="flex-1 flex items-center justify-center gap-2 py-4 bg-surface border border-white/5 text-text-primary rounded-2xl font-bold hover:bg-surface-hover transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-black/40"
+                      className="flex items-center justify-center gap-1.5 py-3.5 bg-surface border border-white/5 text-text-primary rounded-xl text-xs font-bold hover:bg-surface-hover hover:border-white/10 hover:scale-[1.01] active:scale-[0.99] transition-all shadow-sm cursor-pointer"
                     >
-                      <Camera className="w-5 h-5 text-secondary" /> Story (9:16)
+                      <Camera className="w-4 h-4 text-secondary" /> Story
                     </button>
                     <button
                       onClick={() => handleShareCard('standard')}
-                      className="flex-1 flex items-center justify-center gap-2 py-4 bg-surface border border-white/5 text-text-primary rounded-2xl font-bold hover:bg-surface-hover transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm hover:border-primary/20"
+                      className="flex items-center justify-center gap-1.5 py-3.5 bg-surface border border-white/5 text-text-primary rounded-xl text-xs font-bold hover:bg-surface-hover hover:border-white/10 hover:scale-[1.01] active:scale-[0.99] transition-all shadow-sm cursor-pointer"
                     >
-                      <Share2 className="w-5 h-5 text-primary-light" /> Share
+                      <Share2 className="w-4 h-4 text-primary-light" /> Share
                     </button>
                   </div>
                 </motion.div>
@@ -600,23 +617,23 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
           {tab === 'roast' && (
             <motion.div
               key="roast"
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -16 }}
+              exit={{ opacity: 0, y: -10 }}
             >
-              <div className="glass-card p-8 md:p-12 text-center relative overflow-hidden border border-white/5">
-                <div className="absolute top-0 right-0 p-8 opacity-5">
-                  <Flame className="w-48 h-48 text-secondary" />
+              <div className="glass-card p-6 md:p-10 text-center relative overflow-hidden border border-white/5 shadow-xl">
+                <div className="absolute top-0 right-0 p-6 opacity-[0.03] pointer-events-none">
+                  <Flame className="w-40 h-40 text-secondary animate-pulse" />
                 </div>
-                <div className="text-6xl mb-6 relative z-10">🔥</div>
-                <h3 className="font-display text-2xl font-black mb-6 text-text-primary relative z-10">
+                <div className="text-4xl mb-4 relative z-10">🔥</div>
+                <h3 className="font-display text-lg md:text-xl font-black mb-5 text-text-primary relative z-10">
                   Your Social Roast
                 </h3>
-                <p className="text-lg md:text-xl text-text-secondary leading-relaxed max-w-2xl mx-auto font-semibold relative z-10">
+                <p className="text-sm sm:text-base md:text-lg text-text-secondary leading-relaxed max-w-xl mx-auto font-semibold relative z-10">
                   &quot;{report.roast}&quot;
                 </p>
-                <div className="mt-8 pt-6 border-t border-white/5 text-sm font-bold text-text-muted relative z-10">
-                  Based on {report.response_count} friend responses. All in good fun! 😂
+                <div className="mt-7 pt-4.5 border-t border-white/5 text-[10px] md:text-xs font-bold text-text-muted relative z-10">
+                  Based on {report.response_count} response{report.response_count !== 1 ? 's' : ''}. All in good fun! 😂
                 </div>
               </div>
             </motion.div>
@@ -626,23 +643,23 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
           {tab === 'compliment' && (
             <motion.div
               key="compliment"
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -16 }}
+              exit={{ opacity: 0, y: -10 }}
             >
-              <div className="glass-card p-8 md:p-12 text-center relative overflow-hidden border border-white/5">
-                <div className="absolute top-0 left-0 p-8 opacity-5">
-                  <Heart className="w-48 h-48 text-pink-500" />
+              <div className="glass-card p-6 md:p-10 text-center relative overflow-hidden border border-white/5 shadow-xl">
+                <div className="absolute top-0 left-0 p-6 opacity-[0.03] pointer-events-none">
+                  <Heart className="w-40 h-40 text-pink-500 animate-pulse" />
                 </div>
-                <div className="text-6xl mb-6 relative z-10">💖</div>
-                <h3 className="font-display text-2xl font-black mb-6 text-text-primary relative z-10">
+                <div className="text-4xl mb-4 relative z-10">💖</div>
+                <h3 className="font-display text-lg md:text-xl font-black mb-5 text-text-primary relative z-10">
                   Your Social Compliment
                 </h3>
-                <p className="text-lg md:text-xl text-text-secondary leading-relaxed max-w-2xl mx-auto font-semibold relative z-10">
+                <p className="text-sm sm:text-base md:text-lg text-text-secondary leading-relaxed max-w-xl mx-auto font-semibold relative z-10">
                   &quot;{report.compliment}&quot;
                 </p>
-                <div className="mt-8 pt-6 border-t border-white/5 text-sm font-bold text-text-muted relative z-10">
-                  Based on {report.response_count} friend responses. Woven with care! 🥰
+                <div className="mt-7 pt-4.5 border-t border-white/5 text-[10px] md:text-xs font-bold text-text-muted relative z-10">
+                  Based on {report.response_count} response{report.response_count !== 1 ? 's' : ''}. Woven with care! 🥰
                 </div>
               </div>
             </motion.div>
@@ -652,3 +669,4 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
     </div>
   )
 }
+

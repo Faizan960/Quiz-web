@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Trophy, Clock, ArrowRight, Share2, Copy, CheckCircle2, XCircle, Gamepad2, ArrowLeft, RefreshCw, BarChart3, AlertTriangle, Sparkles, Star } from 'lucide-react'
 
 type Question = {
   id: string
@@ -30,13 +32,18 @@ type LeaderboardEntry = {
 }
 
 function AdSlot({ code }: { code?: string | null }) {
-  if (code) return <div dangerouslySetInnerHTML={{ __html: code }} style={{ margin: '16px 0' }} />
+  if (code) {
+    return (
+      <div 
+        dangerouslySetInnerHTML={{ __html: code }} 
+        className="my-6 w-full overflow-hidden rounded-2xl border border-white/5 bg-surface/30 p-4 text-center shadow-inner" 
+      />
+    )
+  }
   return (
-    <div style={{
-      margin: '16px 0', padding: 12, borderRadius: 10, textAlign: 'center',
-      border: '1px dashed rgba(255,255,255,0.08)', color: 'rgba(240,240,245,0.2)',
-      fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase',
-    }}>Ad Space</div>
+    <div className="my-6 p-4 rounded-2xl border border-dashed border-white/5 bg-surface/20 text-center text-[10px] text-text-muted font-bold tracking-widest uppercase select-none">
+      Ad Space
+    </div>
   )
 }
 
@@ -47,7 +54,7 @@ function fmtTime(sec: number | null) {
   return m > 0 ? `${m}m ${s}s` : `${s}s`
 }
 
-const MEDAL = ['🥇', '🥈', '🥉']
+const MEDALS = ['🥇', '🥈', '🥉']
 
 export default function PlayPage() {
   const params = useParams()
@@ -67,6 +74,9 @@ export default function PlayPage() {
   const [startTime, setStartTime]   = useState(0)
   const [timeTaken, setTimeTaken]   = useState(0)
 
+  // Copy status
+  const [copied, setCopied] = useState(false)
+
   // Leaderboard
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
   const [lbLoading, setLbLoading]     = useState(false)
@@ -76,7 +86,11 @@ export default function PlayPage() {
       fetch(`/api/quizzes/${slug}`).then(r => r.ok ? r.json() : null),
       fetch('/api/ads').then(r => r.json()).catch(() => null),
     ]).then(([quizData, adsData]) => {
-      if (!quizData?.quiz) { setNotFound(true); setLoadingQuiz(false); return }
+      if (!quizData?.quiz) { 
+        setNotFound(true)
+        setLoadingQuiz(false)
+        return 
+      }
       setQuiz(quizData.quiz)
       setAds(adsData?.ads)
       setLoadingQuiz(false)
@@ -107,7 +121,7 @@ export default function PlayPage() {
     const newScore = isCorrect ? score + 1 : score
     if (isCorrect) setScore(newScore)
 
-    await new Promise(r => setTimeout(r, 900))
+    await new Promise(r => setTimeout(r, 1100))
 
     if (current + 1 < quiz.questions.length) {
       setCurrent(c => c + 1)
@@ -133,287 +147,460 @@ export default function PlayPage() {
     }
   }, [selected, quiz, current, score, playerName, startTime, fetchLeaderboard])
 
-  // ── LOADING ───────────────────────────────────────────────────
-  if (loadingQuiz) return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ textAlign: 'center' }}>
-        <div style={{ fontSize: 40, marginBottom: 16 }}>⏳</div>
-        <p style={{ color: 'var(--muted)' }}>Loading quiz...</p>
-      </div>
-    </div>
-  )
+  // Keyboard Shortcuts for Game
+  useEffect(() => {
+    if (phase !== 'playing' || selected !== null || !quiz) return
 
-  if (notFound || !quiz) return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ textAlign: 'center' }}>
-        <div style={{ fontSize: 48, marginBottom: 16 }}>😕</div>
-        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 28, marginBottom: 8 }}>Quiz not found</h2>
-        <p style={{ color: 'var(--muted)', marginBottom: 24 }}>This quiz may have been removed or the link is wrong.</p>
-        <Link href="/" style={{ color: 'var(--pink)', textDecoration: 'none', fontWeight: 600 }}>← Back to Home</Link>
+    const q = quiz.questions[current]
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const key = e.key.toUpperCase()
+      let idx = -1
+      if (key === 'A' || key === '1') idx = 0
+      else if (key === 'B' || key === '2') idx = 1
+      else if (key === 'C' || key === '3') idx = 2
+      else if (key === 'D' || key === '4') idx = 3
+
+      if (idx >= 0 && idx < q.options.length) {
+        handleSelect(idx)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [phase, selected, current, quiz, handleSelect])
+
+  const quizUrl = typeof window !== 'undefined' ? window.location.href : ''
+
+  const handleCopy = () => {
+    if (!quiz) return
+    navigator.clipboard.writeText(`I scored ${score}/${quiz.questions.length} on "${quiz.title}"! Can you beat my score? Try it: ${quizUrl}`)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  // ── LOADING ───────────────────────────────────────────────────
+  if (loadingQuiz) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
+        <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-70" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] bg-primary/5 rounded-full blur-[90px] pointer-events-none" />
+        
+        <div className="relative z-10 text-center">
+          <div className="text-4xl mb-4 animate-float text-primary-light">🎯</div>
+          <div className="w-12 h-1 bg-zinc-900 rounded-full mx-auto overflow-hidden relative">
+            <div className="absolute h-full w-1/2 bg-gradient-to-r from-primary to-secondary rounded-full animate-shimmer" style={{ left: 0 }} />
+          </div>
+          <p className="text-text-secondary text-xs font-bold uppercase tracking-wider mt-4">Loading quiz...</p>
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
+
+  // ── NOT FOUND ──────────────────────────────────────────────────
+  if (notFound || !quiz) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden text-text-primary">
+        <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-70" />
+        <div className="relative z-10 w-full max-w-sm glass-card p-8 text-center border border-white/5 shadow-2xl">
+          <div className="w-14 h-14 bg-rose-500/10 border border-rose-500/20 rounded-2xl flex items-center justify-center mx-auto mb-6 text-rose-400">
+            <AlertTriangle className="w-6 h-6" />
+          </div>
+          <h2 className="font-display text-2xl font-black mb-3">Quiz Not Found</h2>
+          <p className="text-text-secondary text-xs leading-relaxed mb-6 font-medium">
+            This trivia challenge might have been deleted, or the URL contains a typo. Check your link and try again.
+          </p>
+          <Link 
+            href="/" 
+            className="inline-flex items-center gap-1 text-xs text-primary-light hover:text-white transition-colors font-bold"
+          >
+            <ArrowLeft className="w-4 h-4" /> Back to Home
+          </Link>
+        </div>
+      </div>
+    )
+  }
 
   const q = quiz.questions[current]
   const progress = (current / quiz.questions.length) * 100
   const pct = Math.round((score / quiz.questions.length) * 100)
-  const resultMsg = pct >= 80 ? '🔥 You know them REALLY well!'
-    : pct >= 50 ? '😄 Pretty good! Not bad at all.'
-    : '😅 You need to hang out more.'
+  
+  const resultMsg = pct >= 80 ? '👑 Mastermind Rank!'
+    : pct >= 50 ? '🧠 Pretty sharp! Well done.'
+    : '😅 Need to hit the books!'
 
-  const quizUrl = typeof window !== 'undefined' ? window.location.href : ''
+  const radius = 70
+  const circumference = 2 * Math.PI * radius
+  const strokeDashoffset = circumference - (pct / 100) * circumference
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--bg)' }}>
-      {/* Nav */}
-      <nav style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '18px 32px', borderBottom: '1px solid var(--border)',
-        background: 'rgba(10,10,15,0.85)', backdropFilter: 'blur(20px)',
-      }}>
-        <Link href="/" style={{
-          fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 20,
-          background: 'linear-gradient(135deg,var(--pink),var(--purple))',
-          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', textDecoration: 'none',
-        }}>Quizly✦</Link>
+    <div className="min-h-screen bg-background relative flex flex-col text-text-primary overflow-x-hidden">
+      {/* Background Dots Grid */}
+      <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-75" />
+      <div className="absolute inset-0 z-0 pointer-events-none bg-pastel-gradient opacity-50" />
+
+      {/* Navbar */}
+      <nav className="glass-panel sticky top-0 z-50 flex items-center justify-between px-6 py-4 md:px-10 border-b border-white/5">
+        <Link href="/" className="flex items-center gap-2">
+          <span className="text-lg drop-shadow-[0_0_8px_rgba(124,58,237,0.4)]">✦</span>
+          <span className="text-gradient font-display font-black text-sm md:text-base tracking-tight">Quizly</span>
+        </Link>
         {phase === 'playing' && (
-          <div style={{ fontSize: 14, color: 'var(--pink)', fontWeight: 600 }}>Score: {score}</div>
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold bg-primary/10 border border-primary/20 text-primary-light">
+            <Trophy className="w-3.5 h-3.5" />
+            <span>Score: {score}</span>
+          </div>
         )}
       </nav>
 
-      <div style={{ maxWidth: 640, margin: '0 auto', padding: '60px 24px' }}>
+      <main className="flex-1 max-w-xl mx-auto w-full px-6 py-12 relative z-10 flex flex-col justify-center">
+        <AnimatePresence mode="wait">
+          
+          {/* ── NAME ENTRY PHASE ──────────────────────── */}
+          {phase === 'name' && (
+            <motion.div
+              key="name-entry"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              className="w-full"
+            >
+              <div className="text-center mb-8">
+                <div className="w-16 h-16 bg-primary/10 border border-primary/20 rounded-3xl flex items-center justify-center mx-auto mb-6 text-primary-light shadow-lg">
+                  <Gamepad2 className="w-8 h-8" />
+                </div>
+                <h1 className="font-display text-3xl font-black tracking-tight mb-2 leading-tight">
+                  {quiz.title}
+                </h1>
+                <p className="text-text-secondary text-xs font-bold uppercase tracking-wider mb-5">
+                  by {quiz.creator_name}
+                </p>
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-950/60 border border-white/5 text-[10px] font-bold text-text-muted">
+                  <span>{quiz.questions.length} Questions</span>
+                  <span className="w-1 h-1 bg-white/10 rounded-full" />
+                  <span>Leaderboard Enabled</span>
+                </div>
+              </div>
 
-        {/* ── NAME ENTRY ─────────────────────────────────────── */}
-        {phase === 'name' && (
-          <div className="animate-fade-up" style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 56, marginBottom: 20 }}>🎯</div>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 800, marginBottom: 6 }}>{quiz.title}</h2>
-            <p style={{ color: 'var(--muted)', marginBottom: 4 }}>by {quiz.creator_name}</p>
-            <p style={{ color: 'var(--muted)', marginBottom: 40, fontSize: 14 }}>{quiz.questions.length} questions · scores appear on the leaderboard 🏆</p>
+              {ads?.player_start_enabled && <AdSlot code={ads.player_start_code} />}
 
-            {ads?.player_start_enabled && <AdSlot code={ads.player_start_code} />}
+              <div className="glass-card p-6 md:p-8 border border-white/5 shadow-2xl mb-6">
+                <div className="space-y-5">
+                  <div>
+                    <label className="block text-[10px] font-black text-text-secondary uppercase tracking-widest mb-2.5">
+                      Your Name
+                    </label>
+                    <input
+                      value={playerName}
+                      onChange={e => setPlayerName(e.target.value)}
+                      onKeyDown={e => e.key === 'Enter' && handleStart()}
+                      placeholder="e.g. Captain Trivia"
+                      className="w-full bg-surface border border-white/5 rounded-2xl px-5 py-4 text-text-primary placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/15 transition-all outline-none font-semibold text-sm shadow-inner"
+                      autoFocus
+                    />
+                  </div>
 
-            <div style={{ textAlign: 'left', maxWidth: 320, margin: '0 auto 32px' }}>
-              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 10 }}>Your Name</label>
-              <input
-                value={playerName}
-                onChange={e => setPlayerName(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && handleStart()}
-                placeholder="Enter your name..."
-                style={{ width: '100%', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '14px 18px', color: 'var(--text)', fontFamily: 'var(--font-body)', fontSize: 15, outline: 'none' }}
-              />
-            </div>
-            <button onClick={handleStart} disabled={!playerName.trim()} style={{
-              padding: '16px 40px', borderRadius: 100, border: 'none',
-              background: playerName.trim() ? 'linear-gradient(135deg,var(--pink),var(--purple))' : 'rgba(255,107,157,0.3)',
-              color: 'white', fontFamily: 'var(--font-body)', fontSize: 16, fontWeight: 700,
-              cursor: playerName.trim() ? 'pointer' : 'not-allowed',
-            }}>Start Quiz 🚀</button>
-          </div>
-        )}
-
-        {/* ── PLAYING ──────────────────────────────────────────── */}
-        {phase === 'playing' && (
-          <div className="animate-fade-in">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-              <div style={{ fontSize: 13, color: 'var(--muted)' }}>Question {current + 1} of {quiz.questions.length}</div>
-              <div style={{ fontSize: 13, color: 'var(--muted)' }}>{playerName}</div>
-            </div>
-            <div style={{ height: 4, background: 'var(--surface2)', borderRadius: 100, marginBottom: 40, overflow: 'hidden' }}>
-              <div style={{ height: '100%', width: `${progress}%`, borderRadius: 100, background: 'linear-gradient(90deg,var(--pink),var(--purple))', transition: 'width 0.4s ease' }} />
-            </div>
-
-            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, lineHeight: 1.3, marginBottom: 32 }}>
-              {q.question_text}
-            </h3>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {q.options.map((opt, idx) => {
-                let bg = 'var(--surface)'
-                let border = '1px solid var(--border)'
-                let color = 'var(--text)'
-                if (selected !== null) {
-                  if (idx === q.correct_index) { bg = 'rgba(6,214,160,0.12)'; border = '1px solid var(--green)'; color = 'var(--green)' }
-                  else if (idx === selected)   { bg = 'rgba(255,77,109,0.1)';  border = '1px solid var(--red)';   color = 'var(--red)' }
-                }
-                return (
-                  <button key={idx} onClick={() => handleSelect(idx)} disabled={selected !== null} style={{
-                    padding: '18px 22px', borderRadius: 16, border, background: bg, color,
-                    fontFamily: 'var(--font-body)', fontSize: 15, fontWeight: 500,
-                    textAlign: 'left', cursor: selected !== null ? 'default' : 'pointer',
-                    transition: 'all 0.2s ease', display: 'flex', alignItems: 'center', gap: 12,
-                  }}
-                    onMouseEnter={e => { if (selected === null) { const el = e.currentTarget as HTMLElement; el.style.borderColor='var(--purple)'; el.style.background='rgba(199,125,255,0.08)'; el.style.transform='translateX(4px)' } }}
-                    onMouseLeave={e => { if (selected === null) { const el = e.currentTarget as HTMLElement; el.style.borderColor='var(--border)'; el.style.background='var(--surface)'; el.style.transform='' } }}
+                  <button 
+                    onClick={handleStart} 
+                    disabled={!playerName.trim()}
+                    className={`w-full py-4 rounded-2xl font-black text-sm transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer ${
+                      playerName.trim() 
+                        ? 'bg-gradient-to-r from-primary to-secondary text-white hover:opacity-95 hover:scale-[1.01] active:scale-[0.99] shadow-primary/15' 
+                        : 'bg-zinc-800 text-zinc-500 cursor-not-allowed shadow-none'
+                    }`}
                   >
-                    <span style={{ color: 'var(--muted)', fontFamily: 'var(--font-display)', fontSize: 13, minWidth: 20 }}>
-                      {['A','B','C','D'][idx]}
-                    </span>
-                    {opt}
+                    Start Trivia 🚀
                   </button>
-                )
-              })}
-            </div>
-          </div>
-        )}
+                </div>
+              </div>
+            </motion.div>
+          )}
 
-        {/* ── RESULT + LEADERBOARD ─────────────────────────────── */}
-        {phase === 'done' && (
-          <div className="animate-fade-up">
-            {/* Score ring */}
-            <div style={{ textAlign: 'center', marginBottom: 40 }}>
-              <div style={{
-                width: 180, height: 180, borderRadius: '50%', margin: '0 auto 32px',
-                background: `conic-gradient(var(--pink) 0%, var(--purple) ${pct}%, var(--surface2) ${pct}%)`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <div style={{
-                  width: 140, height: 140, borderRadius: '50%', background: 'var(--bg)',
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                }}>
-                  <div style={{
-                    fontFamily: 'var(--font-display)', fontSize: 40, fontWeight: 800,
-                    background: 'linear-gradient(135deg,var(--pink),var(--purple))',
-                    WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                  }}>{score}/{quiz.questions.length}</div>
-                  <div style={{ fontSize: 12, color: 'var(--muted)' }}>{pct}%</div>
+          {/* ── QUESTION PLAYING PHASE ────────────────── */}
+          {phase === 'playing' && (
+            <motion.div
+              key="playing-quiz"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              className="w-full"
+            >
+              <div className="mb-8">
+                <div className="flex justify-between items-end mb-3">
+                  <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest">
+                    Question {current + 1} of {quiz.questions.length}
+                  </span>
+                  <span className="text-xs font-bold text-primary-light">
+                    {playerName}
+                  </span>
+                </div>
+                
+                {/* Progress bar */}
+                <div className="w-full h-1.5 bg-zinc-950 rounded-full border border-white/3 overflow-hidden">
+                  <motion.div 
+                    className="h-full rounded-full bg-gradient-to-r from-primary to-secondary"
+                    initial={{ width: `${(current / quiz.questions.length) * 100}%` }}
+                    animate={{ width: `${((current) / quiz.questions.length) * 100}%` }}
+                    transition={{ duration: 0.3 }}
+                  />
                 </div>
               </div>
 
-              {ads?.result_page_enabled && <AdSlot code={ads.result_page_code} />}
-
-              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 800, marginBottom: 8 }}>
-                {playerName}, {resultMsg}
+              {/* Question Text */}
+              <h2 className="font-display text-xl md:text-2xl font-black mb-8 leading-snug">
+                {q.question_text}
               </h2>
-              <p style={{ color: 'var(--muted)', fontSize: 16, marginBottom: 8 }}>
-                You answered {score} out of {quiz.questions.length} correctly.
-              </p>
-              <p style={{ color: 'var(--muted)', fontSize: 13, marginBottom: 32 }}>
-                ⏱ Time: {fmtTime(timeTaken)}
-              </p>
 
-              {/* Share */}
-              <div style={{
-                background: 'var(--surface)', border: '1px solid var(--border)',
-                borderRadius: 20, padding: 24, marginBottom: 32,
-              }}>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 700, marginBottom: 6 }}>Share your score 🏆</div>
-                <div style={{ fontSize: 14, color: 'var(--muted)', marginBottom: 20 }}>
-                  {playerName} got {score}/{quiz.questions.length} on &quot;{quiz.title}&quot;
-                </div>
-                <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
-                  {[
-                    { label: '📋 Copy',     action: () => navigator.clipboard.writeText(`I got ${score}/${quiz.questions.length} on "${quiz.title}"! Try it: ${quizUrl}`), bg: 'var(--surface2)' },
-                    { label: '🐦 X',        action: () => window.open(`https://twitter.com/intent/tweet?text=I got ${score}/${quiz.questions.length} on "${quiz.title}"! Can you beat me? ${quizUrl}`), bg: '#1DA1F2' },
-                    { label: '💬 WhatsApp', action: () => window.open(`https://wa.me/?text=I got ${score}/${quiz.questions.length} on "${quiz.title}"! Try it: ${quizUrl}`), bg: '#25D366' },
-                  ].map(b => (
-                    <button key={b.label} onClick={b.action} style={{
-                      padding: '10px 18px', borderRadius: 100, border: 'none',
-                      background: b.bg, color: 'white', cursor: 'pointer',
-                      fontFamily: 'var(--font-body)', fontSize: 13, fontWeight: 600,
-                    }}>{b.label}</button>
-                  ))}
-                </div>
-              </div>
-            </div>
+              {/* Options Grid */}
+              <div className="flex flex-col gap-3.5">
+                {q.options.map((opt, idx) => {
+                  const isSelected = selected === idx
+                  const isCorrect = idx === q.correct_index
+                  const isIncorrect = isSelected && !isCorrect
+                  const showAnswers = selected !== null
 
-            {/* ── LEADERBOARD ────────────────────────────────── */}
-            <div style={{
-              background: 'var(--surface)', border: '1px solid var(--border)',
-              borderRadius: 24, padding: 28, marginBottom: 32,
-            }}>
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: 10, marginBottom: 24,
-              }}>
-                <div style={{ fontSize: 28 }}>🏆</div>
-                <div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 800 }}>Leaderboard</div>
-                  <div style={{ fontSize: 13, color: 'var(--muted)' }}>Top players on &quot;{quiz.title}&quot;</div>
-                </div>
-              </div>
+                  let optionClass = "group w-full flex items-center justify-between p-4.5 rounded-2xl border text-left font-semibold transition-all duration-300 relative overflow-hidden "
+                  if (!showAnswers) {
+                    optionClass += "bg-surface border-white/5 hover:border-primary/40 hover:bg-surface-hover hover:translate-x-1.5 text-text-primary cursor-pointer"
+                  } else {
+                    if (isCorrect) {
+                      optionClass += "bg-emerald-950/15 border-emerald-500/40 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.1)]"
+                    } else if (isIncorrect) {
+                      optionClass += "bg-rose-950/15 border-rose-500/40 text-rose-300 shadow-[0_0_15px_rgba(239,68,68,0.1)]"
+                    } else {
+                      optionClass += "bg-surface/30 border-white/3 text-text-muted opacity-40 cursor-default"
+                    }
+                  }
 
-              {lbLoading ? (
-                <div style={{ textAlign: 'center', padding: '20px 0', color: 'var(--muted)', fontSize: 14 }}>Loading scores...</div>
-              ) : leaderboard.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '20px 0', color: 'var(--muted)', fontSize: 14 }}>No scores yet — you&apos;re the first!</div>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  {leaderboard.map((entry, rank) => {
-                    const isYou = entry.player_name === playerName
-                    const entryPct = Math.round((entry.score / entry.total) * 100)
-                    return (
-                      <div key={rank} style={{
-                        display: 'flex', alignItems: 'center', gap: 14,
-                        background: isYou ? 'rgba(255,107,157,0.08)' : 'var(--surface2)',
-                        border: isYou ? '1px solid rgba(255,107,157,0.35)' : '1px solid var(--border)',
-                        borderRadius: 14, padding: '14px 18px',
-                        transition: 'all 0.2s',
-                      }}>
-                        {/* Rank */}
-                        <div style={{
-                          width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          background: rank < 3 ? 'rgba(255,107,157,0.12)' : 'var(--surface)',
-                          fontSize: rank < 3 ? 18 : 13,
-                          fontWeight: 700,
-                          color: rank < 3 ? undefined : 'var(--muted)',
-                        }}>
-                          {rank < 3 ? MEDAL[rank] : `#${rank + 1}`}
-                        </div>
-
-                        {/* Name */}
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{
-                            fontWeight: 600, fontSize: 15, color: isYou ? 'var(--pink)' : 'var(--text)',
-                            display: 'flex', alignItems: 'center', gap: 6,
-                          }}>
-                            {entry.player_name}
-                            {isYou && <span style={{ fontSize: 11, background: 'var(--pink)', color: '#fff', padding: '1px 7px', borderRadius: 100, fontWeight: 700 }}>YOU</span>}
-                          </div>
-                          <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>⏱ {fmtTime(entry.time_taken_sec)}</div>
-                        </div>
-
-                        {/* Score bar */}
-                        <div style={{ width: 80, flexShrink: 0 }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-                            <span style={{ fontSize: 13, fontWeight: 700, color: isYou ? 'var(--pink)' : 'var(--text)' }}>{entry.score}/{entry.total}</span>
-                            <span style={{ fontSize: 12, color: 'var(--muted)' }}>{entryPct}%</span>
-                          </div>
-                          <div style={{ height: 4, background: 'var(--surface)', borderRadius: 100, overflow: 'hidden' }}>
-                            <div style={{
-                              height: '100%', width: `${entryPct}%`, borderRadius: 100,
-                              background: isYou
-                                ? 'linear-gradient(90deg,var(--pink),var(--purple))'
-                                : rank === 0
-                                  ? 'linear-gradient(90deg,#FFD700,#FFA500)'
-                                  : 'rgba(199,125,255,0.5)',
-                            }} />
-                          </div>
-                        </div>
+                  return (
+                    <button
+                      key={idx}
+                      onClick={() => handleSelect(idx)}
+                      disabled={showAnswers}
+                      className={optionClass}
+                    >
+                      <div className="flex items-center gap-3.5">
+                        <span className={`w-8 h-8 rounded-xl flex items-center justify-center font-display text-[11px] font-black transition-all ${
+                          showAnswers && isCorrect 
+                            ? 'bg-emerald-500 text-white' 
+                            : showAnswers && isIncorrect 
+                              ? 'bg-rose-500 text-white' 
+                              : 'bg-zinc-950 text-text-secondary border border-white/5'
+                        }`}>
+                          {['A', 'B', 'C', 'D'][idx]}
+                        </span>
+                        <span className="text-sm md:text-base pr-4 leading-normal">{opt}</span>
                       </div>
-                    )
-                  })}
-                </div>
-              )}
-            </div>
 
-            <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Link href="/create" style={{
-                padding: '12px 28px', borderRadius: 100,
-                background: 'linear-gradient(135deg,var(--pink),var(--purple))',
-                color: 'white', textDecoration: 'none',
-                fontFamily: 'var(--font-body)', fontWeight: 600, fontSize: 14,
-              }}>Create Your Own Quiz →</Link>
-              <Link href="/" style={{
-                padding: '12px 28px', borderRadius: 100,
-                background: 'var(--surface)', color: 'var(--muted)',
-                border: '1px solid var(--border)', textDecoration: 'none',
-                fontFamily: 'var(--font-body)', fontWeight: 500, fontSize: 14,
-              }}>Browse More</Link>
-            </div>
-          </div>
-        )}
-      </div>
+                      {showAnswers && isCorrect && (
+                        <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+                      )}
+                      {showAnswers && isIncorrect && (
+                        <XCircle className="w-5 h-5 text-rose-400 shrink-0" />
+                      )}
+                      {!showAnswers && (
+                        <span className="text-[10px] text-text-muted font-bold font-mono px-1.5 py-0.5 rounded bg-zinc-900 border border-white/5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
+                          {['A', 'B', 'C', 'D'][idx]}
+                        </span>
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
+            </motion.div>
+          )}
+
+          {/* ── RESULT & LEADERBOARD PHASE ───────────── */}
+          {phase === 'done' && (
+            <motion.div
+              key="done-quiz"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              className="w-full space-y-6"
+            >
+              {/* Score card summary */}
+              <div className="glass-card p-6 md:p-8 text-center border border-white/5 shadow-2xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-4 opacity-[0.02] pointer-events-none">
+                  <Star className="w-40 h-40 text-primary animate-pulse" />
+                </div>
+
+                {/* Animated Score Ring */}
+                <div className="relative w-40 h-40 flex items-center justify-center mx-auto mb-6">
+                  <svg className="w-full h-full transform -rotate-90" viewBox="0 0 160 160">
+                    <circle
+                      cx="80"
+                      cy="80"
+                      r={radius}
+                      className="stroke-zinc-950 fill-none"
+                      strokeWidth="8"
+                    />
+                    <motion.circle
+                      cx="80"
+                      cy="80"
+                      r={radius}
+                      className="stroke-primary fill-none"
+                      strokeWidth="8"
+                      strokeLinecap="round"
+                      initial={{ strokeDashoffset: circumference }}
+                      animate={{ strokeDashoffset }}
+                      transition={{ duration: 1.2, ease: "easeOut" }}
+                      style={{ strokeDasharray: circumference }}
+                    />
+                  </svg>
+                  <div className="absolute flex flex-col items-center justify-center">
+                    <span className="text-3xl font-black font-display text-gradient leading-none">{score} / {quiz.questions.length}</span>
+                    <span className="text-[10px] text-text-muted mt-1 font-bold tracking-widest uppercase">{pct}% accuracy</span>
+                  </div>
+                </div>
+
+                {ads?.result_page_enabled && <AdSlot code={ads.result_page_code} />}
+
+                <h2 className="font-display text-2xl font-black mb-2 text-text-primary">
+                  {resultMsg}
+                </h2>
+                <p className="text-text-secondary text-xs font-semibold mb-4 leading-relaxed">
+                  Congratulations {playerName}! You completed the trivia challenges in <span className="text-text-primary">{fmtTime(timeTaken)}</span>.
+                </p>
+
+                {/* Share Deck */}
+                <div className="border-t border-white/5 pt-5 mt-5">
+                  <div className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-3.5">
+                    Share your rank with friends
+                  </div>
+                  <div className="flex gap-2 justify-center flex-wrap">
+                    <button 
+                      onClick={handleCopy} 
+                      className={`px-4.5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                        copied 
+                          ? 'bg-emerald-950/20 border border-emerald-500/25 text-emerald-400' 
+                          : 'bg-surface border border-white/5 hover:border-white/10 hover:bg-surface-hover text-text-primary shadow-sm'
+                      }`}
+                    >
+                      <Copy className="w-3.5 h-3.5 text-primary-light" />
+                      <span>{copied ? 'Copied score!' : 'Copy Score'}</span>
+                    </button>
+                    <button 
+                      onClick={() => window.open(`https://twitter.com/intent/tweet?text=I scored ${score}/${quiz.questions.length} on "${quiz.title}"! Try it and beat my rank: ${quizUrl}`)} 
+                      className="px-4.5 py-2.5 bg-[#1DA1F2]/10 border border-[#1DA1F2]/25 text-[#1DA1F2] rounded-xl text-xs font-bold hover:bg-[#1DA1F2]/15 transition-all flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <Share2 className="w-3.5 h-3.5" />
+                      <span>Post on X</span>
+                    </button>
+                    <button 
+                      onClick={() => window.open(`https://wa.me/?text=I scored ${score}/${quiz.questions.length} on "${quiz.title}"! Try it and beat my rank: ${quizUrl}`)} 
+                      className="px-4.5 py-2.5 bg-[#25D366]/10 border border-[#25D366]/25 text-[#25D366] rounded-xl text-xs font-bold hover:bg-[#25D366]/15 transition-all flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <span>WhatsApp</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* ── Leaderboard panel ────────────────────── */}
+              <div className="glass-card p-6 border border-white/5 shadow-xl">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-9 h-9 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center shadow-inner">
+                    <Trophy className="w-4.5 h-4.5 animate-pulse" />
+                  </div>
+                  <div>
+                    <h3 className="font-display text-base font-bold text-text-primary">Leaderboard Rankings</h3>
+                    <p className="text-[10px] text-text-secondary font-medium">Global scores for {quiz.title}</p>
+                  </div>
+                </div>
+
+                {lbLoading ? (
+                  <div className="text-center py-6 text-text-muted text-xs font-bold uppercase tracking-wider">
+                    Loading rankings...
+                  </div>
+                ) : leaderboard.length === 0 ? (
+                  <div className="text-center py-6 text-text-muted text-xs font-semibold">
+                    No records on this leaderboard yet. Be the first to claim #1!
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-2.5">
+                    {leaderboard.map((entry, rank) => {
+                      const isYou = entry.player_name.trim().toLowerCase() === playerName.trim().toLowerCase()
+                      const entryPct = Math.round((entry.score / entry.total) * 100)
+                      return (
+                        <div 
+                          key={rank} 
+                          className={`flex items-center justify-between p-3.5 rounded-xl border transition-all ${
+                            isYou 
+                              ? 'bg-primary/10 border-primary/25 shadow-inner' 
+                              : 'bg-surface/50 border-white/5'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3.5 min-w-0">
+                            {/* Rank Indicator */}
+                            <div className={`w-7 h-7 rounded-lg flex items-center justify-center font-display text-[10px] font-black ${
+                              rank < 3 ? 'bg-zinc-950' : 'text-text-muted font-mono'
+                            }`}>
+                              {rank < 3 ? MEDALS[rank] : `#${rank + 1}`}
+                            </div>
+
+                            <div className="min-w-0">
+                              <div className={`font-bold text-sm truncate flex items-center gap-1.5 ${
+                                isYou ? 'text-primary-light' : 'text-text-primary'
+                              }`}>
+                                {entry.player_name}
+                                {isYou && (
+                                  <span className="text-[9px] font-bold bg-primary px-1.5 py-0.5 rounded-md text-white select-none">
+                                    YOU
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-[10px] text-text-muted flex items-center gap-1.5 mt-0.5 font-medium">
+                                <Clock className="w-3 h-3 text-text-muted" />
+                                <span>{fmtTime(entry.time_taken_sec)}</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="text-right shrink-0 flex flex-col items-end pl-2">
+                            <span className="text-xs font-black text-text-primary">
+                              {entry.score} / {entry.total}
+                            </span>
+                            <div className="w-16 h-1 bg-zinc-900 rounded-full mt-1.5 overflow-hidden border border-white/3">
+                              <div 
+                                className="h-full rounded-full" 
+                                style={{
+                                  width: `${entryPct}%`,
+                                  background: isYou
+                                    ? 'linear-gradient(90deg, #7c3aed, #db2777)'
+                                    : rank === 0
+                                      ? 'linear-gradient(90deg, #fbbf24, #f59e0b)'
+                                      : '#71717a'
+                                }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Backing buttons */}
+              <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                <Link 
+                  href="/create" 
+                  className="flex-1 py-3.5 rounded-xl bg-gradient-to-r from-primary to-secondary text-white font-bold text-xs text-center hover:opacity-95 transition-all shadow-md shadow-primary/10 flex items-center justify-center gap-1 cursor-pointer"
+                >
+                  Create Your Own Quiz <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link 
+                  href="/" 
+                  className="flex-1 py-3.5 rounded-xl bg-surface border border-white/5 text-text-secondary hover:text-white hover:bg-surface-hover hover:border-white/10 font-bold text-xs text-center transition-all shadow-sm cursor-pointer"
+                >
+                  Browse Home
+                </Link>
+              </div>
+            </motion.div>
+          )}
+
+        </AnimatePresence>
+      </main>
     </div>
   )
 }

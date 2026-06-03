@@ -3,13 +3,13 @@
 import { useState, useEffect, use } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
-import { ArrowLeft, ArrowRight, Check, User, Sparkles, Heart, Share2, Camera } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, User, Sparkles, Heart, Share2, Camera, ShieldCheck, Clipboard } from 'lucide-react'
 
 function Confetti() {
   const [pieces, setPieces] = useState<{ id: number; left: string; delay: string; size: string; color: string }[]>([])
   
   useEffect(() => {
-    const colors = ['#9d4edd', '#c77dff', '#ff007f', '#00f5d4', '#8B5CF6', '#EC4899', '#34D399', '#F59E0B']
+    const colors = ['#7c3aed', '#a78bfa', '#db2777', '#06b6d4', '#8B5CF6', '#EC4899', '#34D399', '#F59E0B']
     const newPieces = Array.from({ length: 45 }).map((_, i) => ({
       id: i,
       left: `${Math.random() * 100}%`,
@@ -110,6 +110,29 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
     }, 400)
   }
 
+  // Keyboard navigation shortcuts
+  const question = questions[currentQ]
+  useEffect(() => {
+    if (!started || submitted || !question) return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Avoid firing on input focus
+      if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') return
+
+      const key = e.key.toUpperCase()
+      const index = ['A', 'B', 'C', 'D'].indexOf(key) !== -1 
+        ? ['A', 'B', 'C', 'D'].indexOf(key) 
+        : ['1', '2', '3', '4'].indexOf(key)
+
+      if (index !== -1 && question.options && question.options[index]) {
+        handleAnswer(question.id, question.options[index].text, index)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [started, submitted, currentQ, question])
+
   const handleSubmit = async () => {
     setSubmitting(true)
     try {
@@ -144,8 +167,9 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
   // ─── Loading ──────────────────────────────────
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="w-16 h-16 bg-surface border border-white/5 rounded-2xl flex items-center justify-center text-3xl shadow-2xl animate-pulse-glow">
+      <div className="min-h-screen bg-background flex items-center justify-center relative overflow-hidden">
+        <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-70" />
+        <div className="w-12 h-12 bg-surface border border-white/5 rounded-2xl flex items-center justify-center text-2xl shadow-2xl animate-pulse-glow">
           🪞
         </div>
       </div>
@@ -155,11 +179,12 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
   // ─── Error / Not Found ────────────────────────
   if (error || !profile) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4 text-center px-6">
-        <div className="text-5xl mb-2">😕</div>
-        <h1 className="font-display text-2xl font-bold text-text-primary">Profile not found</h1>
-        <p className="text-text-secondary text-sm">{error || 'This mirror doesn\'t exist.'}</p>
-        <Link href="/" className="mt-4 px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white font-bold rounded-full hover:opacity-90 transition-all">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4 text-center px-6 relative overflow-hidden">
+        <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-70" />
+        <div className="text-4xl mb-2">😕</div>
+        <h1 className="font-display text-xl font-bold text-text-primary">Profile not found</h1>
+        <p className="text-text-secondary text-xs font-semibold">{error || 'This mirror doesn\'t exist.'}</p>
+        <Link href="/" className="mt-4 px-5 py-2.5 bg-gradient-to-r from-primary to-secondary text-white font-bold text-xs rounded-xl hover:opacity-90 transition-all cursor-pointer">
           Go Home
         </Link>
       </div>
@@ -182,30 +207,32 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
         <Confetti />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-accent/5 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-70" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-accent/5 rounded-full blur-[100px] pointer-events-none" />
+        
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          initial={{ opacity: 0, scale: 0.96, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.5, type: 'spring', bounce: 0.4 }}
-          className="relative z-10 glass-card p-8 md:p-10 text-center max-w-md w-full border border-white/5"
+          className="relative z-10 glass-card p-6 md:p-8 text-center max-w-md w-full border border-white/5 shadow-2xl"
         >
           <motion.div 
             initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, type: 'spring' }}
-            className="w-16 h-16 bg-pink-950/40 border border-pink-500/30 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-pink-500/10 animate-pulse-glow"
+            className="w-12 h-12 bg-pink-950/20 border border-pink-500/20 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-sm animate-pulse-glow"
           >
-            <Heart className="w-8 h-8 text-secondary" />
+            <Heart className="w-6 h-6 text-secondary" />
           </motion.div>
           
           <motion.h1 
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-            className="font-display text-2xl md:text-3xl font-black mb-3 text-text-primary"
+            initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+            className="font-display text-xl md:text-2xl font-black mb-2 text-text-primary"
           >
             You&apos;re amazing!
           </motion.h1>
           
           <motion.p 
-            initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-            className="text-text-secondary text-sm md:text-base leading-relaxed mb-6 font-medium"
+            initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+            className="text-text-secondary text-xs md:text-sm leading-relaxed mb-6 font-medium"
           >
             Your responses about <strong className="text-text-primary">{profile.display_name}</strong> have been saved.
             They will help generate their Social Mirror report.
@@ -214,19 +241,19 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
           {/* Teaser Preview Block */}
           {teaser && (
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="p-5 rounded-2xl bg-surface/50 border border-white/5 mb-8 text-left shadow-inner"
+              className="p-4 rounded-xl bg-surface/65 border border-white/5 mb-6 text-left shadow-inner"
             >
-              <div className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-accent animate-pulse" /> Teaser Preview
+              <div className="text-[9px] font-bold text-text-secondary uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <Sparkles className="w-3 h-3 text-accent animate-pulse" /> Teaser Preview
               </div>
-              <p className="text-xs md:text-sm text-text-secondary leading-relaxed font-medium">
+              <p className="text-xs text-text-secondary leading-relaxed font-semibold">
                 {teaser.total_responses >= 3 ? (
                   <>
                     Based on {teaser.total_responses} responses, {teaser.display_name} might be a{" "}
-                    <span className="blur-teaser inline-block px-2 py-0.5 rounded bg-white/10 text-white font-extrabold select-none">
+                    <span className="blur-teaser inline-block px-1.5 py-0.5 rounded bg-white/10 text-white font-extrabold select-none">
                       {teaser.archetype}
                     </span>
                     . Your answers just shifted their scores!
@@ -240,33 +267,33 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
             </motion.div>
           )}
 
-          <div className="space-y-4 relative z-10">
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
-              <Link href="/create" className="flex items-center justify-center gap-2 w-full px-6 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-2xl font-bold transition-all shadow-lg shadow-primary/20 hover:opacity-95 hover:scale-[1.02] active:scale-[0.98]">
-                Create Your Own Mirror <Sparkles className="w-5 h-5" />
+          <div className="space-y-3 relative z-10">
+            <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
+              <Link href="/create" className="flex items-center justify-center gap-1.5 w-full px-5 py-3.5 bg-gradient-to-r from-primary to-secondary text-white rounded-xl text-xs md:text-sm font-bold transition-all shadow-md hover:opacity-95 hover:scale-[1.01] active:scale-[0.99] cursor-pointer">
+                Create Your Own Mirror <Sparkles className="w-4 h-4" />
               </Link>
             </motion.div>
 
             <motion.button
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7 }}
               onClick={handleShareStory}
-              className="flex items-center justify-center gap-2 w-full px-6 py-4 bg-surface border border-white/5 text-text-primary rounded-2xl font-bold transition-all hover:bg-surface-hover hover:scale-[1.02] active:scale-[0.98]"
+              className="flex items-center justify-center gap-1.5 w-full px-5 py-3.5 bg-surface border border-white/5 text-text-primary rounded-xl text-xs md:text-sm font-bold transition-all hover:bg-surface-hover hover:border-white/10 hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
             >
-              <Camera className="w-5 h-5 text-secondary" /> Share to Instagram Story
+              <Camera className="w-4 h-4 text-secondary" /> Share to Instagram Story
             </motion.button>
           </div>
 
           <AnimatePresence>
             {copySuccess && (
               <motion.div
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                className="absolute bottom-4 left-4 right-4 bg-zinc-950/95 border border-white/10 text-white text-xs font-semibold py-3 px-4 rounded-xl shadow-xl z-20 flex items-center justify-center gap-2"
+                exit={{ opacity: 0, y: 8 }}
+                className="absolute bottom-4 left-4 right-4 bg-zinc-950/95 border border-white/10 text-white text-[11px] font-bold py-2.5 px-3 rounded-xl shadow-xl z-20 flex items-center justify-center gap-1.5"
               >
-                <Share2 className="w-4 h-4 text-accent" /> Link & sticker text copied to clipboard!
+                <Share2 className="w-3.5 h-3.5 text-accent" /> Link & sticker text copied to clipboard!
               </motion.div>
             )}
           </AnimatePresence>
@@ -286,43 +313,44 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
 
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
-        <div className="absolute inset-0 z-0 pointer-events-none bg-pastel-gradient opacity-60" />
+        <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-70" />
+        <div className="absolute inset-0 z-0 pointer-events-none bg-pastel-gradient opacity-50" />
         
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           className="relative z-10 w-full max-w-md text-center"
         >
           {/* Avatar */}
-          <div className="w-24 h-24 rounded-3xl mx-auto mb-6 bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-4xl font-display font-black text-white shadow-xl shadow-primary/20">
+          <div className="w-20 h-20 rounded-2xl mx-auto mb-5 bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-3xl font-display font-black text-white shadow-lg shadow-primary/15">
             {initials}
           </div>
 
-          <h1 className="font-display text-3xl font-black mb-3 text-text-primary">
+          <h1 className="font-display text-2xl md:text-3xl font-black mb-2 text-text-primary">
             Answer about <span className="text-gradient">{profile.display_name}</span>
           </h1>
 
           {profile.bio && (
-            <p className="text-text-secondary text-base italic mb-3 font-medium">
+            <p className="text-text-secondary text-sm italic mb-3 font-medium">
               &quot;{profile.bio}&quot;
             </p>
           )}
 
-          <p className="text-text-muted text-sm mb-10 font-bold">
+          <p className="text-text-muted text-xs mb-8 font-bold">
             {questions.length} perception questions &middot; takes 2 mins
           </p>
 
           {/* Identity toggle */}
-          <div className="glass-card p-6 mb-8 text-left border border-white/5">
-            <div className="text-xs font-bold text-text-secondary uppercase tracking-wider mb-4">
+          <div className="glass-card p-5 mb-6.5 text-left border border-white/5 shadow-md">
+            <div className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-3">
               How do you want to respond?
             </div>
-            <div className="flex gap-3 mb-2">
+            <div className="flex gap-3 mb-1">
               <button
                 onClick={() => setIsAnonymous(true)}
-                className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all border flex items-center justify-center gap-2 ${
+                className={`flex-1 py-3 px-3.5 rounded-xl text-xs md:text-sm font-bold transition-all border flex items-center justify-center gap-1.5 cursor-pointer ${
                   isAnonymous 
-                    ? 'bg-primary/20 border-primary/40 text-primary-light shadow-md' 
+                    ? 'bg-primary/20 border-primary text-primary-light shadow-sm' 
                     : 'bg-surface border-white/5 text-text-secondary hover:bg-surface-hover'
                 }`}
               >
@@ -330,19 +358,19 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
               </button>
               <button
                 onClick={() => setIsAnonymous(false)}
-                className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all border flex items-center justify-center gap-2 ${
+                className={`flex-1 py-3 px-3.5 rounded-xl text-xs md:text-sm font-bold transition-all border flex items-center justify-center gap-1.5 cursor-pointer ${
                   !isAnonymous 
-                    ? 'bg-primary/20 border-primary/40 text-primary-light shadow-md' 
+                    ? 'bg-primary/20 border-primary text-primary-light shadow-sm' 
                     : 'bg-surface border-white/5 text-text-secondary hover:bg-surface-hover'
                 }`}
               >
-                <User className="w-4 h-4" /> With Name
+                <User className="w-3.5 h-3.5" /> With Name
               </button>
             </div>
             {!isAnonymous && (
-              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-4 overflow-hidden">
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mt-3 overflow-hidden">
                 <input
-                  className="w-full bg-surface border border-white/5 rounded-xl px-4 py-3 text-sm text-text-primary font-bold focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none"
+                  className="w-full bg-surface border border-white/5 rounded-xl px-3.5 py-3 text-xs md:text-sm text-text-primary font-bold focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all outline-none"
                   type="text"
                   placeholder="Enter your name"
                   value={respondentName}
@@ -355,13 +383,13 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
           <button
             onClick={() => setStarted(true)}
             disabled={!isAnonymous && !respondentName.trim()}
-            className={`flex items-center justify-center gap-2 w-full py-4 rounded-2xl font-black text-white transition-all shadow-xl shadow-primary/20 ${
+            className={`flex items-center justify-center gap-1.5 w-full py-3.5 rounded-xl text-xs md:text-sm font-black text-white transition-all shadow-md cursor-pointer ${
               (!isAnonymous && !respondentName.trim()) 
                 ? 'bg-zinc-800 text-zinc-500 shadow-none cursor-not-allowed' 
                 : 'bg-gradient-to-r from-primary to-secondary hover:opacity-95'
             }`}
           >
-            Start Answering <ArrowRight className="w-5 h-5" />
+            Start Answering <ArrowRight className="w-4 h-4" />
           </button>
         </motion.div>
       </div>
@@ -369,27 +397,28 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
   }
 
   // ─── Question Flow ────────────────────────────
-  const question = questions[currentQ]
   if (!question) return null
 
   return (
     <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
-      <div className="absolute inset-0 z-0 pointer-events-none bg-pastel-gradient opacity-40" />
+      {/* Background */}
+      <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-70" />
+      <div className="absolute inset-0 z-0 pointer-events-none bg-pastel-gradient opacity-30" />
 
       {/* Progress Bar */}
       <div className="sticky top-0 z-50">
-        <div className="w-full h-1.5 bg-zinc-950">
+        <div className="w-full h-1 bg-zinc-950">
           <motion.div
             animate={{ width: `${progress}%` }}
             transition={{ type: "spring", stiffness: 100, damping: 20 }}
-            className="h-full bg-gradient-to-r from-primary to-secondary shadow-[0_0_12px_rgba(157,78,221,0.6)]"
+            className="h-full bg-gradient-to-r from-primary to-secondary shadow-[0_0_8px_rgba(124,58,237,0.5)]"
           />
         </div>
-        <div className="glass-panel flex items-center justify-between px-6 py-4 border-b-0 rounded-none border-white/5">
-          <span className="text-xs font-bold text-text-secondary">
+        <div className="glass-panel flex items-center justify-between px-6 py-3 border-b-0 rounded-none border-white/5">
+          <span className="text-[10px] md:text-xs font-bold text-text-secondary">
             {Object.keys(answers).length}/{questions.length} answered
           </span>
-          <span className="text-xs font-black text-primary-light">
+          <span className="text-[10px] md:text-xs font-black text-primary-light">
             for {profile.display_name}
           </span>
         </div>
@@ -400,19 +429,19 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
         <AnimatePresence mode="wait">
           <motion.div
             key={question.id}
-            initial={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0, x: 15 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.3 }}
+            exit={{ opacity: 0, x: -15 }}
+            transition={{ duration: 0.25 }}
             className="w-full max-w-xl"
           >
             {/* Question number */}
-            <div className="inline-flex px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs font-bold text-primary-light mb-6">
+            <div className="inline-flex px-3.5 py-1 rounded-full bg-primary/10 border border-primary/25 text-[10px] font-bold text-primary-light mb-5">
               Question {currentQ + 1}
             </div>
 
             {/* Question text */}
-            <h2 className="font-display text-2xl md:text-3xl font-black leading-snug mb-8 text-text-primary">
+            <h2 className="font-display text-xl md:text-2xl lg:text-3xl font-black leading-snug mb-6 text-text-primary">
               {question.question_text}
             </h2>
 
@@ -420,26 +449,34 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
             <div className="flex flex-col gap-3">
               {question.options?.map((opt, i) => {
                 const isSelected = answers[question.id]?.index === i
+                const letter = String.fromCharCode(65 + i)
                 return (
                   <motion.button
                     key={i}
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
+                    whileHover={{ scale: 1.005 }}
+                    whileTap={{ scale: 0.995 }}
                     onClick={() => handleAnswer(question.id, opt.text, i)}
                     className={`
-                      w-full flex items-center gap-4 p-4 rounded-2xl border text-left transition-all duration-300
+                      w-full flex items-center gap-3.5 p-4 rounded-xl border text-left transition-all duration-300 cursor-pointer
                       ${isSelected 
-                        ? 'bg-primary/20 border-primary shadow-[0_0_20px_rgba(157,78,221,0.25)] z-10 relative transform scale-[1.01]' 
-                        : 'bg-surface border-white/5 hover:border-primary/30 hover:bg-surface-hover'}
+                        ? 'bg-primary/15 border-primary shadow-[0_0_15px_rgba(124,58,237,0.15)] z-10 relative' 
+                        : 'bg-surface border-white/5 hover:border-primary/25 hover:bg-surface-hover'}
                     `}
                   >
                     <div className={`
-                      w-10 h-10 rounded-xl flex-shrink-0 flex items-center justify-center text-sm font-black transition-colors
-                      ${isSelected ? 'bg-primary text-white shadow-md shadow-primary/25' : 'bg-surface-hover border border-white/5 text-text-secondary'}
+                      w-8.5 h-8.5 rounded-lg flex-shrink-0 flex items-center justify-center text-xs font-black transition-colors relative
+                      ${isSelected ? 'bg-primary text-white shadow-sm' : 'bg-surface-hover border border-white/5 text-text-secondary'}
                     `}>
-                      {isSelected ? <Check className="w-5 h-5" /> : String.fromCharCode(65 + i)}
+                      {isSelected ? (
+                        <Check className="w-4 h-4 animate-scaleUp" />
+                      ) : (
+                        <span>{letter}</span>
+                      )}
+                      <span className="absolute bottom-[2px] right-[2px] text-[7px] font-medium text-text-muted/60 hidden sm:inline">
+                        {i + 1}
+                      </span>
                     </div>
-                    <span className={`text-base md:text-lg font-semibold ${isSelected ? 'text-primary-light font-bold' : 'text-text-primary'}`}>
+                    <span className={`text-sm md:text-base font-semibold ${isSelected ? 'text-primary-light font-bold' : 'text-text-primary'}`}>
                       {opt.text}
                     </span>
                   </motion.button>
@@ -448,44 +485,49 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
             </div>
 
             {/* Navigation */}
-            <div className="flex gap-4 mt-10">
+            <div className="flex gap-4 mt-8">
               {currentQ > 0 && (
                 <button
                   onClick={() => setCurrentQ(q => q - 1)}
-                  className="flex items-center justify-center gap-2 flex-1 max-w-[140px] bg-surface border border-white/5 text-text-secondary hover:bg-surface-hover rounded-2xl py-4 font-bold transition-all shadow-sm"
+                  className="flex items-center justify-center gap-1.5 flex-1 max-w-[120px] bg-surface border border-white/5 text-text-secondary hover:bg-surface-hover hover:border-white/10 rounded-xl py-3.5 text-xs md:text-sm font-bold transition-all shadow-sm cursor-pointer"
                 >
-                  <ArrowLeft className="w-5 h-5" /> Prev
+                  <ArrowLeft className="w-4 h-4" /> Prev
                 </button>
               )}
               {currentQ < questions.length - 1 ? (
                 <button
                   onClick={() => answers[question.id] && setCurrentQ(q => q + 1)}
                   disabled={!answers[question.id]}
-                  className={`flex items-center justify-center gap-2 flex-1 rounded-2xl py-4 font-bold transition-all shadow-lg ${
+                  className={`flex items-center justify-center gap-1.5 flex-1 rounded-xl py-3.5 text-xs md:text-sm font-bold transition-all shadow-md cursor-pointer ${
                     answers[question.id] 
                       ? 'bg-gradient-to-r from-primary to-secondary text-white hover:opacity-95' 
                       : 'bg-zinc-800 text-zinc-500 cursor-not-allowed shadow-none'
                   }`}
                 >
-                  Next <ArrowRight className="w-5 h-5" />
+                  Next <ArrowRight className="w-4 h-4" />
                 </button>
               ) : allAnswered ? (
                 <button
                   onClick={handleSubmit}
                   disabled={submitting}
-                  className={`flex items-center justify-center gap-2 flex-1 rounded-2xl py-4 font-bold transition-all shadow-xl shadow-primary/20 ${
+                  className={`flex items-center justify-center gap-1.5 flex-1 rounded-xl py-3.5 text-xs md:text-sm font-bold transition-all shadow-lg cursor-pointer ${
                     submitting 
-                      ? 'opacity-50 cursor-not-allowed bg-gradient-to-r from-primary to-secondary text-white' 
+                      ? 'opacity-40 cursor-not-allowed bg-gradient-to-r from-primary to-secondary text-white' 
                       : 'bg-gradient-to-r from-primary to-secondary hover:opacity-95 text-white'
                   }`}
                 >
-                  {submitting ? 'Submitting...' : 'Submit Responses'} <Sparkles className="w-5 h-5" />
+                  {submitting ? 'Submitting...' : 'Submit Responses'} <Sparkles className="w-4 h-4" />
                 </button>
               ) : (
-                <button disabled className="flex-1 bg-zinc-800 text-zinc-500 rounded-2xl py-4 font-bold cursor-not-allowed">
+                <button disabled className="flex-1 bg-zinc-800 text-zinc-500 rounded-xl py-3.5 text-xs md:text-sm font-bold cursor-not-allowed">
                   Answer all questions
                 </button>
               )}
+            </div>
+            
+            {/* Keyboard tips */}
+            <div className="hidden sm:block text-center mt-6 text-[10px] text-text-muted font-medium">
+              💡 Tip: Use keyboard keys <span className="px-1.5 py-0.5 rounded bg-zinc-800 font-bold border border-white/5">A</span> - <span className="px-1.5 py-0.5 rounded bg-zinc-800 font-bold border border-white/5">D</span> or <span className="px-1.5 py-0.5 rounded bg-zinc-800 font-bold border border-white/5">1</span> - <span className="px-1.5 py-0.5 rounded bg-zinc-800 font-bold border border-white/5">4</span> to answer quickly.
             </div>
           </motion.div>
         </AnimatePresence>
@@ -493,3 +535,4 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
     </div>
   )
 }
+
