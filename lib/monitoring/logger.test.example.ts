@@ -91,13 +91,13 @@ function runLoggerDemo() {
   console.log('6. Production format (JSON):')
   console.log('Setting NODE_ENV=production...')
   const originalEnv = process.env.NODE_ENV
-  process.env.NODE_ENV = 'production'
+  ;(process.env as any).NODE_ENV = 'production'
   const prodLogger = new Logger()
   prodLogger.info('Production log example', { environment: 'production' })
   prodLogger.error('Production error example', new Error('Test error'), {
     critical: true,
   })
-  process.env.NODE_ENV = originalEnv
+  ;(process.env as any).NODE_ENV = originalEnv
   console.log('')
 
   console.log('=== Logger Demonstration Complete ===')

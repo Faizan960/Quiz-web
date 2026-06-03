@@ -335,6 +335,81 @@ export async function GET(
                 }
               }, `${score}%`)
             ),
+            React.createElement('div', {
+              style: {
+                width: '100%', height: '10px',
+                background: '#F4F4F5', borderRadius: '5px',
+                overflow: 'hidden', display: 'flex',
+              }
+            },
+              React.createElement('div', {
+                style: {
+                  width: `${score}%`, height: '100%',
+                  background: DIMENSION_COLORS[dim] ?? '#818CF8',
+                  borderRadius: '5px',
+                }
+              })
+            )
+          )
+        )),
+        // Footer brand
+        React.createElement('div', {
+          style: {
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: '8px',
+            marginTop: '32px',
+            paddingTop: '20px',
+            borderTop: '1px solid rgba(0,0,0,0.06)',
+          }
+        },
+          React.createElement('span', {
+            style: {
+              fontSize: '12px', color: '#A1A1AA',
+              letterSpacing: '0.15em', fontWeight: 700,
+            }
+          }, '🪞 SOCIAL MIRROR')
+        )
+      ),
+      {
+        width: cardWidth,
+        height: cardHeight,
+        fonts: [
+          {
+            name: 'Inter',
+            data: fontBold,
+            weight: 700,
+            style: 'normal' as const,
+          },
+          {
+            name: 'Inter',
+            data: fontRegular,
+            weight: 400,
+            style: 'normal' as const,
+          },
+        ],
+      }
+    )
 
+    // 7. Convert SVG to PNG
+    const resvg = new Resvg(svg, {
+      fitTo: { mode: 'width' as const, value: cardWidth * 2 },
+    })
+    const pngData = resvg.render()
+    const pngBuffer = pngData.asPng()
 
+    // 8. Return PNG image
+    return new Response(new Uint8Array(pngBuffer), {
+      headers: {
+        'Content-Type': 'image/png',
+        'Content-Disposition': `inline; filename="social-mirror-${slug}.png"`,
+        'Cache-Control': 'public, max-age=3600',
+      },
+    })
 
+  } catch (err) {
+    console.error('Card generation error:', err)
+    return new Response('Failed to generate card', { status: 500 })
+  }
+}

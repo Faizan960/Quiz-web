@@ -73,7 +73,7 @@ function RadarChart({ scores }: { scores: Record<string, number> }) {
           const lx = cx + (r + 18) * Math.cos(p.angle)
           const ly = cy + (r + 12) * Math.sin(p.angle)
 
-          let textAnchor = "middle"
+          let textAnchor: "middle" | "start" | "end" = "middle"
           if (Math.cos(p.angle) > 0.1) textAnchor = "start"
           else if (Math.cos(p.angle) < -0.1) textAnchor = "end"
 
@@ -280,7 +280,7 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
             )}
 
             <button
-              onClick={handleUnlock}
+              onClick={() => handleUnlock(false)}
               disabled={loading || !pin.trim()}
               className={`w-full py-4 rounded-2xl font-bold transition-all ${
                 (loading || !pin.trim())
