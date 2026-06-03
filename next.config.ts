@@ -53,6 +53,7 @@ const nextConfig: NextConfig = {
   compress: true,
   // Remove X-Powered-By: Next.js header — don't leak tech stack
   poweredByHeader: false,
+  serverExternalPackages: ['@resvg/resvg-js'],
 
   // HTTP security headers on all routes
   async headers() {
