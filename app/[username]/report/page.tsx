@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, use, useRef } from 'react'
+import { useState, useEffect, use } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { Lock, Download, Share2, Target, MessageCircle, BarChart3, Flame, Heart, ArrowLeft, CheckCircle2, Sparkles, ArrowRight, Camera } from 'lucide-react'
@@ -59,7 +59,7 @@ function RadarChart({ scores }: { scores: Record<string, number> }) {
               key={index}
               points={gridPoints}
               fill="none"
-              stroke="rgba(161, 140, 209, 0.15)"
+              stroke="rgba(157, 78, 221, 0.18)"
               strokeWidth="1"
               strokeDasharray={lvl < 1 ? "3 3" : "none"}
             />
@@ -79,12 +79,12 @@ function RadarChart({ scores }: { scores: Record<string, number> }) {
 
           return (
             <g key={i}>
-              <line x1={cx} y1={cy} x2={ox} y2={oy} stroke="rgba(161, 140, 209, 0.15)" strokeWidth="1" />
+              <line x1={cx} y1={cy} x2={ox} y2={oy} stroke="rgba(157, 78, 221, 0.18)" strokeWidth="1" />
               <text
                 x={lx}
                 y={ly}
                 textAnchor={textAnchor}
-                className="text-[10px] md:text-xs font-bold fill-zinc-400 capitalize"
+                className="text-[10px] md:text-xs font-bold fill-zinc-400 capitalize font-display"
                 alignmentBaseline="middle"
               >
                 {p.label}
@@ -96,8 +96,8 @@ function RadarChart({ scores }: { scores: Record<string, number> }) {
         {/* Filled Data Polygon */}
         <polygon
           points={pointsStr}
-          fill="rgba(161, 140, 209, 0.25)"
-          stroke="#a18cd1"
+          fill="rgba(157, 78, 221, 0.25)"
+          stroke="#9d4edd"
           strokeWidth="2.5"
           className="transition-all duration-1000 ease-out"
         />
@@ -109,13 +109,13 @@ function RadarChart({ scores }: { scores: Record<string, number> }) {
             cx={p.x}
             cy={p.y}
             r="4"
-            fill="#a18cd1"
-            stroke="#FFFFFF"
+            fill="#9d4edd"
+            stroke="#060210"
             strokeWidth="1.5"
           />
         ))}
 
-        <circle cx={cx} cy={cy} r="3" fill="rgba(161, 140, 209, 0.3)" />
+        <circle cx={cx} cy={cy} r="3" fill="rgba(157, 78, 221, 0.3)" />
       </svg>
     </div>
   )
@@ -231,27 +231,27 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
   // ─── PIN Gate ─────────────────────────────────
   if (!pinSubmitted) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden text-text-primary">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
         
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative z-10 w-full max-w-sm glass-card p-8 text-center"
+          className="relative z-10 w-full max-w-sm glass-card p-8 text-center border border-white/5 shadow-2xl"
         >
-          <div className="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center mx-auto mb-6 text-primary shadow-sm">
+          <div className="w-16 h-16 bg-primary/10 border border-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-6 text-primary-light shadow-sm">
             <Lock className="w-8 h-8" />
           </div>
           
-          <h1 className="font-display text-2xl font-extrabold mb-2 text-text-primary">Unlock Your Report</h1>
-          <p className="text-text-secondary text-sm mb-6">
+          <h1 className="font-display text-2xl font-black mb-2 text-text-primary">Unlock Your Report</h1>
+          <p className="text-text-secondary text-sm mb-6 font-medium">
             Enter the PIN you set when creating your mirror.
           </p>
 
           {/* Response count */}
           <div className={`
-            inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold mb-8 transition-colors
-            ${responseCount >= 3 ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-orange-50 text-orange-600 border border-orange-200'}
+            inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold mb-8 transition-colors border
+            ${responseCount >= 3 ? 'bg-emerald-950/20 text-accent border-emerald-500/20' : 'bg-secondary/10 text-secondary border-secondary/20'}
           `}>
             {responseCount >= 3 ? <CheckCircle2 className="w-4 h-4" /> : <span className="text-base">⏳</span>} 
             {responseCount} response{responseCount !== 1 ? 's' : ''} collected
@@ -260,12 +260,12 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
 
           <div className="space-y-4">
             <input
-              className="w-full bg-zinc-50 border border-zinc-200 rounded-2xl px-5 py-4 text-text-primary font-bold tracking-[0.3em] focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-center text-xl"
+              className="w-full bg-surface border border-white/5 rounded-2xl px-5 py-4 text-text-primary font-black tracking-[0.3em] focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-center text-xl shadow-inner"
               type="password"
               placeholder="••••"
               value={pin}
               onChange={e => setPin(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleUnlock()}
+              onKeyDown={e => e.key === 'Enter' && handleUnlock(false)}
               autoFocus
             />
 
@@ -273,7 +273,7 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
               <motion.div
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="p-3 rounded-xl bg-red-50 border border-red-100 text-red-600 text-sm font-medium"
+                className="p-3 rounded-xl bg-secondary/10 border border-secondary/20 text-secondary text-sm font-semibold"
               >
                 {error}
               </motion.div>
@@ -282,17 +282,17 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
             <button
               onClick={() => handleUnlock(false)}
               disabled={loading || !pin.trim()}
-              className={`w-full py-4 rounded-2xl font-bold transition-all ${
+              className={`w-full py-4 rounded-2xl font-black transition-all shadow-lg ${
                 (loading || !pin.trim())
-                  ? 'bg-zinc-200 text-zinc-400 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-primary to-secondary text-white hover:opacity-90 shadow-lg shadow-primary/30'
+                  ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed shadow-none'
+                  : 'bg-gradient-to-r from-primary to-secondary text-white hover:opacity-95'
               }`}
             >
               {loading ? 'Unlocking...' : 'Unlock Report 🪞'}
             </button>
           </div>
 
-          <Link href={`/${username}`} className="inline-flex items-center gap-1 mt-6 text-sm text-text-muted hover:text-text-primary transition-colors font-medium">
+          <Link href={`/${username}`} className="inline-flex items-center gap-1.5 mt-6 text-sm text-text-secondary hover:text-text-primary transition-colors font-bold">
             <ArrowLeft className="w-4 h-4" /> Back to share link
           </Link>
         </motion.div>
@@ -308,25 +308,25 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
     .slice(0, 6)
 
   return (
-    <div className="min-h-screen bg-background relative flex flex-col">
+    <div className="min-h-screen bg-background relative flex flex-col text-text-primary">
       <div className="absolute inset-0 z-0 pointer-events-none bg-pastel-gradient opacity-60" />
 
       {/* Header */}
-      <nav className="glass-panel sticky top-0 z-50 flex items-center justify-between px-6 py-4 md:px-10">
+      <nav className="glass-panel sticky top-0 z-50 flex items-center justify-between px-6 py-4 md:px-10 border-white/5">
         <Link href="/" className="flex items-center gap-2">
-          <span className="text-xl">🪞</span>
+          <span className="text-xl drop-shadow-[0_0_8px_rgba(157,78,221,0.4)]">🪞</span>
           <span className="text-gradient font-display font-extrabold text-lg">Social Mirror</span>
         </Link>
         <div className="flex items-center gap-3">
           <button
             onClick={() => handleUnlock(true)}
             disabled={regenerating}
-            className="px-3 py-1.5 rounded-full bg-indigo-50 border border-indigo-100 text-xs font-bold text-indigo-600 flex items-center gap-1.5 shadow-sm hover:bg-indigo-100 transition-colors"
+            className="px-4 py-2 rounded-full bg-primary/20 border border-primary/30 text-xs font-bold text-primary-light flex items-center gap-1.5 shadow-sm hover:bg-primary/30 transition-colors"
           >
             <Sparkles className={`w-3.5 h-3.5 ${regenerating ? 'animate-spin' : ''}`} />
             {regenerating ? 'Syncing...' : 'Regenerate'}
           </button>
-          <div className="px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-100 text-xs font-bold text-emerald-600 flex items-center gap-1.5 shadow-sm">
+          <div className="px-4 py-2 rounded-full bg-accent/20 border border-accent/30 text-xs font-bold text-accent flex items-center gap-1.5 shadow-sm">
             <BarChart3 className="w-3.5 h-3.5" /> {report.response_count} responses
           </div>
         </div>
@@ -340,18 +340,18 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
             animate={{ opacity: 1, scale: 1, y: 0 }}
             className="text-center mb-16"
           >
-            <div className="text-6xl md:text-8xl mb-6 drop-shadow-xl">{report.archetype_emoji}</div>
-            <div className="font-display text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-4">
+            <div className="text-6xl md:text-8xl mb-6 drop-shadow-[0_0_20px_rgba(157,78,221,0.35)]">{report.archetype_emoji}</div>
+            <div className="font-display text-4xl md:text-6xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-4">
               {report.archetype}
             </div>
-            <p className="text-text-secondary text-lg leading-relaxed max-w-lg mx-auto">
+            <p className="text-text-secondary text-base md:text-lg leading-relaxed max-w-lg mx-auto font-medium">
               {report.archetype_description}
             </p>
           </motion.div>
         )}
 
         {/* Tab Switcher */}
-        <div className="flex bg-white p-1.5 rounded-2xl border border-zinc-200 shadow-sm mb-8 relative">
+        <div className="flex bg-surface p-1.5 rounded-2xl border border-white/5 shadow-inner mb-8 relative">
           {[
             { id: 'report' as TabType, label: 'Report', icon: <BarChart3 className="w-4 h-4" /> },
             { id: 'roast' as TabType, label: 'Roast', icon: <Flame className="w-4 h-4" /> },
@@ -363,13 +363,13 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
               className={`flex-1 relative flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold transition-colors duration-300 ${
                 tab === t.id 
                   ? 'text-white' 
-                  : 'text-text-secondary hover:bg-zinc-50'
+                  : 'text-text-secondary hover:bg-surface-hover'
               }`}
             >
               {tab === t.id && (
                 <motion.div
                   layoutId="activeTab"
-                  className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-xl shadow-md"
+                  className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-xl shadow-lg"
                   transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                 />
               )}
@@ -395,10 +395,10 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
                 <motion.div
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="glass-card p-6 md:p-8"
+                  className="glass-card p-6 md:p-8 border border-white/5 shadow-2xl"
                 >
                   <h3 className="font-display text-xl font-bold mb-6 flex items-center gap-2 text-text-primary">
-                    <BarChart3 className="w-5 h-5 text-primary" /> Your Personality Radar
+                    <BarChart3 className="w-5 h-5 text-primary-light" /> Your Personality Radar
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                     {/* Radar Chart */}
@@ -419,7 +419,7 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
                               {score}%
                             </span>
                           </div>
-                          <div className="w-full h-2 bg-zinc-100 rounded-full overflow-hidden">
+                          <div className="w-full h-2 bg-zinc-950 rounded-full overflow-hidden border border-white/2">
                             <motion.div
                               initial={{ width: 0 }}
                               animate={{ width: `${score}%` }}
@@ -441,15 +441,15 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
                   <motion.div
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="glass-card p-6 md:p-8"
+                    className="glass-card p-6 md:p-8 border border-white/5"
                   >
                     <h3 className="font-display text-xl font-bold mb-4 flex items-center gap-2 text-text-primary">
-                      <Sparkles className="w-5 h-5 text-emerald-500" /> Strengths
+                      <Sparkles className="w-5 h-5 text-accent" /> Strengths
                     </h3>
                     <div className="space-y-3">
                       {report.strengths.map((s, i) => (
-                        <div key={i} className="flex items-start gap-3 p-4 rounded-2xl bg-emerald-50 border border-emerald-100 text-emerald-900 text-sm font-medium">
-                          <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
+                        <div key={i} className="flex items-start gap-3 p-4 rounded-2xl bg-emerald-950/20 border border-emerald-500/20 text-emerald-200 text-sm font-medium">
+                          <CheckCircle2 className="w-5 h-5 text-accent shrink-0" />
                           {s}
                         </div>
                       ))}
@@ -462,15 +462,15 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
                   <motion.div
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="glass-card p-6 md:p-8"
+                    className="glass-card p-6 md:p-8 border border-white/5"
                   >
                     <h3 className="font-display text-xl font-bold mb-4 flex items-center gap-2 text-text-primary">
-                      <Target className="w-5 h-5 text-orange-500" /> Growth Areas
+                      <Target className="w-5 h-5 text-secondary" /> Growth Areas
                     </h3>
                     <div className="space-y-3">
                       {report.weaknesses.map((w, i) => (
-                        <div key={i} className="flex items-start gap-3 p-4 rounded-2xl bg-orange-50 border border-orange-100 text-orange-900 text-sm font-medium">
-                          <ArrowRight className="w-5 h-5 text-orange-500 shrink-0" />
+                        <div key={i} className="flex items-start gap-3 p-4 rounded-2xl bg-secondary/10 border border-secondary/20 text-secondary text-sm font-medium">
+                          <ArrowRight className="w-5 h-5 text-secondary shrink-0" />
                           {w}
                         </div>
                       ))}
@@ -486,27 +486,27 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
                   animate={{ opacity: 1, y: 0 }}
                   className="grid grid-cols-1 md:grid-cols-2 gap-6"
                 >
-                  <div className="glass-card p-6 md:p-8 relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 p-4 opacity-10 transform translate-x-4 -translate-y-4 group-hover:scale-110 transition-transform duration-500">
+                  <div className="glass-card p-6 md:p-8 relative overflow-hidden group border border-white/5">
+                    <div className="absolute top-0 right-0 p-4 opacity-5 transform translate-x-4 -translate-y-4 group-hover:scale-110 transition-transform duration-500">
                       <Sparkles className="w-24 h-24 text-primary" />
                     </div>
-                    <div className="w-12 h-12 bg-indigo-50 text-indigo-500 rounded-xl flex items-center justify-center mb-4">
+                    <div className="w-12 h-12 bg-primary/20 text-primary-light rounded-xl flex items-center justify-center mb-4">
                       <Target className="w-6 h-6" />
                     </div>
-                    <div className="text-xs font-bold text-text-muted uppercase tracking-wider mb-2">Hidden Talent</div>
-                    <div className="text-base text-text-primary font-medium leading-relaxed relative z-10">
+                    <div className="text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">Hidden Talent</div>
+                    <div className="text-sm md:text-base text-text-primary font-medium leading-relaxed relative z-10">
                       {report.hidden_talent}
                     </div>
                   </div>
-                  <div className="glass-card p-6 md:p-8 relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 p-4 opacity-10 transform translate-x-4 -translate-y-4 group-hover:scale-110 transition-transform duration-500">
+                  <div className="glass-card p-6 md:p-8 relative overflow-hidden group border border-white/5">
+                    <div className="absolute top-0 right-0 p-4 opacity-5 transform translate-x-4 -translate-y-4 group-hover:scale-110 transition-transform duration-500">
                       <MessageCircle className="w-24 h-24 text-pink-500" />
                     </div>
-                    <div className="w-12 h-12 bg-pink-50 text-pink-500 rounded-xl flex items-center justify-center mb-4">
+                    <div className="w-12 h-12 bg-secondary/20 text-secondary rounded-xl flex items-center justify-center mb-4">
                       <MessageCircle className="w-6 h-6" />
                     </div>
-                    <div className="text-xs font-bold text-text-muted uppercase tracking-wider mb-2">Friend Impression</div>
-                    <div className="text-base text-text-primary font-medium leading-relaxed relative z-10">
+                    <div className="text-xs font-bold text-text-secondary uppercase tracking-wider mb-2">Friend Impression</div>
+                    <div className="text-sm md:text-base text-text-primary font-medium leading-relaxed relative z-10">
                       {report.friend_impression}
                     </div>
                   </div>
@@ -518,13 +518,13 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
                 <motion.div
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="glass-card p-6 md:p-8"
+                  className="glass-card p-6 md:p-8 border border-white/5"
                 >
                   <h3 className="font-display text-xl font-bold mb-6 flex items-center gap-2 text-text-primary">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-500" /> Response History
+                    <CheckCircle2 className="w-5 h-5 text-accent" /> Response History
                   </h3>
-                  <div className="relative border-l-2 border-zinc-100 ml-4 pl-6 space-y-6">
-                    {timeline.map((item, i) => {
+                  <div className="relative border-l-2 border-white/5 ml-4 pl-6 space-y-6">
+                    {timeline.map((item) => {
                       const date = new Date(item.created_at).toLocaleDateString(undefined, {
                         month: 'short',
                         day: 'numeric',
@@ -534,7 +534,7 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
                       return (
                         <div key={item.id} className="relative">
                           {/* Timeline bullet */}
-                          <div className="absolute -left-[31px] top-1 w-4.5 h-4.5 rounded-full border-4 border-white bg-primary shadow-sm" />
+                          <div className="absolute -left-[31px] top-1 w-4.5 h-4.5 rounded-full border-4 border-background bg-primary shadow-sm" />
                           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
                             <span className="text-sm font-bold text-text-primary">
                               {item.is_anonymous ? '🕶️ An anonymous friend' : `👤 ${item.respondent_name}`} completed the mirror
@@ -556,12 +556,12 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
                   className="pt-6"
                 >
                   <h3 className="font-display text-xl font-bold mb-6 flex items-center gap-2 text-text-primary">
-                    <Share2 className="w-5 h-5 text-primary" /> Your Social Identity Card
+                    <Share2 className="w-5 h-5 text-primary-light" /> Your Social Identity Card
                   </h3>
 
                   {/* Server-Side Card Preview */}
                   <div className="flex flex-col items-center gap-6 mb-8">
-                    <div className="relative group overflow-hidden rounded-3xl border border-zinc-200/50 shadow-xl max-w-xs w-full aspect-[3/4]">
+                    <div className="relative group overflow-hidden rounded-3xl border border-white/5 shadow-2xl max-w-xs w-full aspect-[3/4]">
                       <img 
                         src={`/api/profiles/${username}/card?pin=${encodeURIComponent(pin)}`}
                         alt="Social Identity Card"
@@ -571,24 +571,24 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
                   </div>
 
                   {/* Actions */}
-                  <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto relative z-10">
                     <button 
                       onClick={() => handleDownloadCard('standard')} 
-                      className="flex-1 flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-2xl font-bold hover:opacity-90 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/30"
+                      className="flex-1 flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-2xl font-bold hover:opacity-95 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/20"
                     >
                       <Download className="w-5 h-5" /> Card
                     </button>
                     <button 
                       onClick={() => handleDownloadCard('story')} 
-                      className="flex-1 flex items-center justify-center gap-2 py-4 bg-zinc-900 text-white rounded-2xl font-bold hover:bg-zinc-800 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-zinc-900/20"
+                      className="flex-1 flex items-center justify-center gap-2 py-4 bg-surface border border-white/5 text-text-primary rounded-2xl font-bold hover:bg-surface-hover transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-black/40"
                     >
-                      <Camera className="w-5 h-5 text-pink-500" /> Story (9:16)
+                      <Camera className="w-5 h-5 text-secondary" /> Story (9:16)
                     </button>
                     <button
                       onClick={() => handleShareCard('standard')}
-                      className="flex-1 flex items-center justify-center gap-2 py-4 bg-white border border-zinc-200 text-zinc-800 rounded-2xl font-bold hover:bg-zinc-50 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm hover:border-primary/30"
+                      className="flex-1 flex items-center justify-center gap-2 py-4 bg-surface border border-white/5 text-text-primary rounded-2xl font-bold hover:bg-surface-hover transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm hover:border-primary/20"
                     >
-                      <Share2 className="w-5 h-5" /> Share
+                      <Share2 className="w-5 h-5 text-primary-light" /> Share
                     </button>
                   </div>
                 </motion.div>
@@ -604,18 +604,18 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -16 }}
             >
-              <div className="glass-card p-8 md:p-12 text-center relative overflow-hidden">
+              <div className="glass-card p-8 md:p-12 text-center relative overflow-hidden border border-white/5">
                 <div className="absolute top-0 right-0 p-8 opacity-5">
-                  <Flame className="w-48 h-48 text-orange-500" />
+                  <Flame className="w-48 h-48 text-secondary" />
                 </div>
                 <div className="text-6xl mb-6 relative z-10">🔥</div>
-                <h3 className="font-display text-2xl font-extrabold mb-6 text-text-primary relative z-10">
+                <h3 className="font-display text-2xl font-black mb-6 text-text-primary relative z-10">
                   Your Social Roast
                 </h3>
-                <p className="text-lg md:text-xl text-text-secondary leading-relaxed max-w-2xl mx-auto font-medium relative z-10">
+                <p className="text-lg md:text-xl text-text-secondary leading-relaxed max-w-2xl mx-auto font-semibold relative z-10">
                   &quot;{report.roast}&quot;
                 </p>
-                <div className="mt-8 pt-6 border-t border-zinc-100 text-sm font-medium text-text-muted relative z-10">
+                <div className="mt-8 pt-6 border-t border-white/5 text-sm font-bold text-text-muted relative z-10">
                   Based on {report.response_count} friend responses. All in good fun! 😂
                 </div>
               </div>
@@ -630,19 +630,19 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -16 }}
             >
-              <div className="glass-card p-8 md:p-12 text-center relative overflow-hidden">
+              <div className="glass-card p-8 md:p-12 text-center relative overflow-hidden border border-white/5">
                 <div className="absolute top-0 left-0 p-8 opacity-5">
                   <Heart className="w-48 h-48 text-pink-500" />
                 </div>
                 <div className="text-6xl mb-6 relative z-10">💖</div>
-                <h3 className="font-display text-2xl font-extrabold mb-6 text-text-primary relative z-10">
+                <h3 className="font-display text-2xl font-black mb-6 text-text-primary relative z-10">
                   Your Social Compliment
                 </h3>
-                <p className="text-lg md:text-xl text-text-secondary leading-relaxed max-w-2xl mx-auto font-medium relative z-10">
+                <p className="text-lg md:text-xl text-text-secondary leading-relaxed max-w-2xl mx-auto font-semibold relative z-10">
                   &quot;{report.compliment}&quot;
                 </p>
-                <div className="mt-8 pt-6 border-t border-zinc-100 text-sm font-medium text-text-muted relative z-10">
-                  Your friends really think you&apos;re special. {report.response_count} people can&apos;t be wrong. ✨
+                <div className="mt-8 pt-6 border-t border-white/5 text-sm font-bold text-text-muted relative z-10">
+                  Based on {report.response_count} friend responses. Woven with care! 🥰
                 </div>
               </div>
             </motion.div>
