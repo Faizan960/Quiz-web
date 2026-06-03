@@ -280,7 +280,7 @@ export default function PlayPage() {
                 </div>
               </div>
 
-              {ads?.player_start_enabled && <AdSlot code={ads.player_start_code} />}
+              {ads?.player_start_enabled && <AdSlot code={ads.player_start_code as string} />}
 
               <div className="glass-card p-6 md:p-8 border border-white/5 shadow-2xl mb-6">
                 <div className="space-y-5">
@@ -452,7 +452,7 @@ export default function PlayPage() {
                   </div>
                 </div>
 
-                {ads?.result_page_enabled && <AdSlot code={ads.result_page_code} />}
+                {ads?.result_page_enabled && <AdSlot code={ads.result_page_code as string} />}
 
                 <h2 className="font-display text-2xl font-black mb-2 text-text-primary">
                   {resultMsg}

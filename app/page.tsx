@@ -72,15 +72,16 @@ export default function HomePage() {
   const [particles, setParticles] = useState<{ id: number; left: string; top: string; duration: number }[]>([])
 
   useEffect(() => {
-    const t = setTimeout(() => setMounted(true), 0)
-    
-    const generated = Array.from({ length: 12 }).map((_, i) => ({
-      id: i,
-      left: `${Math.random() * 100}%`,
-      top: `${Math.random() * 100}%`,
-      duration: 7 + Math.random() * 5,
-    }))
-    setParticles(generated)
+    const t = setTimeout(() => {
+      setMounted(true)
+      const generated = Array.from({ length: 12 }).map((_, i) => ({
+        id: i,
+        left: `${Math.random() * 100}%`,
+        top: `${Math.random() * 100}%`,
+        duration: 7 + Math.random() * 5,
+      }))
+      setParticles(generated)
+    }, 0)
 
     const interval = setInterval(() => {
       setMirrorsCount(prev => prev + Math.floor(Math.random() * 3) + 1)

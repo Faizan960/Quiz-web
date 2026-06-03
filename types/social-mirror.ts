@@ -106,6 +106,7 @@ export interface ReportData {
     charisma: number
     resilience: number
     loyalty: number
+    innovation: number
     confidence: number
   }
   roast: string

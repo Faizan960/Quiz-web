@@ -100,10 +100,6 @@ export function normalizeScores(
     let pct = Math.round((raw / maxRaw) * 100)
     pct = Math.max(15, Math.min(98, pct))
 
-    // Add slight randomization (±3) to avoid identical scores
-    const jitter = Math.floor(Math.random() * 7) - 3
-    pct = Math.max(15, Math.min(98, pct + jitter))
-
     normalized[dim] = pct
   }
 
@@ -162,6 +158,7 @@ export function generateReport(
       charisma: scores.charisma ?? 50,
       resilience: scores.resilience ?? 50,
       loyalty: scores.loyalty ?? 50,
+      innovation: scores.innovation ?? 50,
       confidence: scores.confidence ?? 50,
     },
     roast,

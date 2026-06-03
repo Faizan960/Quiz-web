@@ -165,8 +165,8 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
       setReport(data.report)
       setPinSubmitted(true)
 
-      // Fetch latest response details
-      fetch(`/api/profiles/${username}/responses`)
+      // Fetch latest response details (PIN-gated)
+      fetch(`/api/profiles/${username}/responses?pin=${encodeURIComponent(pin)}`)
         .then(r => r.json())
         .then(d => {
           setResponseCount(d.total ?? 0)

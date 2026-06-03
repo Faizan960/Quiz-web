@@ -31,6 +31,21 @@ export async function POST(
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
     }
 
+    // Validate that all submitted question_ids belong to this profile
+    const { data: validQuestions, error: qErr } = await supabase
+      .from('sm_questions')
+      .select('id')
+      .eq('profile_id', profile.id)
+
+    if (qErr) {
+      return NextResponse.json({ error: qErr.message }, { status: 500 })
+    }
+
+    const validIds = new Set((validQuestions ?? []).map(q => q.id))
+    if (answers.some(a => !validIds.has(a.question_id))) {
+      return NextResponse.json({ error: 'Invalid question_id in answers' }, { status: 400 })
+    }
+
     // Create response session
     const sessionId = uuidv4()
     const { data: response, error: responseError } = await supabase
@@ -81,17 +96,18 @@ export async function POST(
   }
 }
 
-// GET /api/profiles/[slug]/responses?pin=xxx — get response count (owner only)
+// GET /api/profiles/[slug]/responses — get responses count publicly, details PIN-gated
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   const { slug } = await params
+  const pin = request.nextUrl.searchParams.get('pin')
   const supabase = await createClient()
 
   const { data: profile } = await supabase
     .from('sm_profiles')
-    .select('id, total_responses')
+    .select('id, total_responses, pin_hash')
     .eq('slug', slug)
     .eq('is_active', true)
     .single()
@@ -100,12 +116,30 @@ export async function GET(
     return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
   }
 
-  // Get response details (without PIN check — count is safe to expose)
-  const { data: responses } = await supabase
+  // If no PIN provided, return only the total count (safe)
+  if (!pin) {
+    return NextResponse.json({
+      total: profile.total_responses,
+      responses: [],
+    })
+  }
+
+  // Verify PIN
+  const bcrypt = (await import('bcryptjs')).default
+  if (!(await bcrypt.compare(pin, profile.pin_hash))) {
+    return NextResponse.json({ error: 'Incorrect PIN' }, { status: 401 })
+  }
+
+  // Get response details (PIN verified)
+  const { data: responses, error: responsesError } = await supabase
     .from('sm_responses')
     .select('id, respondent_name, is_anonymous, created_at')
     .eq('profile_id', profile.id)
     .order('created_at', { ascending: false })
+
+  if (responsesError) {
+    return NextResponse.json({ error: responsesError.message }, { status: 500 })
+  }
 
   return NextResponse.json({
     total: profile.total_responses,
