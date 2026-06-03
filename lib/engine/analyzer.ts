@@ -1,19 +1,21 @@
 // ─────────────────────────────────────────────────
 // Social Mirror — Response Analyzer
 // Aggregates friend responses into dimension scores
-// and generates structured reports
+// and generates structured reports using the
+// compositional generator engine
 // ─────────────────────────────────────────────────
 
 import type { SmQuestion, SmAnswer, ReportData, QuestionOption } from '@/types/social-mirror'
 import { determineArchetype, getTopDimensions, getBottomDimensions } from './archetypes'
 import {
-  generateStrengths,
-  generateWeaknesses,
-  generateHiddenTalent,
-  generateFriendImpression,
-  generateRoast,
-  generateCompliment,
-} from './templates'
+  createContext,
+  composeRoast,
+  composeCompliment,
+  composeStrengths,
+  composeWeaknesses,
+  composeHiddenTalent,
+  composeFriendImpression,
+} from './generator'
 
 // All trackable dimensions
 const ALL_DIMENSIONS = [
@@ -112,12 +114,14 @@ export function normalizeScores(
  * Generates a complete report from questions and answers.
  *
  * This is the main entry point for the analysis engine.
+ * Now uses the compositional generator for unique, interest-aware content.
  */
 export function generateReport(
   displayName: string,
   questions: SmQuestion[],
   answers: SmAnswer[],
-  responseCount: number
+  responseCount: number,
+  interests: string[] = []
 ): ReportData {
   // 1. Aggregate raw scores
   const rawScores = aggregateScores(questions, answers)
@@ -128,13 +132,16 @@ export function generateReport(
   // 3. Determine archetype
   const archetype = determineArchetype(scores)
 
-  // 4. Generate text content
-  const strengths = generateStrengths(scores, 3)
-  const weaknesses = generateWeaknesses(scores, 2)
-  const hiddenTalent = generateHiddenTalent(scores)
-  const friendImpression = generateFriendImpression(scores)
-  const roast = generateRoast(displayName, scores, archetype, responseCount)
-  const compliment = generateCompliment(displayName, scores, archetype, responseCount)
+  // 4. Create generator context with interests
+  const ctx = createContext(displayName, interests, scores, archetype, responseCount)
+
+  // 5. Generate text content using compositional engine
+  const strengths = composeStrengths(ctx, 3)
+  const weaknesses = composeWeaknesses(ctx, 2)
+  const hiddenTalent = composeHiddenTalent(ctx)
+  const friendImpression = composeFriendImpression(ctx)
+  const roast = composeRoast(ctx)
+  const compliment = composeCompliment(ctx)
 
   return {
     archetype: archetype.name,

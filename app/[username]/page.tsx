@@ -3,7 +3,41 @@
 import { useState, useEffect, use } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
-import { ArrowLeft, ArrowRight, Check, User, Sparkles, Heart } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, User, Sparkles, Heart, Share2, Camera } from 'lucide-react'
+
+function Confetti() {
+  const [pieces, setPieces] = useState<{ id: number; left: string; delay: string; size: string; color: string }[]>([])
+  
+  useEffect(() => {
+    const colors = ['#a18cd1', '#fbc2eb', '#ffb199', '#a8edea', '#8B5CF6', '#EC4899', '#34D399', '#F59E0B']
+    const newPieces = Array.from({ length: 40 }).map((_, i) => ({
+      id: i,
+      left: `${Math.random() * 100}%`,
+      delay: `${Math.random() * 3}s`,
+      size: `${Math.random() * 8 + 6}px`,
+      color: colors[Math.floor(Math.random() * colors.length)],
+    }))
+    setPieces(newPieces)
+  }, [])
+
+  return (
+    <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+      {pieces.map(p => (
+        <div
+          key={p.id}
+          className="confetti-piece"
+          style={{
+            left: p.left,
+            animationDelay: p.delay,
+            width: p.size,
+            height: p.size,
+            backgroundColor: p.color,
+          }}
+        />
+      ))}
+    </div>
+  )
+}
 
 interface QuestionData {
   id: string
@@ -38,6 +72,8 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
   const [isAnonymous, setIsAnonymous] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [teaser, setTeaser] = useState<{ total_responses: number; display_name: string; archetype: string | null; archetype_emoji: string | null } | null>(null)
+  const [copySuccess, setCopySuccess] = useState(false)
 
   useEffect(() => {
     fetch(`/api/profiles/${username}/questions`)
@@ -50,6 +86,19 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
       })
       .catch(() => { setError('Failed to load'); setLoading(false) })
   }, [username])
+
+  useEffect(() => {
+    if (submitted) {
+      fetch(`/api/profiles/${username}/teaser`)
+        .then(r => r.json())
+        .then(data => {
+          if (!data.error) {
+            setTeaser(data)
+          }
+        })
+        .catch(() => {})
+    }
+  }, [submitted, username])
 
   const handleAnswer = (questionId: string, optionText: string, optionIndex: number) => {
     setAnswers(prev => ({ ...prev, [questionId]: { value: optionText, index: optionIndex } }))
@@ -117,41 +166,108 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
     )
   }
 
+  const handleShareStory = async () => {
+    const text = `I just answered questions about ${profile?.display_name || 'my friend'} on Social Mirror! 🪞 Reveal their archetype here: ${window.location.origin}/${username}`
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopySuccess(true)
+      setTimeout(() => setCopySuccess(false), 4000)
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
   // ─── Submitted! ───────────────────────────────
   if (submitted) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
+        <Confetti />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-[100px] pointer-events-none" />
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.5, type: 'spring', bounce: 0.4 }}
-          className="relative z-10 glass-card p-10 text-center max-w-md w-full"
+          className="relative z-10 glass-card p-8 md:p-10 text-center max-w-md w-full"
         >
           <motion.div 
             initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, type: 'spring' }}
-            className="w-20 h-20 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-pink-500/20 animate-pulse-glow"
+            className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-pink-500/20 animate-pulse-glow"
           >
-            <Heart className="w-10 h-10 text-pink-500" />
+            <Heart className="w-8 h-8 text-pink-500" />
           </motion.div>
           <motion.h1 
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-            className="font-display text-3xl font-extrabold mb-3 text-text-primary"
+            className="font-display text-2xl md:text-3xl font-extrabold mb-3 text-text-primary"
           >
             You&apos;re amazing!
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-            className="text-text-secondary text-base leading-relaxed mb-8"
+            className="text-text-secondary text-sm md:text-base leading-relaxed mb-6"
           >
             Your responses about <strong className="text-text-primary">{profile.display_name}</strong> have been saved.
             They&apos;ll help build their Social Mirror report.
           </motion.p>
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
-            <Link href="/create" className="flex items-center justify-center gap-2 w-full px-6 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-2xl font-bold transition-all shadow-lg shadow-primary/30 hover:opacity-90 hover:scale-[1.02] active:scale-[0.98]">
-              Create Your Own Mirror <Sparkles className="w-5 h-5" />
-            </Link>
-          </motion.div>
+
+          {/* Teaser Preview Block */}
+          {teaser && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="p-5 rounded-2xl bg-zinc-50/80 border border-zinc-200/50 mb-8 text-left shadow-inner"
+            >
+              <div className="text-[11px] font-bold text-text-muted uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <Sparkles className="w-3 h-3 text-primary" /> Teaser Preview
+              </div>
+              <p className="text-xs md:text-sm text-text-secondary leading-relaxed font-medium">
+                {teaser.total_responses >= 3 ? (
+                  <>
+                    Based on {teaser.total_responses} responses, {teaser.display_name} might be a{" "}
+                    <span className="blur-teaser inline-block px-1.5 py-0.5 rounded bg-zinc-200/80 text-zinc-900 font-extrabold select-none">
+                      {teaser.archetype}
+                    </span>
+                    . Your answers just shifted their scores!
+                  </>
+                ) : (
+                  <>
+                    Based on {teaser.total_responses} response{teaser.total_responses !== 1 ? 's' : ''}, {teaser.display_name}&apos;s archetype is starting to shape up... Add yours to reveal it!
+                  </>
+                )}
+              </p>
+            </motion.div>
+          )}
+
+          <div className="space-y-4 relative z-10">
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
+              <Link href="/create" className="flex items-center justify-center gap-2 w-full px-6 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-2xl font-bold transition-all shadow-lg shadow-primary/30 hover:opacity-90 hover:scale-[1.02] active:scale-[0.98]">
+                Create Your Own Mirror <Sparkles className="w-5 h-5" />
+              </Link>
+            </motion.div>
+
+            <motion.button
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+              onClick={handleShareStory}
+              className="flex items-center justify-center gap-2 w-full px-6 py-4 bg-white border border-zinc-200 text-zinc-800 rounded-2xl font-bold transition-all hover:bg-zinc-50 hover:scale-[1.02] active:scale-[0.98]"
+            >
+              <Camera className="w-5 h-5 text-pink-500" /> Share to Instagram Story
+            </motion.button>
+          </div>
+
+          <AnimatePresence>
+            {copySuccess && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                className="absolute bottom-4 left-4 right-4 bg-zinc-900 text-white text-xs font-semibold py-3 px-4 rounded-xl shadow-xl z-20 flex items-center justify-center gap-2"
+              >
+                <Share2 className="w-4 h-4 text-emerald-400" /> Link & sticker text copied to clipboard!
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
       </div>
     )

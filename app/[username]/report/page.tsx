@@ -3,7 +3,7 @@
 import { useState, useEffect, use, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
-import { Lock, Download, Share2, Target, MessageCircle, BarChart3, Flame, Heart, ArrowLeft, CheckCircle2, Sparkles, ArrowRight } from 'lucide-react'
+import { Lock, Download, Share2, Target, MessageCircle, BarChart3, Flame, Heart, ArrowLeft, CheckCircle2, Sparkles, ArrowRight, Camera } from 'lucide-react'
 import type { ReportData } from '@/types/social-mirror'
 
 const DIMENSION_COLORS: Record<string, string> = {
@@ -22,36 +22,140 @@ const DIMENSION_COLORS: Record<string, string> = {
 
 type TabType = 'report' | 'roast' | 'compliment'
 
+function RadarChart({ scores }: { scores: Record<string, number> }) {
+  const dims = Object.entries(scores)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 6) // Hexagon layout
+
+  const cx = 150
+  const cy = 150
+  const r = 100
+
+  // Calculate points
+  const points = dims.map(([dim, score], i) => {
+    const angle = (i * 2 * Math.PI) / 6 - Math.PI / 2
+    const val = score / 100
+    const x = cx + r * val * Math.cos(angle)
+    const y = cy + r * val * Math.sin(angle)
+    return { x, y, label: dim, score, angle }
+  })
+
+  const pointsStr = points.map(p => `${p.x},${p.y}`).join(' ')
+  const gridLevels = [0.25, 0.5, 0.75, 1]
+
+  return (
+    <div className="flex flex-col items-center justify-center p-2">
+      <svg width="280" height="280" className="overflow-visible select-none">
+        {/* Grid Hexagons */}
+        {gridLevels.map((lvl, index) => {
+          const gridPoints = dims.map((_, i) => {
+            const angle = (i * 2 * Math.PI) / 6 - Math.PI / 2
+            const x = cx + r * lvl * Math.cos(angle)
+            const y = cy + r * lvl * Math.sin(angle)
+            return `${x},${y}`
+          }).join(' ')
+          return (
+            <polygon
+              key={index}
+              points={gridPoints}
+              fill="none"
+              stroke="rgba(161, 140, 209, 0.15)"
+              strokeWidth="1"
+              strokeDasharray={lvl < 1 ? "3 3" : "none"}
+            />
+          )
+        })}
+
+        {/* Axis Lines & Labels */}
+        {points.map((p, i) => {
+          const ox = cx + r * Math.cos(p.angle)
+          const oy = cy + r * Math.sin(p.angle)
+          const lx = cx + (r + 18) * Math.cos(p.angle)
+          const ly = cy + (r + 12) * Math.sin(p.angle)
+
+          let textAnchor = "middle"
+          if (Math.cos(p.angle) > 0.1) textAnchor = "start"
+          else if (Math.cos(p.angle) < -0.1) textAnchor = "end"
+
+          return (
+            <g key={i}>
+              <line x1={cx} y1={cy} x2={ox} y2={oy} stroke="rgba(161, 140, 209, 0.15)" strokeWidth="1" />
+              <text
+                x={lx}
+                y={ly}
+                textAnchor={textAnchor}
+                className="text-[10px] md:text-xs font-bold fill-zinc-400 capitalize"
+                alignmentBaseline="middle"
+              >
+                {p.label}
+              </text>
+            </g>
+          )
+        })}
+
+        {/* Filled Data Polygon */}
+        <polygon
+          points={pointsStr}
+          fill="rgba(161, 140, 209, 0.25)"
+          stroke="#a18cd1"
+          strokeWidth="2.5"
+          className="transition-all duration-1000 ease-out"
+        />
+
+        {/* Data points */}
+        {points.map((p, i) => (
+          <circle
+            key={i}
+            cx={p.x}
+            cy={p.y}
+            r="4"
+            fill="#a18cd1"
+            stroke="#FFFFFF"
+            strokeWidth="1.5"
+          />
+        ))}
+
+        <circle cx={cx} cy={cy} r="3" fill="rgba(161, 140, 209, 0.3)" />
+      </svg>
+    </div>
+  )
+}
+
 export default function ReportPage({ params }: { params: Promise<{ username: string }> }) {
   const { username } = use(params)
   const [pin, setPin] = useState('')
   const [pinSubmitted, setPinSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [regenerating, setRegenerating] = useState(false)
   const [error, setError] = useState('')
   const [report, setReport] = useState<ReportData | null>(null)
   const [tab, setTab] = useState<TabType>('report')
   const [responseCount, setResponseCount] = useState(0)
   const [revealStep, setRevealStep] = useState(0)
-  const cardRef = useRef<HTMLDivElement>(null)
+  const [timeline, setTimeline] = useState<any[] | null>(null)
 
   // Fetch response count on load
   useEffect(() => {
     fetch(`/api/profiles/${username}/responses`)
       .then(r => r.json())
-      .then(data => setResponseCount(data.total ?? 0))
+      .then(data => {
+        setResponseCount(data.total ?? 0)
+        setTimeline(data.responses ?? [])
+      })
       .catch(() => {})
   }, [username])
 
-  const handleUnlock = async () => {
+  const handleUnlock = async (isRegen = false) => {
     if (!pin.trim()) return
-    setLoading(true)
+    if (isRegen) setRegenerating(true)
+    else setLoading(true)
     setError('')
 
     try {
       const res = await fetch(`/api/profiles/${username}/report`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ pin }),
+        body: JSON.stringify({ pin, regenerate: isRegen }),
       })
 
       const data = await res.json()
@@ -60,32 +164,67 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
       setReport(data.report)
       setPinSubmitted(true)
 
-      // Staggered reveal animation
-      for (let i = 1; i <= 6; i++) {
-        setTimeout(() => setRevealStep(i), i * 400)
+      // Fetch latest response details
+      fetch(`/api/profiles/${username}/responses`)
+        .then(r => r.json())
+        .then(d => {
+          setResponseCount(d.total ?? 0)
+          setTimeline(d.responses ?? [])
+        })
+        .catch(() => {})
+
+      if (!isRegen) {
+        // Staggered reveal animation
+        for (let i = 1; i <= 6; i++) {
+          setTimeout(() => setRevealStep(i), i * 400)
+        }
       }
     } catch (err: any) {
       setError(err.message || 'Something went wrong')
     } finally {
       setLoading(false)
+      setRegenerating(false)
     }
   }
 
-  const handleDownloadCard = async () => {
-    if (!cardRef.current) return
+  const handleDownloadCard = async (format = 'standard') => {
     try {
-      const html2canvas = (await import('html2canvas')).default
-      const canvas = await html2canvas(cardRef.current, {
-        backgroundColor: '#FFFFFF',
-        scale: 3,
-        useCORS: true,
-      })
-      const link = document.createElement('a')
-      link.download = `social-mirror-${username}.png`
-      link.href = canvas.toDataURL('image/png')
-      link.click()
+      const url = `/api/profiles/${username}/card?pin=${encodeURIComponent(pin)}&format=${format}`
+      const res = await fetch(url)
+      if (!res.ok) throw new Error('Failed to generate card image')
+      const blob = await res.blob()
+      const blobUrl = window.URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = blobUrl
+      a.download = `social-mirror-${username}-${format}.png`
+      document.body.appendChild(a)
+      a.click()
+      a.remove()
+      window.URL.revokeObjectURL(blobUrl)
     } catch {
-      alert('Failed to generate image. Try again!')
+      alert('Failed to download card. Please try again!')
+    }
+  }
+
+  const handleShareCard = async (format = 'standard') => {
+    const shareUrl = typeof window !== 'undefined' ? `${window.location.origin}/${username}` : ''
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Social Mirror',
+          text: `Check out my Social Mirror archetype card! 🪞`,
+          url: shareUrl,
+        })
+      } catch (err) {
+        console.log('Share failed:', err)
+      }
+    } else {
+      try {
+        await navigator.clipboard.writeText(`Reveal my Social Mirror archetype here: ${shareUrl}`)
+        alert('Share link copied to clipboard!')
+      } catch {
+        alert('Failed to copy link.')
+      }
     }
   }
 
@@ -178,8 +317,18 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
           <span className="text-xl">🪞</span>
           <span className="text-gradient font-display font-extrabold text-lg">Social Mirror</span>
         </Link>
-        <div className="px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-100 text-xs font-bold text-emerald-600 flex items-center gap-1.5 shadow-sm">
-          <BarChart3 className="w-3.5 h-3.5" /> {report.response_count} responses
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => handleUnlock(true)}
+            disabled={regenerating}
+            className="px-3 py-1.5 rounded-full bg-indigo-50 border border-indigo-100 text-xs font-bold text-indigo-600 flex items-center gap-1.5 shadow-sm hover:bg-indigo-100 transition-colors"
+          >
+            <Sparkles className={`w-3.5 h-3.5 ${regenerating ? 'animate-spin' : ''}`} />
+            {regenerating ? 'Syncing...' : 'Regenerate'}
+          </button>
+          <div className="px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-100 text-xs font-bold text-emerald-600 flex items-center gap-1.5 shadow-sm">
+            <BarChart3 className="w-3.5 h-3.5" /> {report.response_count} responses
+          </div>
         </div>
       </nav>
 
@@ -249,33 +398,39 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
                   className="glass-card p-6 md:p-8"
                 >
                   <h3 className="font-display text-xl font-bold mb-6 flex items-center gap-2 text-text-primary">
-                    <BarChart3 className="w-5 h-5 text-primary" /> Your Scores
+                    <BarChart3 className="w-5 h-5 text-primary" /> Your Personality Radar
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                    {topScores.map(([dim, score], i) => (
-                      <motion.div
-                        key={dim}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: i * 0.1 }}
-                      >
-                        <div className="flex justify-between items-end mb-2">
-                          <span className="text-sm font-bold text-text-secondary capitalize">{dim}</span>
-                          <span className="text-base font-extrabold" style={{ color: DIMENSION_COLORS[dim] ?? '#818CF8' }}>
-                            {score}%
-                          </span>
-                        </div>
-                        <div className="w-full h-2.5 bg-zinc-100 rounded-full overflow-hidden">
-                          <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${score}%` }}
-                            transition={{ delay: 0.3 + i * 0.1, duration: 1.2, type: 'spring', bounce: 0.3 }}
-                            className="h-full rounded-full"
-                            style={{ background: DIMENSION_COLORS[dim] ?? '#818CF8' }}
-                          />
-                        </div>
-                      </motion.div>
-                    ))}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    {/* Radar Chart */}
+                    <RadarChart scores={report.scores} />
+
+                    {/* Score Bars */}
+                    <div className="space-y-4">
+                      {topScores.map(([dim, score], i) => (
+                        <motion.div
+                          key={dim}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: i * 0.1 }}
+                        >
+                          <div className="flex justify-between items-end mb-1.5">
+                            <span className="text-xs font-bold text-text-secondary capitalize">{dim}</span>
+                            <span className="text-sm font-extrabold" style={{ color: DIMENSION_COLORS[dim] ?? '#818CF8' }}>
+                              {score}%
+                            </span>
+                          </div>
+                          <div className="w-full h-2 bg-zinc-100 rounded-full overflow-hidden">
+                            <motion.div
+                              initial={{ width: 0 }}
+                              animate={{ width: `${score}%` }}
+                              transition={{ delay: 0.3 + i * 0.1, duration: 1.2, type: 'spring', bounce: 0.3 }}
+                              className="h-full rounded-full"
+                              style={{ background: DIMENSION_COLORS[dim] ?? '#818CF8' }}
+                            />
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
                   </div>
                 </motion.div>
               )}
@@ -358,6 +513,41 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
                 </motion.div>
               )}
 
+              {/* Timeline Section */}
+              {revealStep >= 5 && timeline && timeline.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="glass-card p-6 md:p-8"
+                >
+                  <h3 className="font-display text-xl font-bold mb-6 flex items-center gap-2 text-text-primary">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-500" /> Response History
+                  </h3>
+                  <div className="relative border-l-2 border-zinc-100 ml-4 pl-6 space-y-6">
+                    {timeline.map((item, i) => {
+                      const date = new Date(item.created_at).toLocaleDateString(undefined, {
+                        month: 'short',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })
+                      return (
+                        <div key={item.id} className="relative">
+                          {/* Timeline bullet */}
+                          <div className="absolute -left-[31px] top-1 w-4.5 h-4.5 rounded-full border-4 border-white bg-primary shadow-sm" />
+                          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
+                            <span className="text-sm font-bold text-text-primary">
+                              {item.is_anonymous ? '🕶️ An anonymous friend' : `👤 ${item.respondent_name}`} completed the mirror
+                            </span>
+                            <span className="text-xs font-semibold text-text-muted">{date}</span>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </motion.div>
+              )}
+
               {/* Social Identity Card */}
               {revealStep >= 6 && (
                 <motion.div
@@ -369,79 +559,37 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
                     <Share2 className="w-5 h-5 text-primary" /> Your Social Identity Card
                   </h3>
 
-                  {/* The card (used for html2canvas export). Inline styles used here specifically for reliable canvas rendering */}
-                  <div className="flex justify-center mb-6">
-                    <div 
-                      ref={cardRef} 
-                      style={{
-                        width: '380px',
-                        background: 'linear-gradient(145deg, #ffffff, #fcfafc)',
-                        border: '1px solid rgba(0,0,0,0.06)',
-                        borderRadius: '32px',
-                        padding: '40px 32px',
-                        position: 'relative',
-                        overflow: 'hidden',
-                        boxShadow: '0 20px 40px -10px rgba(0,0,0,0.05)',
-                        fontFamily: 'system-ui, -apple-system, sans-serif'
-                      }}
-                    >
-                      <div style={{
-                        position: 'absolute', inset: 0, pointerEvents: 'none',
-                        background: 'radial-gradient(ellipse 80% 60% at 30% -10%, rgba(129,140,248,0.15), transparent), radial-gradient(ellipse 50% 50% at 80% 110%, rgba(244,114,182,0.15), transparent)'
-                      }} />
-                      
-                      <div style={{ position: 'relative', zIndex: 1, textAlign: 'center', marginBottom: '32px' }}>
-                        <div style={{ fontSize: '56px', marginBottom: '12px', lineHeight: 1 }}>{report.archetype_emoji}</div>
-                        <div style={{
-                          fontSize: '28px', fontWeight: 800, letterSpacing: '-0.02em',
-                          background: 'linear-gradient(135deg, #818CF8, #F472B6)',
-                          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-                        }}>{report.archetype}</div>
-                      </div>
-
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                        {topScores.slice(0, 4).map(([dim, score]) => (
-                          <div key={dim}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                              <span style={{ fontSize: '14px', color: '#52525B', fontWeight: 600, textTransform: 'capitalize' }}>
-                                {dim}
-                              </span>
-                              <span style={{
-                                fontSize: '14px', fontWeight: 800, color: DIMENSION_COLORS[dim] ?? '#818CF8'
-                              }}>{score}%</span>
-                            </div>
-                            <div style={{ width: '100%', height: '8px', background: '#F4F4F5', borderRadius: '4px', overflow: 'hidden' }}>
-                              <div style={{ width: `${score}%`, height: '100%', background: DIMENSION_COLORS[dim] ?? '#818CF8', borderRadius: '4px' }} />
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-
-                      <div style={{
-                        textAlign: 'center', marginTop: '36px', paddingTop: '20px',
-                        borderTop: '1px solid rgba(0,0,0,0.06)',
-                        fontSize: '11px', color: '#A1A1AA', letterSpacing: '0.15em', fontWeight: 700
-                      }}>
-                        SOCIAL MIRROR 🪞
-                      </div>
+                  {/* Server-Side Card Preview */}
+                  <div className="flex flex-col items-center gap-6 mb-8">
+                    <div className="relative group overflow-hidden rounded-3xl border border-zinc-200/50 shadow-xl max-w-xs w-full aspect-[3/4]">
+                      <img 
+                        src={`/api/profiles/${username}/card?pin=${encodeURIComponent(pin)}`}
+                        alt="Social Identity Card"
+                        className="w-full h-full object-cover select-none"
+                      />
                     </div>
                   </div>
 
                   {/* Actions */}
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-sm mx-auto">
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
                     <button 
-                      onClick={handleDownloadCard} 
+                      onClick={() => handleDownloadCard('standard')} 
                       className="flex-1 flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-2xl font-bold hover:opacity-90 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/30"
                     >
-                      <Download className="w-5 h-5" /> Download
+                      <Download className="w-5 h-5" /> Card
                     </button>
-                    <a
-                      href={`https://wa.me/?text=Check%20out%20my%20Social%20Mirror%20card%21%20🪞%20${encodeURIComponent(typeof window !== 'undefined' ? window.location.origin + '/' + username : '')}`}
-                      target="_blank" rel="noopener noreferrer"
+                    <button 
+                      onClick={() => handleDownloadCard('story')} 
+                      className="flex-1 flex items-center justify-center gap-2 py-4 bg-zinc-900 text-white rounded-2xl font-bold hover:bg-zinc-800 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-zinc-900/20"
+                    >
+                      <Camera className="w-5 h-5 text-pink-500" /> Story (9:16)
+                    </button>
+                    <button
+                      onClick={() => handleShareCard('standard')}
                       className="flex-1 flex items-center justify-center gap-2 py-4 bg-white border border-zinc-200 text-zinc-800 rounded-2xl font-bold hover:bg-zinc-50 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-sm hover:border-primary/30"
                     >
                       <Share2 className="w-5 h-5" /> Share
-                    </a>
+                    </button>
                   </div>
                 </motion.div>
               )}

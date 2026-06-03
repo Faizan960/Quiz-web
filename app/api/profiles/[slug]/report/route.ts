@@ -14,7 +14,7 @@ export async function POST(
   try {
     const { slug } = await params
     const body = await request.json()
-    const { pin, report_type = 'standard' } = body as { pin: string; report_type?: ReportType }
+    const { pin, report_type = 'standard', regenerate = false } = body as { pin: string; report_type?: ReportType; regenerate?: boolean }
 
     if (!pin) {
       return NextResponse.json({ error: 'PIN is required to view your report' }, { status: 401 })
@@ -22,7 +22,7 @@ export async function POST(
 
     const supabase = await createClient()
 
-    // 1. Get profile with pin hash
+    // 1. Get profile with pin hash AND interests
     const { data: profile, error: profileError } = await supabase
       .from('sm_profiles')
       .select('*')
@@ -50,15 +50,24 @@ export async function POST(
     }
 
     // 4. Check for cached report
-    const { data: cachedReport } = await supabase
-      .from('sm_reports')
-      .select('*')
-      .eq('profile_id', profile.id)
-      .eq('report_type', report_type)
-      .single()
+    if (!regenerate) {
+      const { data: cachedReport } = await supabase
+        .from('sm_reports')
+        .select('*')
+        .eq('profile_id', profile.id)
+        .eq('report_type', report_type)
+        .single()
 
-    if (cachedReport) {
-      return NextResponse.json({ report: cachedReport.report_data, cached: true })
+      if (cachedReport) {
+        return NextResponse.json({ report: cachedReport.report_data, cached: true })
+      }
+    } else {
+      // Clear cached report of this type
+      await supabase
+        .from('sm_reports')
+        .delete()
+        .eq('profile_id', profile.id)
+        .eq('report_type', report_type)
     }
 
     // 5. Fetch all questions and answers for analysis
@@ -84,12 +93,13 @@ export async function POST(
       allAnswers = (answers ?? []) as SmAnswer[]
     }
 
-    // 6. Run our analysis engine
+    // 6. Run our analysis engine — now with interests!
     const reportData = generateReport(
       profile.display_name,
       (questions ?? []) as SmQuestion[],
       allAnswers,
-      profile.total_responses
+      profile.total_responses,
+      profile.interests ?? []  // Pass user interests to the generator
     )
 
     // 7. Cache the report
