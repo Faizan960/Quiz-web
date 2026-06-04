@@ -56,6 +56,33 @@ function fmtTime(sec: number | null) {
 
 const MEDALS = ['🥇', '🥈', '🥉']
 
+const cardVariants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? 80 : -80,
+    opacity: 0,
+    scale: 0.98,
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+    scale: 1,
+    transition: {
+      x: { type: 'spring' as const, stiffness: 300, damping: 26 },
+      opacity: { duration: 0.2 },
+    },
+  },
+  exit: (direction: number) => ({
+    x: direction > 0 ? -80 : 80,
+    opacity: 0,
+    scale: 0.98,
+    transition: {
+      x: { type: 'spring' as const, stiffness: 300, damping: 26 },
+      opacity: { duration: 0.2 },
+    },
+  }),
+}
+
+
 export default function PlayPage() {
   const params = useParams()
   const slug = params.slug as string
@@ -69,6 +96,8 @@ export default function PlayPage() {
   const [phase, setPhase]           = useState<'name' | 'playing' | 'done'>('name')
   const [playerName, setPlayerName] = useState('')
   const [current, setCurrent]       = useState(0)
+  const [direction, setDirection]   = useState(1)
+  const [pressedKeyIdx, setPressedKeyIdx] = useState<number | null>(null)
   const [selected, setSelected]     = useState<number | null>(null)
   const [score, setScore]           = useState(0)
   const [startTime, setStartTime]   = useState(0)
@@ -124,6 +153,7 @@ export default function PlayPage() {
     await new Promise(r => setTimeout(r, 1100))
 
     if (current + 1 < quiz.questions.length) {
+      setDirection(1)
       setCurrent(c => c + 1)
       setSelected(null)
     } else {
@@ -153,6 +183,8 @@ export default function PlayPage() {
 
     const q = quiz.questions[current]
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') return
+
       const key = e.key.toUpperCase()
       let idx = -1
       if (key === 'A' || key === '1') idx = 0
@@ -161,12 +193,21 @@ export default function PlayPage() {
       else if (key === 'D' || key === '4') idx = 3
 
       if (idx >= 0 && idx < q.options.length) {
+        setPressedKeyIdx(idx)
         handleSelect(idx)
       }
     }
 
+    const handleKeyUp = () => {
+      setPressedKeyIdx(null)
+    }
+
     window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
+    window.addEventListener('keyup', handleKeyUp)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener('keyup', handleKeyUp)
+    }
   }, [phase, selected, current, quiz, handleSelect])
 
   const quizUrl = typeof window !== 'undefined' ? window.location.href : ''
@@ -344,67 +385,88 @@ export default function PlayPage() {
                 </div>
               </div>
 
-              {/* Question Text */}
-              <h2 className="font-display text-xl md:text-2xl font-black mb-8 leading-snug">
-                {q.question_text}
-              </h2>
+              <AnimatePresence mode="wait" custom={direction}>
+                <motion.div
+                  key={current}
+                  custom={direction}
+                  variants={cardVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  className="w-full"
+                >
+                  {/* Question Text */}
+                  <h2 className="font-display text-xl md:text-2xl font-black mb-8 leading-snug">
+                    {q.question_text}
+                  </h2>
 
-              {/* Options Grid */}
-              <div className="flex flex-col gap-3.5">
-                {q.options.map((opt, idx) => {
-                  const isSelected = selected === idx
-                  const isCorrect = idx === q.correct_index
-                  const isIncorrect = isSelected && !isCorrect
-                  const showAnswers = selected !== null
+                  {/* Options Grid */}
+                  <div className="flex flex-col gap-3.5">
+                    {q.options.map((opt, idx) => {
+                      const isSelected = selected === idx
+                      const isCorrect = idx === q.correct_index
+                      const isIncorrect = isSelected && !isCorrect
+                      const showAnswers = selected !== null
+                      const isKeyPressed = pressedKeyIdx === idx
 
-                  let optionClass = "group w-full flex items-center justify-between p-4.5 rounded-2xl border text-left font-bold transition-all duration-300 relative overflow-hidden "
-                  if (!showAnswers) {
-                    optionClass += "bg-surface border-border hover:border-primary/25 hover:bg-surface-hover hover:translate-x-1.5 text-text-primary cursor-pointer"
-                  } else {
-                    if (isCorrect) {
-                      optionClass += "bg-emerald-50 border-emerald-300 text-emerald-600 shadow-sm"
-                    } else if (isIncorrect) {
-                      optionClass += "bg-pink-50 border-rose-300 text-rose-500 shadow-sm"
-                    } else {
-                      optionClass += "bg-zinc-50 border-zinc-200 text-zinc-400 opacity-40 cursor-default"
-                    }
-                  }
+                      let optionClass = "group w-full flex items-center justify-between p-4.5 rounded-2xl border text-left font-bold transition-all duration-300 relative overflow-hidden "
+                      if (!showAnswers) {
+                        if (isKeyPressed) {
+                          optionClass += "bg-primary/10 border-primary scale-[1.01] translate-x-1.5 text-text-primary cursor-pointer shadow-sm shadow-primary/5"
+                        } else {
+                          optionClass += "bg-surface border-border hover:border-primary/25 hover:bg-surface-hover hover:translate-x-1.5 text-text-primary cursor-pointer"
+                        }
+                      } else {
+                        if (isCorrect) {
+                          optionClass += "bg-emerald-50 border-emerald-300 text-emerald-600 shadow-sm"
+                        } else if (isIncorrect) {
+                          optionClass += "bg-pink-50 border-rose-300 text-rose-500 shadow-sm"
+                        } else {
+                          optionClass += "bg-zinc-50 border-zinc-200 text-zinc-400 opacity-40 cursor-default"
+                        }
+                      }
 
-                  return (
-                    <button
-                      key={idx}
-                      onClick={() => handleSelect(idx)}
-                      disabled={showAnswers}
-                      className={optionClass}
-                    >
-                      <div className="flex items-center gap-3.5">
-                        <span className={`w-8 h-8 rounded-xl flex items-center justify-center font-display text-[11px] font-black transition-all ${
-                          showAnswers && isCorrect 
-                            ? 'bg-emerald-500 text-white' 
-                            : showAnswers && isIncorrect 
-                              ? 'bg-rose-500 text-white' 
-                              : 'bg-background text-text-secondary border border-border'
-                        }`}>
-                          {['A', 'B', 'C', 'D'][idx]}
-                        </span>
-                        <span className="text-sm md:text-base pr-4 leading-normal font-semibold">{opt}</span>
-                      </div>
+                      return (
+                        <motion.button
+                          key={idx}
+                          whileHover={!showAnswers ? { scale: 1.005 } : undefined}
+                          whileTap={!showAnswers ? { scale: 0.995 } : undefined}
+                          onClick={() => handleSelect(idx)}
+                          disabled={showAnswers}
+                          className={optionClass}
+                        >
+                          <div className="flex items-center gap-3.5">
+                            <span className={`w-8 h-8 rounded-xl flex items-center justify-center font-display text-[11px] font-black transition-all ${
+                              showAnswers && isCorrect 
+                                ? 'bg-emerald-500 text-white' 
+                                : showAnswers && isIncorrect 
+                                  ? 'bg-rose-500 text-white' 
+                                  : isKeyPressed
+                                    ? 'bg-primary text-white border-primary shadow-sm scale-110'
+                                    : 'bg-background text-text-secondary border border-border group-hover:border-primary/20'
+                            }`}>
+                              {['A', 'B', 'C', 'D'][idx]}
+                            </span>
+                            <span className="text-sm md:text-base pr-4 leading-normal font-semibold">{opt}</span>
+                          </div>
 
-                      {showAnswers && isCorrect && (
-                        <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
-                      )}
-                      {showAnswers && isIncorrect && (
-                        <XCircle className="w-5 h-5 text-rose-500 shrink-0" />
-                      )}
-                      {!showAnswers && (
-                        <span className="text-[10px] text-text-muted font-bold font-mono px-1.5 py-0.5 rounded bg-zinc-100 border border-border opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-                          {['A', 'B', 'C', 'D'][idx]}
-                        </span>
-                      )}
-                    </button>
-                  )
-                })}
-              </div>
+                          {showAnswers && isCorrect && (
+                            <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
+                          )}
+                          {showAnswers && isIncorrect && (
+                            <XCircle className="w-5 h-5 text-rose-500 shrink-0" />
+                          )}
+                          {!showAnswers && (
+                            <span className={`text-[10px] text-text-muted font-bold font-mono px-1.5 py-0.5 rounded bg-zinc-100 border border-border opacity-0 group-hover:opacity-100 transition-opacity shrink-0 ${isKeyPressed ? 'opacity-100 text-primary border-primary/20 bg-primary/5' : ''}`}>
+                              {['A', 'B', 'C', 'D'][idx]}
+                            </span>
+                          )}
+                        </motion.button>
+                      )
+                    })}
+                  </div>
+                </motion.div>
+              </AnimatePresence>
             </motion.div>
           )}
 

@@ -22,7 +22,137 @@ const DIMENSION_COLORS: Record<string, string> = {
 
 type TabType = 'report' | 'roast' | 'compliment'
 
+const DIMENSION_DESCRIPTIONS: Record<string, string> = {
+  leadership: 'Ability to guide, inspire, and organize others.',
+  creativity: 'Thinking outside the box and generating original ideas.',
+  empathy: 'Understanding and sharing the feelings of others.',
+  ambition: 'Drive, motivation, and goal-oriented focus.',
+  humor: 'Wit, playfulness, and bringing laughter.',
+  trustworthiness: 'Reliability, honesty, and integrity.',
+  intelligence: 'Problem-solving, critical thinking, and wisdom.',
+  charisma: 'Personal charm and magnetic social appeal.',
+  resilience: 'Capacity to recover quickly from difficulties.',
+  loyalty: 'Faithfulness, devotion, and steadfast support.',
+  confidence: 'Self-assurance, poise, and belief in oneself.',
+}
+
+function PasscodeGrid({ value, onChange, showPin, labelId }: { value: string; onChange: (v: string) => void; showPin: boolean; labelId: string }) {
+  const digits = value.split('')
+  const cells = [0, 1, 2, 3]
+
+  return (
+    <div className="relative flex items-center justify-center gap-3.5 py-3">
+      {/* Hidden input for mobile keyboard and accessibility */}
+      <input
+        id={labelId}
+        type="text"
+        pattern="[0-9]*"
+        inputMode="numeric"
+        maxLength={4}
+        value={value}
+        onChange={e => onChange(e.target.value.replace(/\D/g, '').slice(0, 4))}
+        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-25"
+      />
+      {cells.map(idx => {
+        const char = digits[idx]
+        const isFocused = value.length === idx || (value.length === 4 && idx === 3)
+        return (
+          <div
+            key={idx}
+            className={`w-12 h-14 rounded-2xl border flex items-center justify-center text-lg font-bold transition-all duration-200 bg-background/40 backdrop-blur-md ${
+              isFocused 
+                ? 'border-primary ring-4 ring-primary/10 scale-105 shadow-md shadow-primary/5' 
+                : 'border-border'
+            }`}
+          >
+            {char ? (
+              showPin ? (
+                <motion.span initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="font-display font-black text-text-primary">{char}</motion.span>
+              ) : (
+                <motion.div initial={{ scale: 0.5 }} animate={{ scale: 1 }} className="w-3.5 h-3.5 rounded-full bg-gradient-to-tr from-primary to-secondary" />
+              )
+            ) : (
+              <span className="text-text-muted/40 font-light">—</span>
+            )}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+function TiltIdentityCard({ src }: { src: string }) {
+  const [rotateX, setRotateX] = useState(0)
+  const [rotateY, setRotateY] = useState(0)
+  const [sheenX, setSheenX] = useState(50)
+  const [sheenY, setSheenY] = useState(50)
+  const [isHovered, setIsHovered] = useState(false)
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const card = e.currentTarget
+    const rect = card.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    
+    const px = x / rect.width - 0.5
+    const py = y / rect.height - 0.5
+    
+    setRotateY(px * 16)
+    setRotateX(-py * 16)
+    
+    setSheenX((x / rect.width) * 100)
+    setSheenY((y / rect.height) * 100)
+  }
+
+  const handleMouseLeave = () => {
+    setIsHovered(false)
+    setRotateX(0)
+    setRotateY(0)
+  }
+
+  return (
+    <motion.div
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={handleMouseLeave}
+      animate={{
+        rotateX: isHovered ? rotateX : 0,
+        rotateY: isHovered ? rotateY : 0,
+        scale: isHovered ? 1.03 : 1,
+      }}
+      transition={{ type: 'spring', stiffness: 220, damping: 22, mass: 0.8 }}
+      style={{ transformStyle: 'preserve-3d', perspective: 1000 }}
+      className="relative overflow-hidden rounded-2xl border border-white/10 shadow-xl max-w-xs w-full aspect-[3/4] cursor-pointer bg-zinc-950 group"
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt="Social Identity Card"
+        className="w-full h-full object-cover select-none pointer-events-none"
+      />
+      
+      {/* Glare Sheen Overlay */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none z-10 mix-blend-color-dodge transition-opacity duration-300"
+        style={{
+          background: `radial-gradient(circle 180px at ${sheenX}% ${sheenY}%, rgba(255, 255, 255, 0.28) 0%, rgba(255, 255, 255, 0) 80%)`,
+          opacity: isHovered ? 1 : 0,
+        }}
+      />
+      <div className="absolute inset-0 border border-white/5 rounded-2xl pointer-events-none z-20" />
+    </motion.div>
+  )
+}
+
 function RadarChart({ scores }: { scores: Record<string, number> }) {
+  const [isAnimated, setIsAnimated] = useState(false)
+  const [hoveredPoint, setHoveredPoint] = useState<{ x: number; y: number; label: string; score: number } | null>(null)
+
+  useEffect(() => {
+    const t = setTimeout(() => setIsAnimated(true), 150)
+    return () => clearTimeout(t)
+  }, [])
+
   const dims = Object.entries(scores)
     .sort(([, a], [, b]) => b - a)
     .slice(0, 6) // Hexagon layout
@@ -41,11 +171,12 @@ function RadarChart({ scores }: { scores: Record<string, number> }) {
   })
 
   const pointsStr = points.map(p => `${p.x},${p.y}`).join(' ')
+  const collapsedPointsStr = dims.map(() => `${cx},${cy}`).join(' ')
   const gridLevels = [0.25, 0.5, 0.75, 1]
 
   return (
     <div className="flex flex-col items-center justify-center p-2 relative">
-      <svg width="280" height="280" className="overflow-visible select-none drop-shadow-[0_4px_10px_rgba(124,58,237,0.06)]">
+      <svg width="300" height="300" viewBox="0 0 300 300" className="overflow-visible select-none drop-shadow-[0_4px_10px_rgba(124,58,237,0.06)]">
         {/* Grid Hexagons */}
         {gridLevels.map((lvl, index) => {
           const gridPoints = dims.map((_, i) => {
@@ -70,8 +201,8 @@ function RadarChart({ scores }: { scores: Record<string, number> }) {
         {points.map((p, i) => {
           const ox = cx + r * Math.cos(p.angle)
           const oy = cy + r * Math.sin(p.angle)
-          const lx = cx + (r + 16) * Math.cos(p.angle)
-          const ly = cy + (r + 10) * Math.sin(p.angle)
+          const lx = cx + (r + 18) * Math.cos(p.angle)
+          const ly = cy + (r + 12) * Math.sin(p.angle)
 
           let textAnchor: "middle" | "start" | "end" = "middle"
           if (Math.cos(p.angle) > 0.1) textAnchor = "start"
@@ -84,7 +215,7 @@ function RadarChart({ scores }: { scores: Record<string, number> }) {
                 x={lx}
                 y={ly}
                 textAnchor={textAnchor}
-                className="text-[9px] font-bold fill-zinc-600 capitalize font-display tracking-tight"
+                className="text-[10px] font-bold fill-zinc-650 capitalize font-display tracking-tight"
                 alignmentBaseline="middle"
               >
                 {p.label}
@@ -93,30 +224,81 @@ function RadarChart({ scores }: { scores: Record<string, number> }) {
           )
         })}
 
-        {/* Filled Data Polygon */}
-        <polygon
-          points={pointsStr}
+        {/* Filled Data Polygon with drawing path transition */}
+        <motion.polygon
+          animate={{ points: isAnimated ? pointsStr : collapsedPointsStr }}
+          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
           fill="rgba(124, 58, 237, 0.15)"
           stroke="#7c3aed"
-          strokeWidth="2"
-          className="transition-all duration-1000 ease-out"
+          strokeWidth="2.5"
         />
 
-        {/* Data points */}
-        {points.map((p, i) => (
-          <circle
-            key={i}
-            cx={p.x}
-            cy={p.y}
-            r="3.5"
-            fill="#7c3aed"
-            stroke="#ffffff"
-            strokeWidth="1.5"
-          />
-        ))}
+        {/* Pulsing center beacon */}
+        <circle cx={cx} cy={cy} r="3" fill="#7c3aed" />
+        <motion.circle
+          cx={cx}
+          cy={cy}
+          r="3"
+          fill="none"
+          stroke="#7c3aed"
+          strokeWidth="1"
+          animate={{ scale: [1, 3.5], opacity: [0.5, 0] }}
+          transition={{ repeat: Infinity, duration: 2, ease: "easeOut" }}
+        />
 
-        <circle cx={cx} cy={cy} r="3.5" fill="rgba(124, 58, 237, 0.4)" />
+        {/* Data points + invisible hover targets */}
+        {points.map((p, i) => (
+          <g key={i}>
+            <motion.circle
+              animate={{ cx: isAnimated ? p.x : cx, cy: isAnimated ? p.y : cy }}
+              transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+              r="4.5"
+              fill={DIMENSION_COLORS[p.label] ?? '#7c3aed'}
+              stroke="#ffffff"
+              strokeWidth="2"
+            />
+            <motion.circle
+              animate={{ cx: isAnimated ? p.x : cx, cy: isAnimated ? p.y : cy }}
+              transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+              r="18"
+              fill="transparent"
+              className="cursor-pointer"
+              onMouseEnter={() => setHoveredPoint(p)}
+              onMouseLeave={() => setHoveredPoint(null)}
+              onTouchStart={() => setHoveredPoint(p)}
+              onTouchEnd={() => setHoveredPoint(null)}
+            />
+          </g>
+        ))}
       </svg>
+
+      {/* Tooltip Overlay */}
+      <AnimatePresence>
+        {hoveredPoint && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 5 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 5 }}
+            className="absolute z-30 pointer-events-none p-3.5 bg-zinc-950/95 text-white text-xs rounded-xl shadow-xl max-w-[200px] border border-zinc-800 backdrop-blur-md"
+            style={{
+              left: hoveredPoint.x,
+              top: hoveredPoint.y - 12,
+              transform: 'translate(-50%, -100%)',
+            }}
+          >
+            <div className="font-bold font-display capitalize flex items-center justify-between gap-2.5 mb-1 text-zinc-100">
+              <span>{hoveredPoint.label}</span>
+              <span className="font-black" style={{ color: DIMENSION_COLORS[hoveredPoint.label] ?? '#7c3aed' }}>
+                {hoveredPoint.score}%
+              </span>
+            </div>
+            <div className="text-[10px] text-zinc-300 font-semibold leading-normal font-sans">
+              {DIMENSION_DESCRIPTIONS[hoveredPoint.label] ?? 'Your rating in this dimension.'}
+            </div>
+            <div className="absolute left-1/2 bottom-0 w-2 h-2 bg-zinc-950/95 border-r border-b border-zinc-800 rotate-45 -translate-x-1/2 translate-y-1/2" />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
@@ -126,6 +308,7 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
   const [pin, setPin] = useState('')
   const [showPin, setShowPin] = useState(false)
   const [pinSubmitted, setPinSubmitted] = useState(false)
+  const [mirrorUnlocking, setMirrorUnlocking] = useState(false)
   const [loading, setLoading] = useState(false)
   const [regenerating, setRegenerating] = useState(false)
   const [error, setError] = useState('')
@@ -163,22 +346,36 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
       if (!res.ok) throw new Error(data.error || 'Failed to generate report')
 
       setReport(data.report)
-      setPinSubmitted(true)
-
-      // Fetch latest response details (PIN-gated)
-      fetch(`/api/profiles/${username}/responses?pin=${encodeURIComponent(pin)}`)
-        .then(r => r.json())
-        .then(d => {
-          setResponseCount(d.total ?? 0)
-          setTimeline(d.responses ?? [])
-        })
-        .catch(() => {})
 
       if (!isRegen) {
-        // Staggered reveal animation
-        for (let i = 1; i <= 6; i++) {
-          setTimeout(() => setRevealStep(i), i * 350)
-        }
+        setMirrorUnlocking(true)
+        setTimeout(() => {
+          setMirrorUnlocking(false)
+          setPinSubmitted(true)
+
+          // Fetch latest response details (PIN-gated)
+          fetch(`/api/profiles/${username}/responses?pin=${encodeURIComponent(pin)}`)
+            .then(r => r.json())
+            .then(d => {
+              setResponseCount(d.total ?? 0)
+              setTimeline(d.responses ?? [])
+            })
+            .catch(() => {})
+
+          // Staggered reveal animation
+          for (let i = 1; i <= 6; i++) {
+            setTimeout(() => setRevealStep(i), i * 300)
+          }
+        }, 1800)
+      } else {
+        // Fetch latest response details (PIN-gated)
+        fetch(`/api/profiles/${username}/responses?pin=${encodeURIComponent(pin)}`)
+          .then(r => r.json())
+          .then(d => {
+            setResponseCount(d.total ?? 0)
+            setTimeline(d.responses ?? [])
+          })
+          .catch(() => {})
       }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
@@ -187,6 +384,17 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
       setRegenerating(false)
     }
   }
+
+  // Auto-submit when exactly 4 digits are entered
+  useEffect(() => {
+    if (pin.length === 4 && !pinSubmitted && !mirrorUnlocking && !loading) {
+      const t = setTimeout(() => {
+        handleUnlock(false)
+      }, 50)
+      return () => clearTimeout(t)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pin, pinSubmitted, mirrorUnlocking, loading])
 
   const handleDownloadCard = async (format = 'standard') => {
     try {
@@ -261,22 +469,19 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
           </div>
 
           <div className="space-y-4">
-            <div className="relative">
-              <input
-                className="w-full bg-background border border-border rounded-2xl px-5 py-3.5 text-text-primary font-black tracking-[0.3em] focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all outline-none text-center text-lg shadow-inner"
-                type={showPin ? 'text' : 'password'}
-                placeholder="••••"
+            <div className="relative flex flex-col items-center">
+              <PasscodeGrid
                 value={pin}
-                onChange={e => setPin(e.target.value.replace(/\D/g, '').slice(0, 8))}
-                onKeyDown={e => e.key === 'Enter' && handleUnlock(false)}
-                autoFocus
+                onChange={setPin}
+                showPin={showPin}
+                labelId="report-pin"
               />
               <button 
                 onClick={() => setShowPin(!showPin)} 
-                className="absolute right-4.5 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary transition-colors cursor-pointer"
+                className="mt-3.5 text-xs text-text-muted hover:text-text-primary transition-colors cursor-pointer flex items-center gap-1.5 font-bold"
                 type="button"
               >
-                {showPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                {showPin ? <><EyeOff className="w-3.5 h-3.5" /> Hide Digits</> : <><Eye className="w-3.5 h-3.5" /> Show Digits</>}
               </button>
             </div>
 
@@ -292,9 +497,9 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
 
             <button
               onClick={() => handleUnlock(false)}
-              disabled={loading || !pin.trim()}
+              disabled={loading || pin.length !== 4}
               className={`w-full py-3.5 rounded-2xl font-black text-xs md:text-sm transition-all shadow-md cursor-pointer ${
-                (loading || !pin.trim())
+                (loading || pin.length !== 4)
                   ? 'bg-zinc-100 text-zinc-400 border border-zinc-200 cursor-not-allowed shadow-none'
                   : 'bg-gradient-to-r from-primary to-secondary text-white hover:opacity-95'
               }`}
@@ -575,17 +780,7 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
 
                   {/* Server-Side Card Preview with hover tilt animation */}
                   <div className="flex flex-col items-center gap-6 mb-7">
-                    <motion.div 
-                      whileHover={{ scale: 1.025, rotateY: 3, rotateX: -3 }}
-                      className="relative overflow-hidden rounded-2xl border border-border shadow-xl max-w-xs w-full aspect-[3/4] cursor-pointer tilt-card"
-                    >
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img 
-                        src={`/api/profiles/${username}/card?pin=${encodeURIComponent(pin)}`}
-                        alt="Social Identity Card"
-                        className="w-full h-full object-cover select-none"
-                      />
-                    </motion.div>
+                    <TiltIdentityCard src={`/api/profiles/${username}/card?pin=${encodeURIComponent(pin)}`} />
                   </div>
 
                   {/* Actions */}
@@ -667,6 +862,71 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
           )}
         </AnimatePresence>
       </main>
+
+      {/* Cinematic Mirror Reveal Unlock Transition */}
+      <AnimatePresence>
+        {mirrorUnlocking && (
+          <motion.div
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background/95 backdrop-blur-md text-text-primary"
+          >
+            <div className="absolute inset-0 pointer-events-none bg-dot-grid opacity-80" />
+            
+            <div className="relative flex flex-col items-center text-center px-6">
+              {/* Pulsing mirror emoji inside a glowing ring */}
+              <div className="relative mb-8">
+                <motion.div
+                  animate={{ scale: [1, 1.08, 1], rotate: [0, 5, -5, 0] }}
+                  transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
+                  className="w-24 h-24 bg-gradient-to-tr from-primary to-secondary rounded-full flex items-center justify-center text-5xl shadow-xl shadow-primary/20 border border-white/10"
+                >
+                  🪞
+                </motion.div>
+                {/* Ripple wave */}
+                <motion.div
+                  animate={{ scale: [1, 1.6], opacity: [0.6, 0] }}
+                  transition={{ repeat: Infinity, duration: 2, ease: "easeOut" }}
+                  className="absolute inset-0 rounded-full border border-primary pointer-events-none"
+                />
+              </div>
+              
+              <motion.h2
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="font-display text-2xl md:text-3xl font-black mb-2 tracking-tight text-gradient"
+              >
+                Reflecting Your Identity...
+              </motion.h2>
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.6 }}
+                transition={{ delay: 0.4 }}
+                className="text-xs font-bold uppercase tracking-wider text-text-secondary animate-pulse"
+              >
+                Scanning social coordinates
+              </motion.p>
+            </div>
+
+            {/* Glowing Scanline sweep */}
+            <motion.div
+              initial={{ top: '0%' }}
+              animate={{ top: '100%' }}
+              transition={{ duration: 1.8, ease: "easeInOut" }}
+              className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent shadow-[0_0_12px_#7c3aed,0_0_24px_#ec4899] z-50 pointer-events-none"
+            />
+            {/* Secondary scanning wash */}
+            <motion.div
+              initial={{ top: '-10%', opacity: 0.3 }}
+              animate={{ top: '100%', opacity: 0 }}
+              transition={{ duration: 1.8, ease: "easeInOut" }}
+              className="absolute left-0 right-0 h-40 bg-gradient-to-b from-primary/10 to-transparent pointer-events-none"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

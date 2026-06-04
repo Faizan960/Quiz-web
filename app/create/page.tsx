@@ -5,11 +5,19 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { ArrowRight, ArrowLeft, Check, Copy, Sparkles, Brain, Heart, Briefcase, Zap, GraduationCap, Lock, ShieldCheck, Eye, EyeOff } from 'lucide-react'
 
-const INTEREST_OPTIONS = [
-  '💻 Tech', '🎨 Art', '🎵 Music', '📚 Books', '🎮 Gaming',
-  '⚽ Sports', '🎬 Movies', '📸 Photography', '✈️ Travel', '🍳 Cooking',
-  '🧘 Wellness', '📝 Writing', '🔬 Science', '💼 Business', '🎭 Theatre',
-  '🌱 Environment', '🧩 Puzzles', '🎸 Guitar', '🏋️ Fitness', '🐕 Pets',
+const INTEREST_CATEGORIES = [
+  {
+    name: 'Tech & Logic 💻',
+    items: ['💻 Tech', '🔬 Science', '🧩 Puzzles', '💼 Business'],
+  },
+  {
+    name: 'Art & Expression 🎨',
+    items: ['🎨 Art', '🎵 Music', '🎬 Movies', '📸 Photography', '📝 Writing', '🎭 Theatre', '🎸 Guitar'],
+  },
+  {
+    name: 'Life & Wellness 🧘',
+    items: ['⚽ Sports', '✈️ Travel', '🍳 Cooking', '🧘 Wellness', '🏋️ Fitness', '🐕 Pets', '🌱 Environment', '📚 Books'],
+  },
 ]
 
 const CATEGORIES = [
@@ -34,6 +42,52 @@ const STEP_LABELS = [
   { title: 'Question types', desc: 'Feedback domains' },
   { title: 'Secure access', desc: 'Set your privacy PIN' },
 ]
+
+function PasscodeGrid({ value, onChange, showPin, labelId }: { value: string; onChange: (v: string) => void; showPin: boolean; labelId: string }) {
+  const digits = value.split('')
+  const cells = [0, 1, 2, 3]
+
+  return (
+    <div className="relative flex items-center justify-center gap-3.5 py-3">
+      {/* Hidden input for mobile keyboard and accessibility */}
+      <input
+        id={labelId}
+        type="text"
+        pattern="[0-9]*"
+        inputMode="numeric"
+        maxLength={4}
+        value={value}
+        onChange={e => onChange(e.target.value.replace(/\D/g, '').slice(0, 4))}
+        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-25"
+      />
+      {cells.map(idx => {
+        const char = digits[idx]
+        const isFocused = value.length === idx || (value.length === 4 && idx === 3)
+        return (
+          <div
+            key={idx}
+            className={`w-12 h-14 rounded-2xl border flex items-center justify-center text-lg font-bold transition-all duration-200 bg-background/40 backdrop-blur-md ${
+              isFocused 
+                ? 'border-primary ring-4 ring-primary/10 scale-105 shadow-md shadow-primary/5' 
+                : 'border-border'
+            }`}
+          >
+            {char ? (
+              showPin ? (
+                <motion.span initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="font-display font-black text-text-primary">{char}</motion.span>
+              ) : (
+                <motion.div initial={{ scale: 0.5 }} animate={{ scale: 1 }} className="w-3.5 h-3.5 rounded-full bg-gradient-to-tr from-primary to-secondary" />
+              )
+            ) : (
+              <span className="text-text-muted/40 font-light">—</span>
+            )}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 
 export default function CreatePage() {
   const [step, setStep] = useState(0)
@@ -327,29 +381,48 @@ export default function CreatePage() {
                     Pick your interests. We use these to personalize your report.
                   </p>
 
-                  <div className="flex flex-wrap gap-2 max-h-[220px] overflow-y-auto pr-1">
-                    {INTEREST_OPTIONS.map(interest => {
-                      const isSelected = interests.includes(interest);
-                      return (
-                        <button
-                          key={interest}
-                          onClick={() => toggleInterest(interest)}
-                          className={`
-                            px-3.5 py-2 rounded-full text-xs font-bold transition-all duration-200 border cursor-pointer
-                            ${isSelected 
-                              ? 'bg-primary/15 border-primary text-primary shadow-sm' 
-                              : 'bg-background border-border text-text-secondary hover:border-primary/20 hover:bg-surface-hover'}
-                          `}
-                        >
-                          {interest}
-                        </button>
-                      )
-                    })}
+                  <div className="space-y-6 max-h-[300px] overflow-y-auto pr-1">
+                    {INTEREST_CATEGORIES.map((cat, catIdx) => (
+                      <div key={catIdx} className="space-y-2">
+                        <h3 className="text-[10px] font-black text-text-muted uppercase tracking-widest pl-1">
+                          {cat.name}
+                        </h3>
+                        <div className="flex flex-wrap gap-2">
+                          {cat.items.map(interest => {
+                            const isSelected = interests.includes(interest)
+                            return (
+                              <motion.button
+                                key={interest}
+                                whileHover={{ scale: 1.04 }}
+                                whileTap={{ scale: 0.96 }}
+                                onClick={() => toggleInterest(interest)}
+                                className={`
+                                  px-3.5 py-2.5 rounded-full text-xs font-bold transition-all duration-200 border cursor-pointer flex items-center gap-1.5
+                                  ${isSelected 
+                                    ? 'bg-primary/10 border-primary text-primary shadow-sm ring-1 ring-primary/20' 
+                                    : 'bg-background border-border text-text-secondary hover:border-primary/20 hover:bg-surface-hover'}
+                                `}
+                                type="button"
+                              >
+                                {isSelected && <Check className="w-3.5 h-3.5 text-primary" />}
+                                <span>{interest}</span>
+                              </motion.button>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                   
                   {interests.length > 0 && (
-                    <div className="mt-5 text-xs font-bold text-primary flex items-center gap-1.5">
-                      <Check className="w-3.5 h-3.5 text-emerald-500" /> {interests.length} selected
+                    <div className="mt-5 text-xs font-bold text-primary flex items-center gap-2">
+                      <div className="w-full bg-zinc-200/50 rounded-full h-1.5 overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-primary to-secondary transition-all duration-300"
+                          style={{ width: `${Math.min((interests.length / 5) * 100, 100)}%` }}
+                        />
+                      </div>
+                      <span className="shrink-0">{interests.length} selected</span>
                     </div>
                   )}
                 </div>
@@ -382,6 +455,7 @@ export default function CreatePage() {
                               ? 'bg-primary/5 border-primary shadow-sm' 
                               : 'bg-background border-border hover:border-primary/20 hover:bg-surface-hover'}
                           `}
+                          type="button"
                         >
                           <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${isSelected ? 'bg-surface border border-border' : 'bg-zinc-100'}`}>
                             {cat.icon}
@@ -420,38 +494,25 @@ export default function CreatePage() {
 
                   <div className="space-y-4">
                     <div>
-                      <label className="block text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-2">
-                        Secret PIN (minimum 4 digits)
-                      </label>
-                      <div className="relative">
-                        <input
-                          className="w-full bg-background border border-border rounded-2xl px-4.5 py-3.5 text-xs md:text-sm text-text-primary font-black tracking-[0.2em] focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all outline-none text-center"
-                          type={showPin ? 'text' : 'password'}
-                          placeholder="••••"
-                          value={pin}
-                          onChange={e => setPin(e.target.value.replace(/\D/g, '').slice(0, 8))}
-                          autoFocus
-                        />
+                      <div className="flex items-center justify-between mb-2">
+                        <label id="pin-label" className="block text-[10px] font-bold text-text-secondary uppercase tracking-wider">
+                          Secret PIN (exactly 4 digits)
+                        </label>
                         <button 
                           onClick={() => setShowPin(!showPin)} 
-                          className="absolute right-4.5 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary transition-colors cursor-pointer"
+                          className="text-[10px] text-primary hover:text-primary-light font-bold transition-colors cursor-pointer flex items-center gap-1"
                           type="button"
                         >
-                          {showPin ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          {showPin ? <><EyeOff className="w-3 h-3" /> Hide</> : <><Eye className="w-3 h-3" /> Show</>}
                         </button>
                       </div>
+                      <PasscodeGrid value={pin} onChange={setPin} showPin={showPin} labelId="pin-label" />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-2">
+                      <label id="confirm-pin-label" className="block text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-2">
                         Confirm Secret PIN
                       </label>
-                      <input
-                        className="w-full bg-background border border-border rounded-2xl px-4.5 py-3.5 text-xs md:text-sm text-text-primary font-black tracking-[0.2em] focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all outline-none text-center"
-                        type={showPin ? 'text' : 'password'}
-                        placeholder="••••"
-                        value={confirmPin}
-                        onChange={e => setConfirmPin(e.target.value.replace(/\D/g, '').slice(0, 8))}
-                      />
+                      <PasscodeGrid value={confirmPin} onChange={setConfirmPin} showPin={showPin} labelId="confirm-pin-label" />
                       {confirmPin && pin !== confirmPin && (
                         <p className="text-red-500 text-xs font-bold mt-2 text-center flex items-center gap-1 justify-center">
                           PINs do not match

@@ -49,6 +49,33 @@ interface QuestionData {
   order_num: number
 }
 
+const cardVariants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? 80 : -80,
+    opacity: 0,
+    scale: 0.98,
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+    scale: 1,
+    transition: {
+      x: { type: 'spring' as const, stiffness: 300, damping: 26 },
+      opacity: { duration: 0.2 },
+    },
+  },
+  exit: (direction: number) => ({
+    x: direction > 0 ? -80 : 80,
+    opacity: 0,
+    scale: 0.98,
+    transition: {
+      x: { type: 'spring' as const, stiffness: 300, damping: 26 },
+      opacity: { duration: 0.2 },
+    },
+  }),
+}
+
+
 interface ProfileData {
   id: string
   slug: string
@@ -68,6 +95,7 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
   // Answer flow state
   const [started, setStarted] = useState(false)
   const [currentQ, setCurrentQ] = useState(0)
+  const [direction, setDirection] = useState(1)
   const [answers, setAnswers] = useState<Record<string, { value: string; index: number }>>({})
   const [respondentName, setRespondentName] = useState('')
   const [isAnonymous, setIsAnonymous] = useState(true)
@@ -106,6 +134,7 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
     // Auto-advance after short delay
     setTimeout(() => {
       if (currentQ < questions.length - 1) {
+        setDirection(1)
         setCurrentQ(q => q + 1)
       }
     }, 400)
@@ -427,13 +456,14 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
 
       {/* Question Card */}
       <div className="flex-1 flex flex-col items-center justify-center p-6 relative z-10 w-full">
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={question.id}
-            initial={{ opacity: 0, x: 15 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -15 }}
-            transition={{ duration: 0.25 }}
+            custom={direction}
+            variants={cardVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
             className="w-full max-w-xl"
           >
             {/* Question number */}
@@ -465,7 +495,7 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
                     `}
                   >
                     <div className={`
-                      w-8.5 h-8.5 rounded-lg flex-shrink-0 flex items-center justify-center text-xs font-black transition-colors relative
+                       w-8.5 h-8.5 rounded-lg flex-shrink-0 flex items-center justify-center text-xs font-black transition-colors relative
                       ${isSelected ? 'bg-primary text-white shadow-sm' : 'bg-background border border-border text-text-secondary'}
                     `}>
                       {isSelected ? (
@@ -489,7 +519,7 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
             <div className="flex gap-4 mt-8">
               {currentQ > 0 && (
                 <button
-                  onClick={() => setCurrentQ(q => q - 1)}
+                  onClick={() => { setDirection(-1); setCurrentQ(q => q - 1) }}
                   className="flex items-center justify-center gap-1.5 flex-1 max-w-[120px] bg-background border border-border text-text-secondary hover:bg-surface hover:border-primary/20 rounded-xl py-3.5 text-xs md:text-sm font-bold transition-all shadow-sm cursor-pointer"
                 >
                   <ArrowLeft className="w-4 h-4" /> Prev
@@ -497,7 +527,7 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
               )}
               {currentQ < questions.length - 1 ? (
                 <button
-                  onClick={() => answers[question.id] && setCurrentQ(q => q + 1)}
+                  onClick={() => { if (answers[question.id]) { setDirection(1); setCurrentQ(q => q + 1) } }}
                   disabled={!answers[question.id]}
                   className={`flex items-center justify-center gap-1.5 flex-1 rounded-xl py-3.5 text-xs md:text-sm font-bold transition-all shadow-md cursor-pointer ${
                     answers[question.id] 
