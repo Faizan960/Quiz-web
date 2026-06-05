@@ -16,6 +16,7 @@
   
   --font-display: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
   --font-body: var(--font-dm), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-serif), Georgia, serif;
 }
 
 @layer base {
@@ -39,6 +40,47 @@
 }
 
 @layer utilities {
+  .font-serif-editorial {
+    font-family: var(--font-serif);
+  }
+
+  .btn-premium-solid {
+    background-color: #09090b;
+    color: #faf8f5;
+    border: 2px solid #09090b;
+    box-shadow: 3px 3px 0px 0px #ebe7e0;
+    transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .btn-premium-solid:hover:not(:disabled) {
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0px 0px #09090b;
+  }
+
+  .btn-premium-solid:active:not(:disabled) {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0px 0px #09090b;
+  }
+
+  .btn-premium-outline {
+    background-color: transparent;
+    color: #09090b;
+    border: 2px solid #09090b;
+    box-shadow: 3px 3px 0px 0px rgba(9, 9, 11, 0.1);
+    transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s;
+  }
+
+  .btn-premium-outline:hover:not(:disabled) {
+    background-color: #fcfbf9;
+    transform: translate(-1px, -1px);
+    box-shadow: 4px 4px 0px 0px #09090b;
+  }
+
+  .btn-premium-outline:active:not(:disabled) {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0px 0px #09090b;
+  }
+
   .text-gradient {
     background: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
     -webkit-background-clip: text;

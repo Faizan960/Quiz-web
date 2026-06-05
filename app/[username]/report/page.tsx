@@ -60,17 +60,17 @@ function PasscodeGrid({ value, onChange, showPin, labelId }: { value: string; on
         return (
           <div
             key={idx}
-            className={`w-12 h-14 rounded-2xl border flex items-center justify-center text-lg font-bold transition-all duration-200 bg-background/40 backdrop-blur-md ${
+            className={`w-12 h-14 rounded-xl border-2 flex items-center justify-center text-lg font-bold transition-all duration-200 bg-[#fcfbf9] ${
               isFocused 
-                ? 'border-primary ring-4 ring-primary/10 scale-105 shadow-md shadow-primary/5' 
-                : 'border-border'
+                ? 'border-text-primary shadow-[3px_3px_0px_0px_rgba(9,9,11,1)] scale-105' 
+                : 'border-border text-text-muted'
             }`}
           >
             {char ? (
               showPin ? (
                 <motion.span initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="font-display font-black text-text-primary">{char}</motion.span>
               ) : (
-                <motion.div initial={{ scale: 0.5 }} animate={{ scale: 1 }} className="w-3.5 h-3.5 rounded-full bg-gradient-to-tr from-primary to-secondary" />
+                <motion.div initial={{ scale: 0.5 }} animate={{ scale: 1 }} className="w-3.5 h-3.5 rounded-full bg-text-primary" />
               )
             ) : (
               <span className="text-text-muted/40 font-light">—</span>
@@ -123,7 +123,7 @@ function TiltIdentityCard({ src }: { src: string }) {
       }}
       transition={{ type: 'spring', stiffness: 220, damping: 22, mass: 0.8 }}
       style={{ transformStyle: 'preserve-3d', perspective: 1000 }}
-      className="relative overflow-hidden rounded-2xl border border-white/10 shadow-xl max-w-xs w-full aspect-[3/4] cursor-pointer bg-zinc-950 group"
+      className="relative overflow-hidden rounded-2xl border-2 border-text-primary shadow-[6px_6px_0px_0px_rgba(9,9,11,1)] max-w-xs w-full aspect-[3/4] cursor-pointer bg-zinc-950 group"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -177,7 +177,7 @@ function RadarChart({ scores }: { scores: Record<string, number> }) {
 
   return (
     <div className="flex flex-col items-center justify-center p-2 relative">
-      <svg width="300" height="300" viewBox="0 0 300 300" className="overflow-visible select-none drop-shadow-[0_4px_10px_rgba(124,58,237,0.06)]">
+      <svg width="300" height="300" viewBox="0 0 300 300" className="overflow-visible select-none drop-shadow-[0_4px_10px_rgba(9,9,11,0.06)]">
         {/* Grid Hexagons */}
         {gridLevels.map((lvl, index) => {
           const gridPoints = dims.map((_, i) => {
@@ -216,7 +216,7 @@ function RadarChart({ scores }: { scores: Record<string, number> }) {
                 x={lx}
                 y={ly}
                 textAnchor={textAnchor}
-                className="text-[10px] font-bold fill-zinc-650 capitalize font-display tracking-tight"
+                className="text-[10px] font-bold fill-zinc-650 capitalize font-mono tracking-tight"
                 alignmentBaseline="middle"
               >
                 {p.label}
@@ -229,19 +229,19 @@ function RadarChart({ scores }: { scores: Record<string, number> }) {
         <motion.polygon
           animate={{ points: isAnimated ? pointsStr : collapsedPointsStr }}
           transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          fill="rgba(124, 58, 237, 0.15)"
-          stroke="#7c3aed"
+          fill="rgba(9, 9, 11, 0.05)"
+          stroke="#09090b"
           strokeWidth="2.5"
         />
 
         {/* Pulsing center beacon */}
-        <circle cx={cx} cy={cy} r="3" fill="#7c3aed" />
+        <circle cx={cx} cy={cy} r="3" fill="#09090b" />
         <motion.circle
           cx={cx}
           cy={cy}
           r="3"
           fill="none"
-          stroke="#7c3aed"
+          stroke="#09090b"
           strokeWidth="1"
           animate={{ scale: [1, 3.5], opacity: [0.5, 0] }}
           transition={{ repeat: Infinity, duration: 2, ease: "easeOut" }}
@@ -254,9 +254,9 @@ function RadarChart({ scores }: { scores: Record<string, number> }) {
               animate={{ cx: isAnimated ? p.x : cx, cy: isAnimated ? p.y : cy }}
               transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
               r="4.5"
-              fill={DIMENSION_COLORS[p.label] ?? '#7c3aed'}
-              stroke="#ffffff"
-              strokeWidth="2"
+              fill={DIMENSION_COLORS[p.label] ?? '#09090b'}
+              stroke="#09090b"
+              strokeWidth="2.5"
             />
             <motion.circle
               animate={{ cx: isAnimated ? p.x : cx, cy: isAnimated ? p.y : cy }}
@@ -287,7 +287,7 @@ function RadarChart({ scores }: { scores: Record<string, number> }) {
               transform: 'translate(-50%, -100%)',
             }}
           >
-            <div className="font-bold font-display capitalize flex items-center justify-between gap-2.5 mb-1 text-zinc-100">
+            <div className="font-bold font-mono capitalize flex items-center justify-between gap-2.5 mb-1 text-zinc-100">
               <span>{hoveredPoint.label}</span>
               <span className="font-black" style={{ color: DIMENSION_COLORS[hoveredPoint.label] ?? '#7c3aed' }}>
                 {hoveredPoint.score}%
@@ -448,23 +448,23 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative z-10 w-full max-w-sm glass-card p-6 md:p-8 text-center border border-border shadow-md bg-surface"
+          className="relative z-10 w-full max-w-sm glass-card p-6 md:p-8 text-center border border-border bg-surface"
         >
-          <div className="w-12 h-12 bg-primary/10 border border-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-5 text-primary shadow-sm">
+          <div className="w-12 h-12 bg-[#fcfbf9] border-2 border-text-primary rounded-2xl flex items-center justify-center mx-auto mb-5 text-text-primary shadow-[2.5px_2.5px_0px_0px_rgba(9,9,11,1)]">
             <Lock className="w-5 h-5" />
           </div>
           
-          <h1 className="font-display text-xl md:text-2xl font-black mb-2 text-text-primary">Unlock Your Report</h1>
+          <h1 className="font-display text-xl md:text-2xl font-black mb-2 text-text-primary tracking-tight">Unlock Your Report</h1>
           <p className="text-text-secondary text-xs mb-6 font-semibold">
             Enter the access PIN you set during creation.
           </p>
 
           {/* Response count */}
           <div className={`
-            inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold mb-7 border
-            ${responseCount >= 3 ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-pink-50 text-pink-500 border-pink-200'}
+            inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold mb-7 border-2 border-text-primary font-mono bg-white shadow-[1.5px_1.5px_0px_0px_rgba(9,9,11,1)]
+            ${responseCount >= 3 ? 'text-emerald-600' : 'text-pink-500'}
           `}>
-            {responseCount >= 3 ? <CheckCircle2 className="w-3.5 h-3.5" /> : <span className="text-xs">⏳</span>} 
+            {responseCount >= 3 ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> : <span className="text-xs">⏳</span>} 
             <span>{responseCount} response{responseCount !== 1 ? 's' : ''} collected</span>
             {responseCount < 3 && <span className="opacity-75 font-semibold">({3 - responseCount} more needed)</span>}
           </div>
@@ -479,7 +479,7 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
               />
               <button 
                 onClick={() => setShowPin(!showPin)} 
-                className="mt-3.5 text-xs text-text-muted hover:text-text-primary transition-colors cursor-pointer flex items-center gap-1.5 font-bold"
+                className="mt-3.5 text-xs text-text-muted hover:text-text-primary transition-colors cursor-pointer flex items-center gap-1.5 font-bold font-mono"
                 type="button"
               >
                 {showPin ? <><EyeOff className="w-3.5 h-3.5" /> Hide Digits</> : <><Eye className="w-3.5 h-3.5" /> Show Digits</>}
@@ -490,7 +490,7 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
               <motion.div
                 initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-500 text-xs font-bold"
+                className="p-3 rounded-xl bg-red-50 border-2 border-red-200 text-red-500 text-xs font-bold"
               >
                 {error}
               </motion.div>
@@ -499,17 +499,17 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
             <button
               onClick={() => handleUnlock(false)}
               disabled={loading || pin.length !== 4}
-              className={`w-full py-3.5 rounded-2xl font-black text-xs md:text-sm transition-all shadow-md cursor-pointer ${
+              className={`w-full py-3.5 rounded-2xl font-black text-xs md:text-sm transition-all cursor-pointer ${
                 (loading || pin.length !== 4)
-                  ? 'bg-zinc-100 text-zinc-400 border border-zinc-200 cursor-not-allowed shadow-none'
-                  : 'bg-gradient-to-r from-primary to-secondary text-white hover:opacity-95'
+                  ? 'bg-zinc-150 text-zinc-400 border border-zinc-200 cursor-not-allowed shadow-none'
+                  : 'btn-premium-solid'
               }`}
             >
               {loading ? 'Unlocking...' : 'Unlock Report 🪞'}
             </button>
           </div>
 
-          <Link href={`/${username}`} className="inline-flex items-center gap-1 mt-6 text-xs text-text-secondary hover:text-text-primary transition-colors font-bold cursor-pointer">
+          <Link href={`/${username}`} className="inline-flex items-center gap-1 mt-6 text-xs text-text-secondary hover:text-text-primary transition-colors font-bold cursor-pointer font-mono uppercase tracking-wider">
             <ArrowLeft className="w-3.5 h-3.5" /> Back to share link
           </Link>
         </motion.div>
@@ -534,19 +534,19 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
       <nav className="glass-panel sticky top-0 z-50 flex items-center justify-between px-6 py-4 md:px-10 border-b border-border">
         <Link href="/" className="flex items-center gap-2">
           <span className="text-lg">🪞</span>
-          <span className="text-gradient font-display font-black text-sm md:text-base tracking-tight">Social Mirror</span>
+          <span className="font-display font-black text-sm md:text-base tracking-tight text-text-primary">Social Mirror</span>
         </Link>
         <div className="flex items-center gap-2.5">
           <button
             onClick={() => handleUnlock(true)}
             disabled={regenerating}
-            className="px-3.5 py-1.5 rounded-xl bg-primary/10 border border-primary/20 text-[10px] font-bold text-primary flex items-center gap-1 shadow-sm hover:bg-primary/20 transition-colors cursor-pointer"
+            className="px-3.5 py-1.5 rounded-xl btn-premium-outline text-[10px] font-bold flex items-center gap-1 cursor-pointer shadow-none"
           >
             <Sparkles className={`w-3 h-3 ${regenerating ? 'animate-spin' : ''}`} />
             {regenerating ? 'Syncing...' : 'Sync Data'}
           </button>
-          <div className="px-3.5 py-1.5 rounded-xl bg-sky-50 border border-sky-200 text-[10px] font-bold text-sky-600 flex items-center gap-1 shadow-sm">
-            <BarChart3 className="w-3 h-3" /> {report.response_count} responses
+          <div className="px-3.5 py-1.5 rounded-xl border-2 border-text-primary bg-white text-[10px] font-bold text-text-primary flex items-center gap-1 shadow-[1.5px_1.5px_0px_0px_rgba(9,9,11,1)] font-mono">
+            <BarChart3 className="w-3 h-3" /> {report.response_count} RESPONSES
           </div>
         </div>
       </nav>
@@ -561,7 +561,7 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
             className="text-center mb-12"
           >
             <div className="text-5xl md:text-7xl mb-5 drop-shadow-sm">{report.archetype_emoji}</div>
-            <div className="font-display text-3xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-3.5 tracking-tight leading-tight">
+            <div className="font-display text-3xl md:text-5xl lg:text-6xl font-black text-text-primary mb-3.5 tracking-tighter leading-tight">
               {report.archetype}
             </div>
             <p className="text-text-secondary text-xs sm:text-sm md:text-base leading-relaxed max-w-lg mx-auto font-semibold">
@@ -571,7 +571,7 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
         )}
 
         {/* Tab Switcher */}
-        <div className="flex bg-background/80 p-1 rounded-2xl border border-border shadow-inner mb-8 relative">
+        <div className="flex bg-[#fcfbf9] p-1 rounded-2xl border-2 border-text-primary shadow-sm mb-8 relative">
           {[
             { id: 'report' as TabType, label: 'Report', icon: <BarChart3 className="w-4 h-4" /> },
             { id: 'roast' as TabType, label: 'Roast', icon: <Flame className="w-4 h-4" /> },
@@ -583,13 +583,14 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
               className={`flex-1 relative flex items-center justify-center gap-1.5 py-3 rounded-xl text-xs md:text-sm font-bold transition-colors duration-300 cursor-pointer ${
                 tab === t.id 
                   ? 'text-white' 
-                  : 'text-text-secondary hover:bg-zinc-100'
+                  : 'text-text-secondary hover:bg-zinc-150'
               }`}
+              style={{ color: tab === t.id ? '#faf8f5' : 'var(--color-text-secondary)' }}
             >
               {tab === t.id && (
                 <motion.div
                   layoutId="activeTab"
-                  className="absolute inset-0 bg-gradient-to-r from-primary to-secondary rounded-xl shadow-md"
+                  className="absolute inset-0 bg-text-primary rounded-xl shadow-[2px_2px_0px_0px_rgba(9,9,11,0.15)]"
                   transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
                 />
               )}
@@ -608,19 +609,19 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="space-y-5"
+              className="space-y-8"
             >
               {/* Scores */}
               {revealStep >= 2 && (
                 <TiltCard
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  accentColor="rgba(124, 58, 237, 0.3)"
+                  accentColor="rgba(9, 9, 11, 0.15)"
                   borderRadius={28}
                 >
-                  <div className="glass-card p-5 md:p-7 border border-border shadow-md bg-surface h-full">
-                    <h3 className="font-display text-base md:text-lg font-bold mb-5 flex items-center gap-1.5 text-text-primary">
-                      <BarChart3 className="w-4.5 h-4.5 text-primary" /> Character Dimension Radar
+                  <div className="glass-card p-5 md:p-7 border border-border shadow-md bg-surface h-full hover:card-offset hover:border-text-primary transition-all duration-300">
+                    <h3 className="font-display text-base md:text-lg font-black mb-5 flex items-center gap-1.5 text-text-primary">
+                      <BarChart3 className="w-4.5 h-4.5 text-text-primary" /> Character Dimension Radar
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
                       {/* Radar Chart */}
@@ -636,17 +637,17 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
                             transition={{ delay: i * 0.08 }}
                           >
                             <div className="flex justify-between items-end mb-1">
-                              <span className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">{dim}</span>
-                              <span className="text-xs font-black" style={{ color: DIMENSION_COLORS[dim] ?? '#a78bfa' }}>
+                              <span className="text-[10px] font-bold text-text-secondary uppercase tracking-wider font-mono">{dim}</span>
+                              <span className="text-xs font-black font-mono" style={{ color: DIMENSION_COLORS[dim] ?? '#a78bfa' }}>
                                 {score}%
                               </span>
                             </div>
-                            <div className="w-full h-1.5 bg-zinc-100 rounded-full overflow-hidden border border-zinc-200/60">
+                            <div className="w-full h-2.5 bg-[#f5f3f0] rounded-full overflow-hidden border-2 border-text-primary">
                               <motion.div
                                 initial={{ width: 0 }}
                                 animate={{ width: `${score}%` }}
                                 transition={{ delay: 0.25 + i * 0.08, duration: 1, type: 'spring', bounce: 0.25 }}
-                                className="h-full rounded-full"
+                                className="h-full rounded-full border-r border-text-primary"
                                 style={{ background: DIMENSION_COLORS[dim] ?? '#a78bfa' }}
                               />
                             </div>
@@ -658,23 +659,23 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
                 </TiltCard>
               )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Strengths */}
                 {revealStep >= 3 && (
                   <TiltCard
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    accentColor="rgba(16, 185, 129, 0.3)"
+                    accentColor="rgba(9, 9, 11, 0.15)"
                     borderRadius={24}
                   >
-                    <div className="glass-card p-5 md:p-6 border border-border bg-surface h-full">
-                      <h3 className="font-display text-base font-bold mb-4.5 flex items-center gap-1.5 text-text-primary">
-                        <Sparkles className="w-4.5 h-4.5 text-accent" /> Key Strengths
+                    <div className="glass-card p-5 md:p-6 border border-border bg-surface h-full hover:card-offset hover:border-text-primary transition-all duration-300">
+                      <h3 className="font-display text-base font-black mb-4.5 flex items-center gap-1.5 text-text-primary">
+                        <Sparkles className="w-4.5 h-4.5 text-text-primary" /> Key Strengths
                       </h3>
-                      <div className="space-y-2.5">
+                      <div className="space-y-3">
                         {report.strengths.map((s, i) => (
-                          <div key={i} className="flex items-start gap-2.5 p-3 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-600 text-xs md:text-sm font-semibold">
-                            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                          <div key={i} className="flex items-start gap-2.5 p-3.5 rounded-xl bg-[#fcfbf9] border-2 border-text-primary text-text-primary text-xs md:text-sm font-bold shadow-[2px_2px_0px_0px_rgba(9,9,11,1)]">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                             <span>{s}</span>
                           </div>
                         ))}
@@ -688,17 +689,17 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
                   <TiltCard
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    accentColor="rgba(236, 72, 153, 0.3)"
+                    accentColor="rgba(9, 9, 11, 0.15)"
                     borderRadius={24}
                   >
-                    <div className="glass-card p-5 md:p-6 border border-border bg-surface h-full">
-                      <h3 className="font-display text-base font-bold mb-4.5 flex items-center gap-1.5 text-text-primary">
-                        <Target className="w-4.5 h-4.5 text-secondary" /> Growth Areas
+                    <div className="glass-card p-5 md:p-6 border border-border bg-surface h-full hover:card-offset hover:border-text-primary transition-all duration-300">
+                      <h3 className="font-display text-base font-black mb-4.5 flex items-center gap-1.5 text-text-primary">
+                        <Target className="w-4.5 h-4.5 text-text-primary" /> Growth Areas
                       </h3>
-                      <div className="space-y-2.5">
+                      <div className="space-y-3">
                         {report.weaknesses.map((w, i) => (
-                          <div key={i} className="flex items-start gap-2.5 p-3 rounded-xl bg-pink-50 border border-pink-100 text-pink-500 text-xs md:text-sm font-semibold">
-                            <ArrowRight className="w-4 h-4 text-pink-450 shrink-0 mt-0.5" />
+                          <div key={i} className="flex items-start gap-2.5 p-3.5 rounded-xl bg-[#fcfbf9] border-2 border-text-primary text-text-primary text-xs md:text-sm font-bold shadow-[2px_2px_0px_0px_rgba(9,9,11,1)]">
+                            <ArrowRight className="w-4 h-4 text-text-primary shrink-0 mt-0.5" />
                             <span>{w}</span>
                           </div>
                         ))}
@@ -710,22 +711,22 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
 
               {/* Hidden Talent + Friend Impression */}
               {revealStep >= 5 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <TiltCard
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    accentColor="rgba(124, 58, 237, 0.3)"
+                    accentColor="rgba(9, 9, 11, 0.15)"
                     borderRadius={24}
                   >
-                    <div className="glass-card p-5 md:p-6 relative overflow-hidden group border border-border bg-surface h-full">
+                    <div className="glass-card p-5 md:p-6 relative overflow-hidden group border border-border bg-surface h-full hover:card-offset hover:border-text-primary transition-all duration-300">
                       <div className="absolute top-0 right-0 p-4 opacity-[0.04] transform translate-x-3 -translate-y-3 group-hover:scale-105 transition-transform duration-500 pointer-events-none">
-                        <Sparkles className="w-20 h-20 text-primary" />
+                        <Sparkles className="w-20 h-20 text-text-primary" />
                       </div>
-                      <div className="w-9 h-9 bg-primary/10 text-primary rounded-xl flex items-center justify-center mb-3.5">
+                      <div className="w-9 h-9 bg-background border-2 border-text-primary text-text-primary rounded-xl flex items-center justify-center mb-3.5 shadow-[1.5px_1.5px_0px_0px_rgba(9,9,11,1)]">
                         <Target className="w-4.5 h-4.5" />
                       </div>
-                      <div className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1.5">Hidden Talent</div>
-                      <div className="text-xs md:text-sm text-text-primary font-semibold leading-relaxed relative z-10">
+                      <div className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1.5 font-mono">Hidden Talent</div>
+                      <div className="text-xs md:text-sm text-text-primary font-bold leading-relaxed relative z-10">
                         {report.hidden_talent}
                       </div>
                     </div>
@@ -734,18 +735,18 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
                   <TiltCard
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    accentColor="rgba(236, 72, 153, 0.3)"
+                    accentColor="rgba(9, 9, 11, 0.15)"
                     borderRadius={24}
                   >
-                    <div className="glass-card p-5 md:p-6 relative overflow-hidden group border border-border bg-surface h-full">
+                    <div className="glass-card p-5 md:p-6 relative overflow-hidden group border border-border bg-surface h-full hover:card-offset hover:border-text-primary transition-all duration-300">
                       <div className="absolute top-0 right-0 p-4 opacity-[0.04] transform translate-x-3 -translate-y-3 group-hover:scale-105 transition-transform duration-500 pointer-events-none">
-                        <MessageCircle className="w-20 h-20 text-pink-500" />
+                        <MessageCircle className="w-20 h-20 text-text-primary" />
                       </div>
-                      <div className="w-9 h-9 bg-secondary/10 text-secondary rounded-xl flex items-center justify-center mb-3.5">
+                      <div className="w-9 h-9 bg-background border-2 border-text-primary text-text-primary rounded-xl flex items-center justify-center mb-3.5 shadow-[1.5px_1.5px_0px_0px_rgba(9,9,11,1)]">
                         <MessageCircle className="w-4.5 h-4.5" />
                       </div>
-                      <div className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1.5">Friend Impression</div>
-                      <div className="text-xs md:text-sm text-text-primary font-semibold leading-relaxed relative z-10">
+                      <div className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1.5 font-mono">Friend Impression</div>
+                      <div className="text-xs md:text-sm text-text-primary font-bold leading-relaxed relative z-10">
                         {report.friend_impression}
                       </div>
                     </div>
@@ -758,14 +759,14 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
                 <TiltCard
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  accentColor="rgba(14, 165, 233, 0.3)"
+                  accentColor="rgba(9, 9, 11, 0.1)"
                   borderRadius={28}
                 >
-                  <div className="glass-card p-5 md:p-7 border border-border shadow-sm bg-surface h-full">
-                    <h3 className="font-display text-base md:text-lg font-bold mb-5 flex items-center gap-1.5 text-text-primary">
-                      <CheckCircle2 className="w-4.5 h-4.5 text-accent" /> Submission History
+                  <div className="glass-card p-5 md:p-7 border border-border shadow-sm bg-surface h-full hover:card-offset hover:border-text-primary transition-all duration-300">
+                    <h3 className="font-display text-base md:text-lg font-black mb-5 flex items-center gap-1.5 text-text-primary">
+                      <CheckCircle2 className="w-4.5 h-4.5 text-text-primary" /> Submission History
                     </h3>
-                    <div className="relative border-l border-border ml-3 pl-5 space-y-5">
+                    <div className="relative border-l-2 border-text-primary ml-3 pl-5 space-y-5">
                       {timeline.map((item) => {
                         const date = new Date(item.created_at).toLocaleDateString(undefined, {
                           month: 'short',
@@ -776,12 +777,12 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
                         return (
                           <div key={item.id} className="relative">
                             {/* Timeline bullet */}
-                            <div className="absolute -left-[24.5px] top-1 w-2.5 h-2.5 rounded-full border border-surface bg-primary shadow-sm" />
+                            <div className="absolute -left-[26px] top-1 w-3.5 h-3.5 rounded-full border-2 border-text-primary bg-background shadow-sm" />
                             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
-                              <span className="text-xs md:text-sm font-semibold text-text-primary">
+                              <span className="text-xs md:text-sm font-bold text-text-primary">
                                 {item.is_anonymous ? '🕶️ An anonymous friend' : `👤 ${item.respondent_name}`} completed the mirror
                               </span>
-                              <span className="text-[10px] md:text-xs font-bold text-text-muted">{date}</span>
+                              <span className="text-[10px] md:text-xs font-bold text-text-muted font-mono">{date}</span>
                             </div>
                           </div>
                         )
@@ -796,37 +797,46 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
                 <motion.div
                   initial={{ opacity: 0, scale: 0.96 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="pt-6"
+                  className="pt-6 border-t border-border"
                 >
-                  <h3 className="font-display text-base md:text-lg font-bold mb-5 flex items-center gap-1.5 text-text-primary">
-                    <Share2 className="w-4.5 h-4.5 text-primary" /> Social Identity Card
+                  <h3 className="font-display text-base md:text-lg font-black mb-6 flex items-center gap-1.5 text-text-primary">
+                    <Share2 className="w-4.5 h-4.5 text-text-primary" /> Social Identity Card
                   </h3>
 
-                  {/* Server-Side Card Preview with hover tilt animation */}
-                  <div className="flex flex-col items-center gap-6 mb-7">
-                    <TiltIdentityCard src={`/api/profiles/${username}/card?pin=${encodeURIComponent(pin)}`} />
-                  </div>
-
-                  {/* Actions */}
-                  <div className="grid grid-cols-3 gap-2.5 max-w-md mx-auto relative z-10">
-                    <button 
-                      onClick={() => handleDownloadCard('standard')} 
-                      className="flex items-center justify-center gap-1.5 py-3.5 bg-gradient-to-r from-primary to-secondary text-white rounded-xl text-xs font-bold hover:opacity-95 hover:scale-[1.01] active:scale-[0.99] transition-all shadow-md shadow-primary/10 cursor-pointer border-0"
-                    >
-                      <Download className="w-4 h-4" /> Card
-                    </button>
-                    <button 
-                      onClick={() => handleDownloadCard('story')} 
-                      className="flex items-center justify-center gap-1.5 py-3.5 bg-background border border-border text-text-primary rounded-xl text-xs font-bold hover:bg-surface hover:border-primary/20 hover:scale-[1.01] active:scale-[0.99] transition-all shadow-sm cursor-pointer"
-                    >
-                      <Camera className="w-4 h-4 text-secondary" /> Story
-                    </button>
-                    <button
-                      onClick={handleShareCard}
-                      className="flex items-center justify-center gap-1.5 py-3.5 bg-background border border-border text-text-primary rounded-xl text-xs font-bold hover:bg-surface hover:border-primary/20 hover:scale-[1.01] active:scale-[0.99] transition-all shadow-sm cursor-pointer"
-                    >
-                      <Share2 className="w-4 h-4 text-primary" /> Share
-                    </button>
+                  {/* Asymmetrical layout: Card Left, Details & Downloads Right */}
+                  <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+                    <div className="md:col-span-5 flex justify-center">
+                      <TiltIdentityCard src={`/api/profiles/${username}/card?pin=${encodeURIComponent(pin)}`} />
+                    </div>
+                    
+                    <div className="md:col-span-7 space-y-4">
+                      <h4 className="font-display text-lg md:text-xl font-black text-text-primary tracking-tight">Export Your Card</h4>
+                      <p className="text-xs text-text-secondary leading-relaxed font-semibold">
+                        Download your server-rendered Social Identity Card in high definition. Formatted perfectly for sharing on Instagram stories, Snapchat, or save it to your phone.
+                      </p>
+                      
+                      {/* Actions */}
+                      <div className="flex flex-col sm:flex-row gap-3 pt-2 relative z-10 w-full">
+                        <button 
+                          onClick={() => handleDownloadCard('standard')} 
+                          className="btn-premium-solid flex items-center justify-center gap-1.5 py-3 px-5 rounded-xl text-xs font-bold cursor-pointer animate-none transition-all"
+                        >
+                          <Download className="w-4 h-4" /> Download Card
+                        </button>
+                        <button 
+                          onClick={() => handleDownloadCard('story')} 
+                          className="btn-premium-outline flex items-center justify-center gap-1.5 py-3 px-5 rounded-xl text-xs font-bold cursor-pointer"
+                        >
+                          <Camera className="w-4 h-4 text-text-primary" /> Story (9:16)
+                        </button>
+                        <button
+                          onClick={handleShareCard}
+                          className="btn-premium-outline flex items-center justify-center gap-1.5 py-3 px-5 rounded-xl text-xs font-bold cursor-pointer"
+                        >
+                          <Share2 className="w-4 h-4 text-text-primary" /> Share Link
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </motion.div>
               )}
@@ -841,18 +851,18 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
             >
-              <div className="glass-card p-6 md:p-10 text-center relative overflow-hidden border border-border shadow-md bg-surface">
+              <div className="glass-card p-6 md:p-10 text-center relative overflow-hidden border-2 border-text-primary bg-surface shadow-[4px_4px_0px_0px_rgba(9,9,11,1)]">
                 <div className="absolute top-0 right-0 p-6 opacity-[0.04] pointer-events-none">
-                  <Flame className="w-40 h-40 text-secondary animate-pulse" />
+                  <Flame className="w-40 h-40 text-text-primary" />
                 </div>
                 <div className="text-4xl mb-4 relative z-10">🔥</div>
-                <h3 className="font-display text-lg md:text-xl font-black mb-5 text-text-primary relative z-10">
+                <h3 className="font-display text-lg md:text-xl font-black mb-5 text-text-primary relative z-10 tracking-tight">
                   Your Social Roast
                 </h3>
-                <p className="text-sm sm:text-base md:text-lg text-text-secondary leading-relaxed max-w-xl mx-auto font-semibold relative z-10">
+                <p className="text-sm sm:text-base md:text-lg text-text-primary leading-relaxed max-w-xl mx-auto font-serif-editorial italic font-normal relative z-10">
                   &quot;{report.roast}&quot;
                 </p>
-                <div className="mt-7 pt-4.5 border-t border-border text-[10px] md:text-xs font-bold text-text-muted relative z-10">
+                <div className="mt-7 pt-4.5 border-t border-border text-[10px] md:text-xs font-bold text-text-muted relative z-10 font-mono">
                   Based on {report.response_count} response{report.response_count !== 1 ? 's' : ''}. All in good fun! 😂
                 </div>
               </div>
@@ -867,18 +877,18 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
             >
-              <div className="glass-card p-6 md:p-10 text-center relative overflow-hidden border border-border shadow-md bg-surface">
+              <div className="glass-card p-6 md:p-10 text-center relative overflow-hidden border-2 border-text-primary bg-surface shadow-[4px_4px_0px_0px_rgba(9,9,11,1)]">
                 <div className="absolute top-0 left-0 p-6 opacity-[0.04] pointer-events-none">
-                  <Heart className="w-40 h-40 text-pink-500 animate-pulse" />
+                  <Heart className="w-40 h-40 text-text-primary" />
                 </div>
                 <div className="text-4xl mb-4 relative z-10">💖</div>
-                <h3 className="font-display text-lg md:text-xl font-black mb-5 text-text-primary relative z-10">
+                <h3 className="font-display text-lg md:text-xl font-black mb-5 text-text-primary relative z-10 tracking-tight">
                   Your Social Compliment
                 </h3>
-                <p className="text-sm sm:text-base md:text-lg text-text-secondary leading-relaxed max-w-xl mx-auto font-semibold relative z-10">
+                <p className="text-sm sm:text-base md:text-lg text-text-primary leading-relaxed max-w-xl mx-auto font-serif-editorial italic font-normal relative z-10">
                   &quot;{report.compliment}&quot;
                 </p>
-                <div className="mt-7 pt-4.5 border-t border-border text-[10px] md:text-xs font-bold text-text-muted relative z-10">
+                <div className="mt-7 pt-4.5 border-t border-border text-[10px] md:text-xs font-bold text-text-muted relative z-10 font-mono">
                   Based on {report.response_count} response{report.response_count !== 1 ? 's' : ''}. Woven with care! 🥰
                 </div>
               </div>
@@ -904,7 +914,7 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
                 <motion.div
                   animate={{ scale: [1, 1.08, 1], rotate: [0, 5, -5, 0] }}
                   transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-                  className="w-24 h-24 bg-gradient-to-tr from-primary to-secondary rounded-full flex items-center justify-center text-5xl shadow-xl shadow-primary/20 border border-white/10"
+                  className="w-24 h-24 bg-[#fcfbf9] border-2 border-text-primary rounded-full flex items-center justify-center text-5xl shadow-[4px_4px_0px_0px_rgba(9,9,11,1)]"
                 >
                   🪞
                 </motion.div>
@@ -912,7 +922,7 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
                 <motion.div
                   animate={{ scale: [1, 1.6], opacity: [0.6, 0] }}
                   transition={{ repeat: Infinity, duration: 2, ease: "easeOut" }}
-                  className="absolute inset-0 rounded-full border border-primary pointer-events-none"
+                  className="absolute inset-0 rounded-full border border-text-primary pointer-events-none"
                 />
               </div>
               
@@ -920,7 +930,7 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="font-display text-2xl md:text-3xl font-black mb-2 tracking-tight text-gradient"
+                className="font-display text-2xl md:text-3xl font-black mb-2 tracking-tight text-text-primary"
               >
                 Reflecting Your Identity...
               </motion.h2>
@@ -928,7 +938,7 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 0.6 }}
                 transition={{ delay: 0.4 }}
-                className="text-xs font-bold uppercase tracking-wider text-text-secondary animate-pulse"
+                className="text-xs font-bold uppercase tracking-wider text-text-secondary animate-pulse font-mono"
               >
                 Scanning social coordinates
               </motion.p>
@@ -939,14 +949,14 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
               initial={{ top: '0%' }}
               animate={{ top: '100%' }}
               transition={{ duration: 1.8, ease: "easeInOut" }}
-              className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent shadow-[0_0_12px_#7c3aed,0_0_24px_#ec4899] z-50 pointer-events-none"
+              className="absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-text-primary to-transparent shadow-[0_0_12px_rgba(9,9,11,0.5)] z-50 pointer-events-none"
             />
             {/* Secondary scanning wash */}
             <motion.div
               initial={{ top: '-10%', opacity: 0.3 }}
               animate={{ top: '100%', opacity: 0 }}
               transition={{ duration: 1.8, ease: "easeInOut" }}
-              className="absolute left-0 right-0 h-40 bg-gradient-to-b from-primary/10 to-transparent pointer-events-none"
+              className="absolute left-0 right-0 h-40 bg-gradient-to-b from-text-primary/10 to-transparent pointer-events-none"
             />
           </motion.div>
         )}

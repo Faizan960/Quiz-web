@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Syne, DM_Sans } from 'next/font/google'
+import { Syne, DM_Sans, Instrument_Serif } from 'next/font/google'
 import './globals.css'
 
 const syne = Syne({
@@ -16,6 +16,14 @@ const dmSans = DM_Sans({
   display: 'swap',
 })
 
+const instrumentSerif = Instrument_Serif({
+  subsets: ['latin'],
+  weight: ['400'],
+  style: ['normal', 'italic'],
+  variable: '--font-serif',
+  display: 'swap',
+})
+
 export const metadata: Metadata = {
   title: 'Social Mirror — Discover how people really see you',
   description: 'An AI-powered social insight platform where friends anonymously answer questions about you and you get personality reports, social identity cards, roasts, and compliments.',
@@ -29,8 +37,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${syne.variable} ${dmSans.variable}`}>
+    <html lang="en" className={`${syne.variable} ${dmSans.variable} ${instrumentSerif.variable}`}>
       <body>{children}</body>
     </html>
   )
 }
+
