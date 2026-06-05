@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Trophy, Clock, ArrowRight, Share2, Copy, CheckCircle2, XCircle, Gamepad2, ArrowLeft, AlertTriangle, Star } from 'lucide-react'
+import { TiltCard } from '@/components/TiltCard'
 
 type Question = {
   id: string
@@ -323,35 +324,37 @@ export default function PlayPage() {
 
               {ads?.player_start_enabled && <AdSlot code={ads.player_start_code as string} />}
 
-              <div className="glass-card p-6 md:p-8 border border-border shadow-md mb-6 bg-surface">
-                <div className="space-y-5">
-                  <div>
-                    <label className="block text-[10px] font-black text-text-secondary uppercase tracking-widest mb-2.5">
-                      Your Name
-                    </label>
-                    <input
-                      value={playerName}
-                      onChange={e => setPlayerName(e.target.value)}
-                      onKeyDown={e => e.key === 'Enter' && handleStart()}
-                      placeholder="e.g. Captain Trivia"
-                      className="w-full bg-background border border-border rounded-2xl px-5 py-4 text-text-primary placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all outline-none font-bold text-sm shadow-inner"
-                      autoFocus
-                    />
-                  </div>
+              <TiltCard accentColor="rgba(124, 58, 237, 0.3)" borderRadius={24} className="mb-6">
+                <div className="glass-card p-6 md:p-8 border border-border shadow-md bg-surface h-full">
+                  <div className="space-y-5">
+                    <div>
+                      <label className="block text-[10px] font-black text-text-secondary uppercase tracking-widest mb-2.5">
+                        Your Name
+                      </label>
+                      <input
+                        value={playerName}
+                        onChange={e => setPlayerName(e.target.value)}
+                        onKeyDown={e => e.key === 'Enter' && handleStart()}
+                        placeholder="e.g. Captain Trivia"
+                        className="w-full bg-background border border-border rounded-2xl px-5 py-4 text-text-primary placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/10 transition-all outline-none font-bold text-sm shadow-inner"
+                        autoFocus
+                      />
+                    </div>
 
-                  <button 
-                    onClick={handleStart} 
-                    disabled={!playerName.trim()}
-                    className={`w-full py-4 rounded-2xl font-black text-sm transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer ${
-                      playerName.trim() 
-                        ? 'bg-gradient-to-r from-primary to-secondary text-white hover:opacity-95 hover:scale-[1.01] active:scale-[0.99] shadow-primary/10 border-0' 
-                        : 'bg-zinc-100 text-zinc-400 border border-zinc-200 cursor-not-allowed shadow-none'
-                    }`}
-                  >
-                    Start Trivia 🚀
-                  </button>
+                    <button 
+                      onClick={handleStart} 
+                      disabled={!playerName.trim()}
+                      className={`w-full py-4 rounded-2xl font-black text-sm transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer ${
+                        playerName.trim() 
+                          ? 'bg-gradient-to-r from-primary to-secondary text-white hover:opacity-95 hover:scale-[1.01] active:scale-[0.99] shadow-primary/10 border-0' 
+                          : 'bg-zinc-100 text-zinc-400 border border-zinc-200 cursor-not-allowed shadow-none'
+                      }`}
+                    >
+                      Start Trivia 🚀
+                    </button>
+                  </div>
                 </div>
-              </div>
+              </TiltCard>
             </motion.div>
           )}
 
@@ -480,167 +483,171 @@ export default function PlayPage() {
               className="w-full space-y-6"
             >
               {/* Score card summary */}
-              <div className="glass-card p-6 md:p-8 text-center border border-border shadow-md bg-surface relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none">
-                  <Star className="w-40 h-40 text-primary animate-pulse" />
-                </div>
+              <TiltCard accentColor="rgba(124, 58, 237, 0.35)" borderRadius={32}>
+                <div className="glass-card p-6 md:p-8 text-center border border-border shadow-md bg-surface relative overflow-hidden h-full">
+                  <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none">
+                    <Star className="w-40 h-40 text-primary animate-pulse" />
+                  </div>
 
-                {/* Animated Score Ring */}
-                <div className="relative w-40 h-40 flex items-center justify-center mx-auto mb-6">
-                  <svg className="w-full h-full transform -rotate-90" viewBox="0 0 160 160">
-                    <circle
-                      cx="80"
-                      cy="80"
-                      r={radius}
-                      className="stroke-zinc-100 fill-none"
-                      strokeWidth="8"
-                    />
-                    <motion.circle
-                      cx="80"
-                      cy="80"
-                      r={radius}
-                      className="stroke-primary fill-none"
-                      strokeWidth="8"
-                      strokeLinecap="round"
-                      initial={{ strokeDashoffset: circumference }}
-                      animate={{ strokeDashoffset }}
-                      transition={{ duration: 1.2, ease: "easeOut" }}
-                      style={{ strokeDasharray: circumference }}
-                    />
-                  </svg>
-                  <div className="absolute flex flex-col items-center justify-center">
-                    <span className="text-3xl font-black font-display text-gradient leading-none">{score} / {quiz.questions.length}</span>
-                    <span className="text-[10px] text-text-muted mt-1 font-bold tracking-widest uppercase">{pct}% accuracy</span>
+                  {/* Animated Score Ring */}
+                  <div className="relative w-40 h-40 flex items-center justify-center mx-auto mb-6">
+                    <svg className="w-full h-full transform -rotate-90" viewBox="0 0 160 160">
+                      <circle
+                        cx="80"
+                        cy="80"
+                        r={radius}
+                        className="stroke-zinc-100 fill-none"
+                        strokeWidth="8"
+                      />
+                      <motion.circle
+                        cx="80"
+                        cy="80"
+                        r={radius}
+                        className="stroke-primary fill-none"
+                        strokeWidth="8"
+                        strokeLinecap="round"
+                        initial={{ strokeDashoffset: circumference }}
+                        animate={{ strokeDashoffset }}
+                        transition={{ duration: 1.2, ease: "easeOut" }}
+                        style={{ strokeDasharray: circumference }}
+                      />
+                    </svg>
+                    <div className="absolute flex flex-col items-center justify-center">
+                      <span className="text-3xl font-black font-display text-gradient leading-none">{score} / {quiz.questions.length}</span>
+                      <span className="text-[10px] text-text-muted mt-1 font-bold tracking-widest uppercase">{pct}% accuracy</span>
+                    </div>
+                  </div>
+
+                  {ads?.result_page_enabled && <AdSlot code={ads.result_page_code as string} />}
+
+                  <h2 className="font-display text-2xl font-black mb-2 text-text-primary">
+                    {resultMsg}
+                  </h2>
+                  <p className="text-text-secondary text-xs font-semibold mb-4 leading-relaxed">
+                    Congratulations {playerName}! You completed the trivia challenges in <span className="text-text-primary">{fmtTime(timeTaken)}</span>.
+                  </p>
+
+                  {/* Share Deck */}
+                  <div className="border-t border-border pt-5 mt-5">
+                    <div className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-3.5">
+                      Share your rank with friends
+                    </div>
+                    <div className="flex gap-2 justify-center flex-wrap">
+                      <button 
+                        onClick={handleCopy} 
+                        className={`px-4.5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                          copied 
+                            ? 'bg-emerald-50 border border-emerald-250 text-emerald-600' 
+                            : 'bg-background border border-border hover:bg-surface text-text-primary shadow-sm'
+                        }`}
+                      >
+                        <Copy className="w-3.5 h-3.5 text-primary" />
+                        <span>{copied ? 'Copied score!' : 'Copy Score'}</span>
+                      </button>
+                      <button 
+                        onClick={() => window.open(`https://twitter.com/intent/tweet?text=I scored ${score}/${quiz.questions.length} on "${quiz.title}"! Try it and beat my rank: ${quizUrl}`)} 
+                        className="px-4.5 py-2.5 bg-[#1DA1F2]/5 border border-[#1DA1F2]/15 text-[#1DA1F2] rounded-xl text-xs font-bold hover:bg-[#1DA1F2]/10 transition-all flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <Share2 className="w-3.5 h-3.5" />
+                        <span>Post on X</span>
+                      </button>
+                      <button 
+                        onClick={() => window.open(`https://wa.me/?text=I scored ${score}/${quiz.questions.length} on "${quiz.title}"! Try it and beat my rank: ${quizUrl}`)} 
+                        className="px-4.5 py-2.5 bg-[#25D366]/5 border border-[#25D366]/15 text-[#25D366] rounded-xl text-xs font-bold hover:bg-[#25D366]/10 transition-all flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <span>WhatsApp</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
-
-                {ads?.result_page_enabled && <AdSlot code={ads.result_page_code as string} />}
-
-                <h2 className="font-display text-2xl font-black mb-2 text-text-primary">
-                  {resultMsg}
-                </h2>
-                <p className="text-text-secondary text-xs font-semibold mb-4 leading-relaxed">
-                  Congratulations {playerName}! You completed the trivia challenges in <span className="text-text-primary">{fmtTime(timeTaken)}</span>.
-                </p>
-
-                {/* Share Deck */}
-                <div className="border-t border-border pt-5 mt-5">
-                  <div className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-3.5">
-                    Share your rank with friends
-                  </div>
-                  <div className="flex gap-2 justify-center flex-wrap">
-                    <button 
-                      onClick={handleCopy} 
-                      className={`px-4.5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
-                        copied 
-                          ? 'bg-emerald-50 border border-emerald-250 text-emerald-600' 
-                          : 'bg-background border border-border hover:bg-surface text-text-primary shadow-sm'
-                      }`}
-                    >
-                      <Copy className="w-3.5 h-3.5 text-primary" />
-                      <span>{copied ? 'Copied score!' : 'Copy Score'}</span>
-                    </button>
-                    <button 
-                      onClick={() => window.open(`https://twitter.com/intent/tweet?text=I scored ${score}/${quiz.questions.length} on "${quiz.title}"! Try it and beat my rank: ${quizUrl}`)} 
-                      className="px-4.5 py-2.5 bg-[#1DA1F2]/5 border border-[#1DA1F2]/15 text-[#1DA1F2] rounded-xl text-xs font-bold hover:bg-[#1DA1F2]/10 transition-all flex items-center gap-1.5 cursor-pointer"
-                    >
-                      <Share2 className="w-3.5 h-3.5" />
-                      <span>Post on X</span>
-                    </button>
-                    <button 
-                      onClick={() => window.open(`https://wa.me/?text=I scored ${score}/${quiz.questions.length} on "${quiz.title}"! Try it and beat my rank: ${quizUrl}`)} 
-                      className="px-4.5 py-2.5 bg-[#25D366]/5 border border-[#25D366]/15 text-[#25D366] rounded-xl text-xs font-bold hover:bg-[#25D366]/10 transition-all flex items-center gap-1.5 cursor-pointer"
-                    >
-                      <span>WhatsApp</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
+              </TiltCard>
 
               {/* ── Leaderboard panel ────────────────────── */}
-              <div className="glass-card p-6 border border-border shadow-sm bg-surface">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center">
-                    <Trophy className="w-4.5 h-4.5 animate-pulse" />
+              <TiltCard accentColor="rgba(236, 72, 153, 0.3)" borderRadius={24}>
+                <div className="glass-card p-6 border border-border shadow-sm bg-surface h-full">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center">
+                      <Trophy className="w-4.5 h-4.5 animate-pulse" />
+                    </div>
+                    <div>
+                      <h3 className="font-display text-base font-bold text-text-primary">Leaderboard Rankings</h3>
+                      <p className="text-[10px] text-text-secondary font-semibold">Global scores for {quiz.title}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-display text-base font-bold text-text-primary">Leaderboard Rankings</h3>
-                    <p className="text-[10px] text-text-secondary font-semibold">Global scores for {quiz.title}</p>
-                  </div>
-                </div>
 
-                {lbLoading ? (
-                  <div className="text-center py-6 text-text-muted text-xs font-bold uppercase tracking-wider">
-                    Loading rankings...
-                  </div>
-                ) : leaderboard.length === 0 ? (
-                  <div className="text-center py-6 text-text-muted text-xs font-semibold">
-                    No records on this leaderboard yet. Be the first to claim #1!
-                  </div>
-                ) : (
-                  <div className="flex flex-col gap-2.5">
-                    {leaderboard.map((entry, rank) => {
-                      const isYou = entry.player_name.trim().toLowerCase() === playerName.trim().toLowerCase()
-                      const entryPct = Math.round((entry.score / entry.total) * 100)
-                      return (
-                        <div 
-                          key={rank} 
-                          className={`flex items-center justify-between p-3.5 rounded-xl border transition-all ${
-                            isYou 
-                              ? 'bg-primary/5 border-primary/30 shadow-inner' 
-                              : 'bg-background border-border'
-                          }`}
-                        >
-                          <div className="flex items-center gap-3.5 min-w-0">
-                            {/* Rank Indicator */}
-                            <div className={`w-7 h-7 rounded-lg flex items-center justify-center font-display text-[10px] font-black ${
-                              rank < 3 ? 'bg-zinc-100 border border-border' : 'text-text-secondary font-mono'
-                            }`}>
-                              {rank < 3 ? MEDALS[rank] : `#${rank + 1}`}
-                            </div>
-
-                            <div className="min-w-0">
-                              <div className={`font-bold text-sm truncate flex items-center gap-1.5 ${
-                                isYou ? 'text-primary' : 'text-text-primary'
+                  {lbLoading ? (
+                    <div className="text-center py-6 text-text-muted text-xs font-bold uppercase tracking-wider">
+                      Loading rankings...
+                    </div>
+                  ) : leaderboard.length === 0 ? (
+                    <div className="text-center py-6 text-text-muted text-xs font-semibold">
+                      No records on this leaderboard yet. Be the first to claim #1!
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-2.5">
+                      {leaderboard.map((entry, rank) => {
+                        const isYou = entry.player_name.trim().toLowerCase() === playerName.trim().toLowerCase()
+                        const entryPct = Math.round((entry.score / entry.total) * 100)
+                        return (
+                          <div 
+                            key={rank} 
+                            className={`flex items-center justify-between p-3.5 rounded-xl border transition-all ${
+                              isYou 
+                                ? 'bg-primary/5 border-primary/30 shadow-inner' 
+                                : 'bg-background border-border'
+                            }`}
+                          >
+                            <div className="flex items-center gap-3.5 min-w-0">
+                              {/* Rank Indicator */}
+                              <div className={`w-7 h-7 rounded-lg flex items-center justify-center font-display text-[10px] font-black ${
+                                rank < 3 ? 'bg-zinc-100 border border-border' : 'text-text-secondary font-mono'
                               }`}>
-                                {entry.player_name}
-                                {isYou && (
-                                  <span className="text-[9px] font-bold bg-primary px-1.5 py-0.5 rounded-md text-white select-none">
-                                    YOU
-                                  </span>
-                                )}
+                                {rank < 3 ? MEDALS[rank] : `#${rank + 1}`}
                               </div>
-                              <div className="text-[10px] text-text-muted flex items-center gap-1.5 mt-0.5 font-semibold">
-                                <Clock className="w-3 h-3 text-text-muted" />
-                                <span>{fmtTime(entry.time_taken_sec)}</span>
-                              </div>
-                            </div>
-                          </div>
 
-                          <div className="text-right shrink-0 flex flex-col items-end pl-2">
-                            <span className="text-xs font-black text-text-primary">
-                              {entry.score} / {entry.total}
-                            </span>
-                            <div className="w-16 h-1 bg-zinc-100 rounded-full mt-1.5 overflow-hidden border border-zinc-200/60">
-                              <div 
-                                className="h-full rounded-full" 
-                                style={{
-                                  width: `${entryPct}%`,
-                                  background: isYou
-                                    ? 'linear-gradient(90deg, #7c3aed, #ec4899)'
-                                    : rank === 0
-                                      ? 'linear-gradient(90deg, #fbbf24, #f59e0b)'
-                                      : '#8e8e93'
-                                }}
-                              />
+                              <div className="min-w-0">
+                                <div className={`font-bold text-sm truncate flex items-center gap-1.5 ${
+                                  isYou ? 'text-primary' : 'text-text-primary'
+                                }`}>
+                                  {entry.player_name}
+                                  {isYou && (
+                                    <span className="text-[9px] font-bold bg-primary px-1.5 py-0.5 rounded-md text-white select-none">
+                                      YOU
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="text-[10px] text-text-muted flex items-center gap-1.5 mt-0.5 font-semibold">
+                                  <Clock className="w-3 h-3 text-text-muted" />
+                                  <span>{fmtTime(entry.time_taken_sec)}</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="text-right shrink-0 flex flex-col items-end pl-2">
+                              <span className="text-xs font-black text-text-primary">
+                                {entry.score} / {entry.total}
+                              </span>
+                              <div className="w-16 h-1 bg-zinc-100 rounded-full mt-1.5 overflow-hidden border border-zinc-200/60">
+                                <div 
+                                  className="h-full rounded-full" 
+                                  style={{
+                                    width: `${entryPct}%`,
+                                    background: isYou
+                                      ? 'linear-gradient(90deg, #7c3aed, #ec4899)'
+                                      : rank === 0
+                                        ? 'linear-gradient(90deg, #fbbf24, #f59e0b)'
+                                        : '#8e8e93'
+                                  }}
+                                />
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-                )}
-              </div>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
+              </TiltCard>
 
               {/* Backing buttons */}
               <div className="flex flex-col sm:flex-row gap-3 pt-4">

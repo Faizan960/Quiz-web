@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { Lock, Download, Share2, Target, MessageCircle, BarChart3, Flame, Heart, ArrowLeft, CheckCircle2, Sparkles, ArrowRight, Camera, Eye, EyeOff } from 'lucide-react'
 import type { ReportData } from '@/types/social-mirror'
+import { TiltCard } from '@/components/TiltCard'
 
 const DIMENSION_COLORS: Record<string, string> = {
   leadership: '#7c3aed',
@@ -611,160 +612,183 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
             >
               {/* Scores */}
               {revealStep >= 2 && (
-                <motion.div
+                <TiltCard
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="glass-card p-5 md:p-7 border border-border shadow-md bg-surface"
+                  accentColor="rgba(124, 58, 237, 0.3)"
+                  borderRadius={28}
                 >
-                  <h3 className="font-display text-base md:text-lg font-bold mb-5 flex items-center gap-1.5 text-text-primary">
-                    <BarChart3 className="w-4.5 h-4.5 text-primary" /> Character Dimension Radar
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                    {/* Radar Chart */}
-                    <RadarChart scores={report.scores} />
+                  <div className="glass-card p-5 md:p-7 border border-border shadow-md bg-surface h-full">
+                    <h3 className="font-display text-base md:text-lg font-bold mb-5 flex items-center gap-1.5 text-text-primary">
+                      <BarChart3 className="w-4.5 h-4.5 text-primary" /> Character Dimension Radar
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                      {/* Radar Chart */}
+                      <RadarChart scores={report.scores} />
 
-                    {/* Score Bars */}
-                    <div className="space-y-3">
-                      {topScores.map(([dim, score], i) => (
-                        <motion.div
-                          key={dim}
-                          initial={{ opacity: 0, x: -15 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: i * 0.08 }}
-                        >
-                          <div className="flex justify-between items-end mb-1">
-                            <span className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">{dim}</span>
-                            <span className="text-xs font-black" style={{ color: DIMENSION_COLORS[dim] ?? '#a78bfa' }}>
-                              {score}%
-                            </span>
-                          </div>
-                          <div className="w-full h-1.5 bg-zinc-100 rounded-full overflow-hidden border border-zinc-200/60">
-                            <motion.div
-                              initial={{ width: 0 }}
-                              animate={{ width: `${score}%` }}
-                              transition={{ delay: 0.25 + i * 0.08, duration: 1, type: 'spring', bounce: 0.25 }}
-                              className="h-full rounded-full"
-                              style={{ background: DIMENSION_COLORS[dim] ?? '#a78bfa' }}
-                            />
-                          </div>
-                        </motion.div>
-                      ))}
+                      {/* Score Bars */}
+                      <div className="space-y-3">
+                        {topScores.map(([dim, score], i) => (
+                          <motion.div
+                            key={dim}
+                            initial={{ opacity: 0, x: -15 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: i * 0.08 }}
+                          >
+                            <div className="flex justify-between items-end mb-1">
+                              <span className="text-[10px] font-bold text-text-secondary uppercase tracking-wider">{dim}</span>
+                              <span className="text-xs font-black" style={{ color: DIMENSION_COLORS[dim] ?? '#a78bfa' }}>
+                                {score}%
+                              </span>
+                            </div>
+                            <div className="w-full h-1.5 bg-zinc-100 rounded-full overflow-hidden border border-zinc-200/60">
+                              <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${score}%` }}
+                                transition={{ delay: 0.25 + i * 0.08, duration: 1, type: 'spring', bounce: 0.25 }}
+                                className="h-full rounded-full"
+                                style={{ background: DIMENSION_COLORS[dim] ?? '#a78bfa' }}
+                              />
+                            </div>
+                          </motion.div>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </motion.div>
+                </TiltCard>
               )}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {/* Strengths */}
                 {revealStep >= 3 && (
-                  <motion.div
+                  <TiltCard
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="glass-card p-5 md:p-6 border border-border bg-surface"
+                    accentColor="rgba(16, 185, 129, 0.3)"
+                    borderRadius={24}
                   >
-                    <h3 className="font-display text-base font-bold mb-4.5 flex items-center gap-1.5 text-text-primary">
-                      <Sparkles className="w-4.5 h-4.5 text-accent" /> Key Strengths
-                    </h3>
-                    <div className="space-y-2.5">
-                      {report.strengths.map((s, i) => (
-                        <div key={i} className="flex items-start gap-2.5 p-3 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-600 text-xs md:text-sm font-semibold">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-                          <span>{s}</span>
-                        </div>
-                      ))}
+                    <div className="glass-card p-5 md:p-6 border border-border bg-surface h-full">
+                      <h3 className="font-display text-base font-bold mb-4.5 flex items-center gap-1.5 text-text-primary">
+                        <Sparkles className="w-4.5 h-4.5 text-accent" /> Key Strengths
+                      </h3>
+                      <div className="space-y-2.5">
+                        {report.strengths.map((s, i) => (
+                          <div key={i} className="flex items-start gap-2.5 p-3 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-600 text-xs md:text-sm font-semibold">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                            <span>{s}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </motion.div>
+                  </TiltCard>
                 )}
 
                 {/* Weaknesses */}
                 {revealStep >= 4 && (
-                  <motion.div
+                  <TiltCard
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="glass-card p-5 md:p-6 border border-border bg-surface"
+                    accentColor="rgba(236, 72, 153, 0.3)"
+                    borderRadius={24}
                   >
-                    <h3 className="font-display text-base font-bold mb-4.5 flex items-center gap-1.5 text-text-primary">
-                      <Target className="w-4.5 h-4.5 text-secondary" /> Growth Areas
-                    </h3>
-                    <div className="space-y-2.5">
-                      {report.weaknesses.map((w, i) => (
-                        <div key={i} className="flex items-start gap-2.5 p-3 rounded-xl bg-pink-50 border border-pink-100 text-pink-500 text-xs md:text-sm font-semibold">
-                          <ArrowRight className="w-4 h-4 text-pink-450 shrink-0 mt-0.5" />
-                          <span>{w}</span>
-                        </div>
-                      ))}
+                    <div className="glass-card p-5 md:p-6 border border-border bg-surface h-full">
+                      <h3 className="font-display text-base font-bold mb-4.5 flex items-center gap-1.5 text-text-primary">
+                        <Target className="w-4.5 h-4.5 text-secondary" /> Growth Areas
+                      </h3>
+                      <div className="space-y-2.5">
+                        {report.weaknesses.map((w, i) => (
+                          <div key={i} className="flex items-start gap-2.5 p-3 rounded-xl bg-pink-50 border border-pink-100 text-pink-500 text-xs md:text-sm font-semibold">
+                            <ArrowRight className="w-4 h-4 text-pink-450 shrink-0 mt-0.5" />
+                            <span>{w}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                  </motion.div>
+                  </TiltCard>
                 )}
               </div>
 
               {/* Hidden Talent + Friend Impression */}
               {revealStep >= 5 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="grid grid-cols-1 md:grid-cols-2 gap-5"
-                >
-                  <div className="glass-card p-5 md:p-6 relative overflow-hidden group border border-border bg-surface">
-                    <div className="absolute top-0 right-0 p-4 opacity-[0.04] transform translate-x-3 -translate-y-3 group-hover:scale-105 transition-transform duration-500 pointer-events-none">
-                      <Sparkles className="w-20 h-20 text-primary" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <TiltCard
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    accentColor="rgba(124, 58, 237, 0.3)"
+                    borderRadius={24}
+                  >
+                    <div className="glass-card p-5 md:p-6 relative overflow-hidden group border border-border bg-surface h-full">
+                      <div className="absolute top-0 right-0 p-4 opacity-[0.04] transform translate-x-3 -translate-y-3 group-hover:scale-105 transition-transform duration-500 pointer-events-none">
+                        <Sparkles className="w-20 h-20 text-primary" />
+                      </div>
+                      <div className="w-9 h-9 bg-primary/10 text-primary rounded-xl flex items-center justify-center mb-3.5">
+                        <Target className="w-4.5 h-4.5" />
+                      </div>
+                      <div className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1.5">Hidden Talent</div>
+                      <div className="text-xs md:text-sm text-text-primary font-semibold leading-relaxed relative z-10">
+                        {report.hidden_talent}
+                      </div>
                     </div>
-                    <div className="w-9 h-9 bg-primary/10 text-primary rounded-xl flex items-center justify-center mb-3.5">
-                      <Target className="w-4.5 h-4.5" />
+                  </TiltCard>
+
+                  <TiltCard
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    accentColor="rgba(236, 72, 153, 0.3)"
+                    borderRadius={24}
+                  >
+                    <div className="glass-card p-5 md:p-6 relative overflow-hidden group border border-border bg-surface h-full">
+                      <div className="absolute top-0 right-0 p-4 opacity-[0.04] transform translate-x-3 -translate-y-3 group-hover:scale-105 transition-transform duration-500 pointer-events-none">
+                        <MessageCircle className="w-20 h-20 text-pink-500" />
+                      </div>
+                      <div className="w-9 h-9 bg-secondary/10 text-secondary rounded-xl flex items-center justify-center mb-3.5">
+                        <MessageCircle className="w-4.5 h-4.5" />
+                      </div>
+                      <div className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1.5">Friend Impression</div>
+                      <div className="text-xs md:text-sm text-text-primary font-semibold leading-relaxed relative z-10">
+                        {report.friend_impression}
+                      </div>
                     </div>
-                    <div className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1.5">Hidden Talent</div>
-                    <div className="text-xs md:text-sm text-text-primary font-semibold leading-relaxed relative z-10">
-                      {report.hidden_talent}
-                    </div>
-                  </div>
-                  <div className="glass-card p-5 md:p-6 relative overflow-hidden group border border-border bg-surface">
-                    <div className="absolute top-0 right-0 p-4 opacity-[0.04] transform translate-x-3 -translate-y-3 group-hover:scale-105 transition-transform duration-500 pointer-events-none">
-                      <MessageCircle className="w-20 h-20 text-pink-500" />
-                    </div>
-                    <div className="w-9 h-9 bg-secondary/10 text-secondary rounded-xl flex items-center justify-center mb-3.5">
-                      <MessageCircle className="w-4.5 h-4.5" />
-                    </div>
-                    <div className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1.5">Friend Impression</div>
-                    <div className="text-xs md:text-sm text-text-primary font-semibold leading-relaxed relative z-10">
-                      {report.friend_impression}
-                    </div>
-                  </div>
-                </motion.div>
+                  </TiltCard>
+                </div>
               )}
 
               {/* Timeline Section */}
               {revealStep >= 5 && timeline && timeline.length > 0 && (
-                <motion.div
+                <TiltCard
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="glass-card p-5 md:p-7 border border-border shadow-sm bg-surface"
+                  accentColor="rgba(14, 165, 233, 0.3)"
+                  borderRadius={28}
                 >
-                  <h3 className="font-display text-base md:text-lg font-bold mb-5 flex items-center gap-1.5 text-text-primary">
-                    <CheckCircle2 className="w-4.5 h-4.5 text-accent" /> Submission History
-                  </h3>
-                  <div className="relative border-l border-border ml-3 pl-5 space-y-5">
-                    {timeline.map((item) => {
-                      const date = new Date(item.created_at).toLocaleDateString(undefined, {
-                        month: 'short',
-                        day: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      })
-                      return (
-                        <div key={item.id} className="relative">
-                          {/* Timeline bullet */}
-                          <div className="absolute -left-[24.5px] top-1 w-2.5 h-2.5 rounded-full border border-surface bg-primary shadow-sm" />
-                          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
-                            <span className="text-xs md:text-sm font-semibold text-text-primary">
-                              {item.is_anonymous ? '🕶️ An anonymous friend' : `👤 ${item.respondent_name}`} completed the mirror
-                            </span>
-                            <span className="text-[10px] md:text-xs font-bold text-text-muted">{date}</span>
+                  <div className="glass-card p-5 md:p-7 border border-border shadow-sm bg-surface h-full">
+                    <h3 className="font-display text-base md:text-lg font-bold mb-5 flex items-center gap-1.5 text-text-primary">
+                      <CheckCircle2 className="w-4.5 h-4.5 text-accent" /> Submission History
+                    </h3>
+                    <div className="relative border-l border-border ml-3 pl-5 space-y-5">
+                      {timeline.map((item) => {
+                        const date = new Date(item.created_at).toLocaleDateString(undefined, {
+                          month: 'short',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })
+                        return (
+                          <div key={item.id} className="relative">
+                            {/* Timeline bullet */}
+                            <div className="absolute -left-[24.5px] top-1 w-2.5 h-2.5 rounded-full border border-surface bg-primary shadow-sm" />
+                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
+                              <span className="text-xs md:text-sm font-semibold text-text-primary">
+                                {item.is_anonymous ? '🕶️ An anonymous friend' : `👤 ${item.respondent_name}`} completed the mirror
+                              </span>
+                              <span className="text-[10px] md:text-xs font-bold text-text-muted">{date}</span>
+                            </div>
                           </div>
-                        </div>
-                      )
-                    })}
+                        )
+                      })}
+                    </div>
                   </div>
-                </motion.div>
+                </TiltCard>
               )}
 
               {/* Social Identity Card */}

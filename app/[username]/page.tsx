@@ -4,6 +4,7 @@ import { useState, useEffect, use, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { ArrowLeft, ArrowRight, Check, User, Sparkles, Heart, Share2, Camera } from 'lucide-react'
+import { TiltCard } from '@/components/TiltCard'
 
 function Confetti() {
   const [pieces, setPieces] = useState<{ id: number; left: string; delay: string; size: string; color: string }[]>([])
@@ -240,12 +241,16 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
         <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-80" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
         
-        <motion.div
+        <TiltCard
           initial={{ opacity: 0, scale: 0.96, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.5, type: 'spring', bounce: 0.4 }}
-          className="relative z-10 glass-card p-6 md:p-8 text-center max-w-md w-full border border-border shadow-md bg-surface"
+          tiltMax={8}
+          borderRadius={32}
+          accentColor="rgba(236, 72, 153, 0.35)"
+          className="relative z-10 max-w-md w-full"
         >
+          <div className="glass-card p-6 md:p-8 text-center border border-border shadow-md bg-surface h-full">
           <motion.div 
             initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, type: 'spring' }}
             className="w-12 h-12 bg-pink-50 border border-pink-200 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-sm"
@@ -327,7 +332,8 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
               </motion.div>
             )}
           </AnimatePresence>
-        </motion.div>
+        </div>
+      </TiltCard>
       </div>
     )
   }
@@ -346,11 +352,15 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
         <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-80" />
         <div className="absolute inset-0 z-0 pointer-events-none bg-pastel-gradient opacity-90" />
         
-        <motion.div
+        <TiltCard
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
+          tiltMax={6}
+          borderRadius={32}
+          accentColor="rgba(124, 58, 237, 0.3)"
           className="relative z-10 w-full max-w-md text-center"
         >
+          <div className="glass-card p-6 md:p-8 border border-border shadow-md bg-surface h-full flex flex-col items-center">
           {/* Avatar */}
           <div className="w-20 h-20 rounded-3xl mx-auto mb-5 bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-3xl font-display font-black text-white shadow-lg shadow-primary/10">
             {initials}
@@ -421,7 +431,8 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
           >
             Start Answering <ArrowRight className="w-4 h-4" />
           </button>
-        </motion.div>
+        </div>
+      </TiltCard>
       </div>
     )
   }

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Sparkles, Brain, Flame, Heart, Share2, MessageCircle, BarChart3, ArrowRight, CheckCircle2, Star, ShieldCheck, UserCheck } from 'lucide-react'
+import { TiltCard } from '@/components/TiltCard'
 
 const FEATURES = [
   {
@@ -193,16 +194,19 @@ export default function HomePage() {
 
         {/* Dashboard Preview (Interactive Dribbble / Awwwards App Frame) */}
         {mounted && (
-          <motion.div 
+          <TiltCard
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            className="mt-20 relative max-w-2xl mx-auto"
+            tiltMax={6}
+            borderRadius={32}
+            accentColor="rgba(124, 58, 237, 0.25)"
+            className="mt-20 relative max-w-2xl mx-auto z-10"
           >
             {/* Aesthetic Shadow Ring */}
             <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-[32px] blur-2xl -z-10" />
             
-            <div className="glass-card p-6 md:p-8 border border-border relative shadow-xl overflow-hidden text-left bg-surface/90">
+            <div className="glass-card p-6 md:p-8 border border-border relative shadow-xl overflow-hidden text-left bg-surface/90 h-full">
               <div className="absolute -top-20 -left-20 w-44 h-44 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
               
               {/* Header preview */}
@@ -326,7 +330,7 @@ export default function HomePage() {
                 </AnimatePresence>
               </div>
             </div>
-          </motion.div>
+          </TiltCard>
         )}
       </main>
 
@@ -338,24 +342,31 @@ export default function HomePage() {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {FEATURES.map((feature, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.08 }}
-              className={`glass-card p-6 md:p-8 flex flex-col justify-between border ${feature.colSpan} ${feature.bg}`}
-            >
-              <div>
-                <div className="w-11 h-11 bg-background border border-border rounded-2xl flex items-center justify-center mb-5 shadow-sm">
-                  {feature.icon}
+          {FEATURES.map((feature, i) => {
+            const colors = ['rgba(124, 58, 237, 0.35)', 'rgba(236, 72, 153, 0.35)', 'rgba(14, 165, 233, 0.35)', 'rgba(124, 58, 237, 0.35)']
+            return (
+              <TiltCard
+                key={i}
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08 }}
+                accentColor={colors[i % colors.length]}
+                borderRadius={24}
+                className={feature.colSpan}
+              >
+                <div className={`glass-card p-6 md:p-8 flex flex-col justify-between h-full border border-border bg-surface`}>
+                  <div>
+                    <div className="w-11 h-11 bg-background border border-border rounded-2xl flex items-center justify-center mb-5 shadow-sm">
+                      {feature.icon}
+                    </div>
+                    <h3 className="font-display text-lg md:text-xl font-bold mb-2 text-text-primary">{feature.title}</h3>
+                    <p className="text-text-secondary leading-relaxed text-xs md:text-sm font-semibold">{feature.desc}</p>
+                  </div>
                 </div>
-                <h3 className="font-display text-lg md:text-xl font-bold mb-2 text-text-primary">{feature.title}</h3>
-                <p className="text-text-secondary leading-relaxed text-xs md:text-sm font-semibold">{feature.desc}</p>
-              </div>
-            </motion.div>
-          ))}
+              </TiltCard>
+            )
+          })}
         </div>
       </section>
 
@@ -368,23 +379,26 @@ export default function HomePage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {STEPS.map((step, i) => (
-            <motion.div
+            <TiltCard
               key={i}
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.08 }}
-              className="glass-card p-6 border border-border relative overflow-hidden group shadow-sm bg-surface"
+              accentColor="rgba(124, 58, 237, 0.25)"
+              borderRadius={24}
             >
-              <div className="absolute top-0 right-0 p-4 text-5xl font-display font-black text-zinc-900/[0.02] group-hover:text-primary/[0.05] transition-colors -z-10 select-none">
-                {step.num}
+              <div className="glass-card p-6 border border-border relative overflow-hidden group shadow-sm bg-surface h-full">
+                <div className="absolute top-0 right-0 p-4 text-5xl font-display font-black text-zinc-900/[0.02] group-hover:text-primary/[0.05] transition-colors -z-10 select-none">
+                  {step.num}
+                </div>
+                <div className="w-10 h-10 bg-background border border-border text-primary rounded-xl flex items-center justify-center mb-5 shadow-sm">
+                  {step.icon}
+                </div>
+                <h3 className="font-display text-base font-bold mb-1.5 text-text-primary">{step.title}</h3>
+                <p className="text-text-secondary text-xs leading-relaxed font-semibold">{step.desc}</p>
               </div>
-              <div className="w-10 h-10 bg-background border border-border text-primary rounded-xl flex items-center justify-center mb-5 shadow-sm">
-                {step.icon}
-              </div>
-              <h3 className="font-display text-base font-bold mb-1.5 text-text-primary">{step.title}</h3>
-              <p className="text-text-secondary text-xs leading-relaxed font-semibold">{step.desc}</p>
-            </motion.div>
+            </TiltCard>
           ))}
         </div>
       </section>
@@ -398,31 +412,35 @@ export default function HomePage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {TESTIMONIALS.map((t, i) => (
-            <motion.div
+            <TiltCard
               key={i}
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.08 }}
-              className="glass-card p-6 md:p-7 flex flex-col justify-between border border-border bg-surface/80 shadow-sm"
+              accentColor="rgba(14, 165, 233, 0.25)"
+              borderRadius={24}
+              className="h-full"
             >
-              <div>
-                <div className="flex gap-1 mb-3.5 text-accent">
-                  {Array.from({ length: t.rating }).map((_, idx) => (
-                    <Star key={idx} className="w-3.5 h-3.5 fill-current" />
-                  ))}
+              <div className="glass-card p-6 md:p-7 flex flex-col justify-between h-full border border-border bg-surface/80 shadow-sm">
+                <div>
+                  <div className="flex gap-1 mb-3.5 text-accent">
+                    {Array.from({ length: t.rating }).map((_, idx) => (
+                      <Star key={idx} className="w-3.5 h-3.5 fill-current" />
+                    ))}
+                  </div>
+                  <p className="text-text-secondary text-xs md:text-sm leading-relaxed mb-5 font-semibold">
+                    &quot;{t.quote}&quot;
+                  </p>
                 </div>
-                <p className="text-text-secondary text-xs md:text-sm leading-relaxed mb-5 font-semibold">
-                  &quot;{t.quote}&quot;
-                </p>
+                <div className="flex justify-between items-center pt-3.5 border-t border-border">
+                  <span className="font-bold text-text-primary text-xs">{t.author}</span>
+                  <span className="text-[10px] font-bold px-2.5 py-0.5 bg-background border border-border rounded-full text-text-secondary">
+                    {t.archetype}
+                  </span>
+                </div>
               </div>
-              <div className="flex justify-between items-center pt-3.5 border-t border-border">
-                <span className="font-bold text-text-primary text-xs">{t.author}</span>
-                <span className="text-[10px] font-bold px-2.5 py-0.5 bg-background border border-border rounded-full text-text-secondary">
-                  {t.archetype}
-                </span>
-              </div>
-            </motion.div>
+            </TiltCard>
           ))}
         </div>
       </section>
