@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/server'
 import { generateReport } from '@/lib/engine/analyzer'
 import type { SmQuestion, SmAnswer } from '@/types/social-mirror'
+import { handleApiError, DatabaseError } from '@/lib/monitoring/logger'
 
 export const dynamic = 'force-dynamic'
 
@@ -21,6 +22,9 @@ export async function GET(
       .single()
 
     if (profileError || !profile) {
+      if (profileError && profileError.code !== 'PGRST116') {
+        throw new DatabaseError(profileError.message, profileError)
+      }
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
     }
 
@@ -34,24 +38,36 @@ export async function GET(
       })
     }
 
-    const { data: questions } = await supabase
+    const { data: questions, error: questionsError } = await supabase
       .from('sm_questions')
       .select('*')
       .eq('profile_id', profile.id)
 
-    const { data: responses } = await supabase
+    if (questionsError) {
+      throw new DatabaseError(questionsError.message, questionsError)
+    }
+
+    const { data: responses, error: responsesError } = await supabase
       .from('sm_responses')
       .select('id')
       .eq('profile_id', profile.id)
+
+    if (responsesError) {
+      throw new DatabaseError(responsesError.message, responsesError)
+    }
 
     const responseIds = (responses ?? []).map((r: { id: string }) => r.id)
 
     let allAnswers: SmAnswer[] = []
     if (responseIds.length > 0) {
-      const { data: answers } = await supabase
+      const { data: answers, error: answersError } = await supabase
         .from('sm_answers')
         .select('*')
         .in('response_id', responseIds)
+
+      if (answersError) {
+        throw new DatabaseError(answersError.message, answersError)
+      }
 
       allAnswers = (answers ?? []) as SmAnswer[]
     }
@@ -72,7 +88,6 @@ export async function GET(
     })
 
   } catch (err) {
-    console.error('Teaser fetch error:', err)
-    return NextResponse.json({ error: 'Server error' }, { status: 500 })
+    return handleApiError(err, request)
   }
 }

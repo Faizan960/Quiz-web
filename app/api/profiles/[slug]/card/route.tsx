@@ -1,10 +1,11 @@
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/server'
 import bcrypt from 'bcryptjs'
 import satori from 'satori'
 import { Resvg } from '@resvg/resvg-js'
 import type { ReportData } from '@/types/social-mirror'
 import React from 'react'
+import { handleApiError, ValidationError, AuthenticationError, DatabaseError } from '@/lib/monitoring/logger'
 
 export const dynamic = 'force-dynamic'
 
@@ -57,7 +58,7 @@ export async function GET(
     const pin = request.nextUrl.searchParams.get('pin')
 
     if (!pin) {
-      return new Response('PIN required', { status: 401 })
+      throw new ValidationError('PIN required')
     }
 
     const supabase = createAdminClient()
@@ -71,25 +72,31 @@ export async function GET(
       .single()
 
     if (profileError || !profile) {
-      return new Response('Profile not found', { status: 404 })
+      if (profileError && profileError.code !== 'PGRST116') {
+        throw new DatabaseError(profileError.message, profileError)
+      }
+      return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
     }
 
     // 2. Verify PIN
     const pinValid = await bcrypt.compare(pin, profile.pin_hash)
     if (!pinValid) {
-      return new Response('Incorrect PIN', { status: 401 })
+      throw new AuthenticationError('Incorrect PIN')
     }
 
     // 3. Get cached report
-    const { data: cachedReport } = await supabase
+    const { data: cachedReport, error: reportError } = await supabase
       .from('sm_reports')
       .select('report_data')
       .eq('profile_id', profile.id)
       .eq('report_type', 'standard')
       .single()
 
-    if (!cachedReport) {
-      return new Response('Report not generated yet', { status: 404 })
+    if (reportError || !cachedReport) {
+      if (reportError && reportError.code !== 'PGRST116') {
+        throw new DatabaseError(reportError.message, reportError)
+      }
+      return NextResponse.json({ error: 'Report not generated yet' }, { status: 404 })
     }
 
     const report = cachedReport.report_data as ReportData
@@ -417,7 +424,6 @@ export async function GET(
     })
 
   } catch (err) {
-    console.error('Card generation error:', err)
-    return new Response('Failed to generate card', { status: 500 })
+    return handleApiError(err, request)
   }
 }

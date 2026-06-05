@@ -3,6 +3,7 @@ import { createAdminClient } from '@/lib/supabase/server'
 import bcrypt from 'bcryptjs'
 import { getQuestionsForProfile } from '@/lib/engine/questions'
 import type { CreateProfilePayload, QuestionCategory } from '@/types/social-mirror'
+import { handleApiError, DatabaseError, ValidationError } from '@/lib/monitoring/logger'
 
 function generateSlug(name: string): string {
   const base = name
@@ -23,13 +24,13 @@ export async function POST(request: NextRequest) {
     const { display_name, bio, interests, pin, categories } = body
 
     if (!display_name?.trim() || !pin?.trim()) {
-      return NextResponse.json({ error: 'Name and PIN are required' }, { status: 400 })
+      throw new ValidationError('Name and PIN are required')
     }
     if (pin.length < 4) {
-      return NextResponse.json({ error: 'PIN must be at least 4 characters' }, { status: 400 })
+      throw new ValidationError('PIN must be at least 4 characters')
     }
     if (!categories?.length) {
-      return NextResponse.json({ error: 'Select at least one category' }, { status: 400 })
+      throw new ValidationError('Select at least one category')
     }
 
     const supabase = createAdminClient()
@@ -50,7 +51,7 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (profileError || !profile) {
-      return NextResponse.json({ error: profileError?.message ?? 'Failed to create profile' }, { status: 500 })
+      throw new DatabaseError(profileError?.message ?? 'Failed to create profile', profileError)
     }
 
     // 2. Generate questions using our engine
@@ -72,7 +73,7 @@ export async function POST(request: NextRequest) {
     if (questionsError) {
       // Clean up profile if questions fail
       await supabase.from('sm_profiles').delete().eq('id', profile.id)
-      return NextResponse.json({ error: questionsError.message }, { status: 500 })
+      throw new DatabaseError(questionsError.message, questionsError)
     }
 
     return NextResponse.json({
@@ -86,32 +87,38 @@ export async function POST(request: NextRequest) {
     }, { status: 201 })
 
   } catch (err) {
-    console.error('Profile creation error:', err)
-    return NextResponse.json({ error: 'Server error' }, { status: 500 })
+    return handleApiError(err, request)
   }
 }
 
 // GET /api/profiles?slug=xxx — get public profile info
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url)
-  const slug = searchParams.get('slug')
+  try {
+    const { searchParams } = new URL(request.url)
+    const slug = searchParams.get('slug')
 
-  if (!slug) {
-    return NextResponse.json({ error: 'slug is required' }, { status: 400 })
+    if (!slug) {
+      throw new ValidationError('slug is required')
+    }
+
+    const supabase = createAdminClient()
+
+    const { data, error } = await supabase
+      .from('sm_profiles')
+      .select('id, slug, display_name, bio, avatar_url, interests, total_responses, created_at')
+      .eq('slug', slug)
+      .eq('is_active', true)
+      .single()
+
+    if (error || !data) {
+      if (error && error.code !== 'PGRST116') {
+        throw new DatabaseError(error.message, error)
+      }
+      return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
+    }
+
+    return NextResponse.json({ profile: data })
+  } catch (err) {
+    return handleApiError(err, request)
   }
-
-  const supabase = createAdminClient()
-
-  const { data, error } = await supabase
-    .from('sm_profiles')
-    .select('id, slug, display_name, bio, avatar_url, interests, total_responses, created_at')
-    .eq('slug', slug)
-    .eq('is_active', true)
-    .single()
-
-  if (error || !data) {
-    return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
-  }
-
-  return NextResponse.json({ profile: data })
 }

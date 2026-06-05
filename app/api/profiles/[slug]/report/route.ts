@@ -3,6 +3,7 @@ import { createAdminClient } from '@/lib/supabase/server'
 import bcrypt from 'bcryptjs'
 import { generateReport } from '@/lib/engine/analyzer'
 import type { SmQuestion, SmAnswer, ReportType } from '@/types/social-mirror'
+import { handleApiError, ValidationError, AuthenticationError, DatabaseError } from '@/lib/monitoring/logger'
 
 const MIN_RESPONSES_FOR_REPORT = 3
 
@@ -17,7 +18,7 @@ export async function POST(
     const { pin, report_type = 'standard', regenerate = false } = body as { pin: string; report_type?: ReportType; regenerate?: boolean }
 
     if (!pin) {
-      return NextResponse.json({ error: 'PIN is required to view your report' }, { status: 401 })
+      throw new ValidationError('PIN is required to view your report')
     }
 
     const supabase = createAdminClient()
@@ -31,64 +32,86 @@ export async function POST(
       .single()
 
     if (profileError || !profile) {
+      if (profileError && profileError.code !== 'PGRST116') {
+        throw new DatabaseError(profileError.message, profileError)
+      }
       return NextResponse.json({ error: 'Profile not found' }, { status: 404 })
     }
 
     // 2. Verify PIN
     const pinValid = await bcrypt.compare(pin, profile.pin_hash)
     if (!pinValid) {
-      return NextResponse.json({ error: 'Incorrect PIN' }, { status: 401 })
+      throw new AuthenticationError('Incorrect PIN')
     }
 
     // 3. Check minimum responses
     if (profile.total_responses < MIN_RESPONSES_FOR_REPORT) {
-      return NextResponse.json({
-        error: `Need at least ${MIN_RESPONSES_FOR_REPORT} responses to generate a report`,
-        current: profile.total_responses,
-        required: MIN_RESPONSES_FOR_REPORT,
-      }, { status: 400 })
+      throw new ValidationError(`Need at least ${MIN_RESPONSES_FOR_REPORT} responses to generate a report`, {
+        current: String(profile.total_responses),
+        required: String(MIN_RESPONSES_FOR_REPORT),
+      })
     }
 
     // 4. Check for cached report
     if (!regenerate) {
-      const { data: cachedReport } = await supabase
+      const { data: cachedReport, error: cacheFetchError } = await supabase
         .from('sm_reports')
         .select('*')
         .eq('profile_id', profile.id)
         .eq('report_type', report_type)
-        .single()
+        .maybeSingle()
+
+      if (cacheFetchError) {
+        throw new DatabaseError(cacheFetchError.message, cacheFetchError)
+      }
 
       if (cachedReport) {
         return NextResponse.json({ report: cachedReport.report_data, cached: true })
       }
     } else {
       // Clear cached report of this type
-      await supabase
+      const { error: deleteError } = await supabase
         .from('sm_reports')
         .delete()
         .eq('profile_id', profile.id)
         .eq('report_type', report_type)
+
+      if (deleteError) {
+        throw new DatabaseError(deleteError.message, deleteError)
+      }
     }
 
     // 5. Fetch all questions and answers for analysis
-    const { data: questions } = await supabase
+    const { data: questions, error: questionsError } = await supabase
       .from('sm_questions')
       .select('*')
       .eq('profile_id', profile.id)
 
-    const { data: responses } = await supabase
+    if (questionsError) {
+      throw new DatabaseError(questionsError.message, questionsError)
+    }
+
+    const { data: responses, error: responsesError } = await supabase
       .from('sm_responses')
       .select('id')
       .eq('profile_id', profile.id)
+
+    if (responsesError) {
+      throw new DatabaseError(responsesError.message, responsesError)
+    }
 
     const responseIds = (responses ?? []).map((r: { id: string }) => r.id)
 
     let allAnswers: SmAnswer[] = []
     if (responseIds.length > 0) {
-      const { data: answers } = await supabase
+      const { data: answers, error: answersError } = await supabase
         .from('sm_answers')
         .select('*')
         .in('response_id', responseIds)
+
+      if (answersError) {
+        throw new DatabaseError(answersError.message, answersError)
+      }
 
       allAnswers = (answers ?? []) as SmAnswer[]
     }
@@ -103,7 +126,7 @@ export async function POST(
     )
 
     // 7. Cache the report
-    await supabase
+    const { error: cacheInsertError } = await supabase
       .from('sm_reports')
       .insert({
         profile_id: profile.id,
@@ -112,10 +135,13 @@ export async function POST(
         response_count: profile.total_responses,
       })
 
+    if (cacheInsertError) {
+      throw new DatabaseError(cacheInsertError.message, cacheInsertError)
+    }
+
     return NextResponse.json({ report: reportData, cached: false })
 
   } catch (err) {
-    console.error('Report generation error:', err)
-    return NextResponse.json({ error: 'Server error' }, { status: 500 })
+    return handleApiError(err, request)
   }
 }
