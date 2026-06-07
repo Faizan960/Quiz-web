@@ -87,7 +87,7 @@ export default function HomePage() {
     const interval = setInterval(() => {
       setMirrorsCount(prev => prev + Math.floor(Math.random() * 3) + 1)
     }, 2000)
-    
+
     return () => {
       clearInterval(interval)
       clearTimeout(t)
@@ -136,14 +136,14 @@ export default function HomePage() {
             <span className="font-display font-black tracking-tight text-base md:text-lg text-text-primary">Social Mirror</span>
           </div>
           <div className="flex items-center gap-4">
-            <Link 
-              href="/admin" 
+            <Link
+              href="/admin"
               className="hidden sm:inline-block text-xs font-bold text-text-secondary hover:text-text-primary transition-colors"
             >
               Admin Dashboard
             </Link>
-            <Link 
-              href="/create" 
+            <Link
+              href="/create"
               className="flex items-center gap-1.5 px-5 py-2.5 btn-premium-solid rounded-xl font-bold text-xs"
             >
               Create Mirror <Sparkles className="w-3.5 h-3.5" />
@@ -155,7 +155,7 @@ export default function HomePage() {
       {/* Hero Section */}
       <main className="relative z-10 max-w-6xl mx-auto px-6 pt-12 md:pt-20 pb-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center text-left">
-          
+
           {/* Left Column: Heading & CTA */}
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -170,20 +170,20 @@ export default function HomePage() {
               </span>
               <span>Join <strong className="text-text-primary">{mirrorsCount.toLocaleString()}</strong> active social loops</span>
             </div>
-            
+
             <h1 className="font-display font-black text-4xl sm:text-5xl md:text-6xl lg:text-7xl tracking-tighter leading-[1.02] text-text-primary">
               Discover how <br className="hidden sm:inline" />
               people <span className="font-serif-editorial italic text-primary font-normal drop-shadow-[0_0_30px_rgba(124,58,237,0.08)]">really</span> see you.
             </h1>
-            
+
             <p className="text-text-secondary text-sm sm:text-base leading-relaxed font-semibold max-w-lg">
               Share your unique perception link. Friends answer anonymous questions about you.
               Unlock a server-generated Social Identity Card, dimensional radar reports, custom compliments, and witty AI roasts.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row items-center gap-4 max-w-md">
-              <Link 
-                href="/create" 
+              <Link
+                href="/create"
                 className="flex items-center justify-center gap-2 w-full px-8 py-4 btn-premium-solid rounded-xl font-bold text-base"
               >
                 Get Started for Free <ArrowRight className="w-4 h-4" />
@@ -210,10 +210,10 @@ export default function HomePage() {
               >
                 {/* Aesthetic Shadow Ring */}
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-[32px] blur-2xl -z-10" />
-                
+
                 <div className="glass-card p-6 md:p-8 border border-border relative shadow-xl overflow-hidden text-left bg-surface/90 h-full">
                   <div className="absolute -top-20 -left-20 w-44 h-44 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-                  
+
                   {/* Header preview */}
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 pb-5 border-b border-border">
                     <div className="flex items-center gap-3">
@@ -269,7 +269,7 @@ export default function HomePage() {
                               ⚡ 9:16 vertical layout
                             </span>
                           </div>
-                          
+
                           {/* Tiny representation of card */}
                           <div className="bg-background border border-border p-5 rounded-2xl shadow-inner space-y-3.5 text-left relative overflow-hidden">
                             <div className="absolute top-0 right-0 w-20 h-20 bg-primary/5 rounded-full blur-2xl" />
@@ -351,7 +351,7 @@ export default function HomePage() {
             Bespoke features engineered to reveal your social reflection in high fidelity.
           </p>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {FEATURES.map((feature, i) => {
             return (
@@ -470,8 +470,8 @@ export default function HomePage() {
           <span className="font-serif-editorial italic font-normal text-primary">Social Mirror</span>?
         </h2>
         <p className="text-sm md:text-base text-text-secondary mb-8 font-semibold">It takes 30 seconds. No sign-up required.</p>
-        <Link 
-          href="/create" 
+        <Link
+          href="/create"
           className="inline-flex items-center justify-center gap-2 px-8 py-4 btn-premium-solid rounded-xl font-bold"
         >
           Create Your Mirror <Sparkles className="w-4 h-4" />

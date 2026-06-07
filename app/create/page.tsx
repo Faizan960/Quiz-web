@@ -66,11 +66,10 @@ function PasscodeGrid({ value, onChange, showPin, labelId }: { value: string; on
         return (
           <div
             key={idx}
-            className={`w-12 h-14 rounded-xl border-2 flex items-center justify-center text-lg font-bold transition-all duration-200 bg-[#fcfbf9] ${
-              isFocused 
-                ? 'border-text-primary shadow-[3px_3px_0px_0px_rgba(9,9,11,1)] scale-105' 
+            className={`w-12 h-14 rounded-xl border-2 flex items-center justify-center text-lg font-bold transition-all duration-200 bg-[#fcfbf9] ${isFocused
+                ? 'border-text-primary shadow-[3px_3px_0px_0px_rgba(9,9,11,1)] scale-105'
                 : 'border-border text-text-muted'
-            }`}
+              }`}
           >
             {char ? (
               showPin ? (
@@ -168,7 +167,7 @@ export default function CreatePage() {
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden text-text-primary">
         <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-90" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
-        
+
         <motion.div
           initial={{ opacity: 0, scale: 0.96, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -178,7 +177,7 @@ export default function CreatePage() {
           <div className="w-16 h-16 bg-[#fcfbf9] border-2 border-text-primary rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-[3px_3px_0px_0px_rgba(9,9,11,1)]">
             <Sparkles className="w-8 h-8 text-text-primary" />
           </div>
-          
+
           <h1 className="font-display text-2xl md:text-3xl font-black mb-2 text-text-primary tracking-tight">
             Your Mirror is Live!
           </h1>
@@ -191,8 +190,8 @@ export default function CreatePage() {
             <div className="flex-1 font-bold text-text-primary truncate text-left text-xs md:text-sm">
               {shareUrl}
             </div>
-            <button 
-              onClick={handleCopy} 
+            <button
+              onClick={handleCopy}
               className="btn-premium-solid px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-1.5 flex-shrink-0 cursor-pointer shadow-none"
             >
               {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
@@ -219,8 +218,8 @@ export default function CreatePage() {
           </div>
 
           <div className="flex items-center justify-center gap-4">
-            <Link 
-              href={`${result.url}/report`} 
+            <Link
+              href={`${result.url}/report`}
               className="flex items-center justify-center gap-2 flex-1 btn-premium-outline rounded-2xl py-3.5 text-xs md:text-sm font-bold transition-all"
             >
               📊 View Dashboard
@@ -254,7 +253,7 @@ export default function CreatePage() {
       </nav>
 
       <main className="flex-1 flex flex-col md:flex-row max-w-5xl mx-auto w-full pt-8 md:pt-16 pb-24 px-6 gap-8 relative z-10">
-        
+
         {/* Step Navigation Sidebar (Desktop) */}
         <div className="hidden md:flex flex-col w-64 shrink-0">
           <div className="space-y-6">
@@ -265,26 +264,24 @@ export default function CreatePage() {
                 <div key={idx} className="flex gap-4 items-center relative">
                   {/* Step line connector */}
                   {idx < totalSteps - 1 && (
-                    <div 
-                      className={`absolute left-5 top-10 bottom-[-16px] w-[1px] transition-colors duration-300 ${
-                        step > idx ? 'bg-text-primary' : 'bg-border'
-                      }`}
+                    <div
+                      className={`absolute left-5 top-10 bottom-[-16px] w-[1px] transition-colors duration-300 ${step > idx ? 'bg-text-primary' : 'bg-border'
+                        }`}
                     />
                   )}
-                  
+
                   {/* Indicator Dot */}
-                  <div 
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xs border-2 transition-all duration-300 ${
-                      isActive 
+                  <div
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-xs border-2 transition-all duration-300 ${isActive
                         ? 'bg-[#fcfbf9] border-text-primary text-text-primary shadow-[2px_2px_0px_0px_rgba(9,9,11,1)]'
                         : isCompleted
                           ? 'bg-text-primary text-background border-text-primary'
                           : 'bg-surface border-border text-text-muted'
-                    }`}
+                      }`}
                   >
                     {isCompleted ? <Check className="w-4 h-4" /> : `0${idx + 1}`}
                   </div>
-                  
+
                   {/* Title & Desc */}
                   <div>
                     <h4 className={`text-xs font-bold transition-colors ${isActive ? 'text-text-primary font-black' : isCompleted ? 'text-text-primary' : 'text-text-muted'}`}>
@@ -402,8 +399,8 @@ export default function CreatePage() {
                                 onClick={() => toggleInterest(interest)}
                                 className={`
                                   px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 border-2 cursor-pointer flex items-center gap-1.5
-                                  ${isSelected 
-                                    ? 'bg-text-primary border-text-primary text-background shadow-[2px_2px_0px_0px_rgba(124,58,237,0.2)]' 
+                                  ${isSelected
+                                    ? 'bg-text-primary border-text-primary text-background shadow-[2px_2px_0px_0px_rgba(124,58,237,0.2)]'
                                     : 'bg-[#fcfbf9] border-border text-text-secondary hover:border-text-primary hover:bg-white'}
                                 `}
                                 type="button"
@@ -417,11 +414,11 @@ export default function CreatePage() {
                       </div>
                     ))}
                   </div>
-                  
+
                   {interests.length > 0 && (
                     <div className="mt-5 text-xs font-bold text-text-primary flex items-center gap-2 font-mono">
                       <div className="w-full bg-zinc-200/50 rounded-full h-1.5 overflow-hidden">
-                        <div 
+                        <div
                           className="h-full bg-text-primary transition-all duration-300"
                           style={{ width: `${Math.min((interests.length / 5) * 100, 100)}%` }}
                         />
@@ -457,8 +454,8 @@ export default function CreatePage() {
                           onClick={() => toggleCategory(cat.id)}
                           className={`
                             flex items-center gap-3 p-3.5 rounded-xl border-2 text-left transition-all duration-200 cursor-pointer
-                            ${isSelected 
-                              ? 'bg-white border-text-primary shadow-[2px_2px_0px_0px_rgba(9,9,11,1)]' 
+                            ${isSelected
+                              ? 'bg-white border-text-primary shadow-[2px_2px_0px_0px_rgba(9,9,11,1)]'
                               : 'bg-[#fcfbf9] border-border hover:border-text-primary hover:bg-white'}
                           `}
                           type="button"
@@ -506,8 +503,8 @@ export default function CreatePage() {
                         <label id="pin-label" className="block text-[10px] font-bold text-text-secondary uppercase tracking-wider font-mono">
                           Secret PIN (4 digits)
                         </label>
-                        <button 
-                          onClick={() => setShowPin(!showPin)} 
+                        <button
+                          onClick={() => setShowPin(!showPin)}
                           className="text-[10px] text-text-primary hover:underline font-bold transition-colors cursor-pointer flex items-center gap-1 font-mono"
                           type="button"
                         >
@@ -554,7 +551,7 @@ export default function CreatePage() {
                 <ArrowLeft className="w-4 h-4" /> Back
               </button>
             )}
-            
+
             {step < totalSteps - 1 ? (
               <button
                 onClick={() => canProceed() && setStep(s => s + 1)}

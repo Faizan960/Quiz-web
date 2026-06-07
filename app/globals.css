@@ -1,19 +1,30 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #7c3aed; /* Electric Violet */
-  --color-primary-light: #8b5cf6; /* Warm Purple */
-  --color-secondary: #ec4899; /* Sunset Pink */
-  --color-accent: #0ea5e9; /* Light Blue */
-  --color-surface: #ffffff; /* Clean Card Surface */
-  --color-surface-hover: #fcfbf9; /* Soft Hover Sand */
-  --color-background: #faf8f5; /* Premium Alabaster / Sand */
-  
-  --color-text-primary: #09090b; /* Deep Dark Zinc */
-  --color-text-secondary: #52525b; /* Slate Gray */
-  --color-text-muted: #8e8e93; /* Muted Soft Gray */
-  --color-border: #ebe7e0; /* Warm Accent Beige Border */
-  
+  --color-primary: #7c3aed;
+  /* Electric Violet */
+  --color-primary-light: #8b5cf6;
+  /* Warm Purple */
+  --color-secondary: #ec4899;
+  /* Sunset Pink */
+  --color-accent: #0ea5e9;
+  /* Light Blue */
+  --color-surface: #ffffff;
+  /* Clean Card Surface */
+  --color-surface-hover: #fcfbf9;
+  /* Soft Hover Sand */
+  --color-background: #faf8f5;
+  /* Premium Alabaster / Sand */
+
+  --color-text-primary: #09090b;
+  /* Deep Dark Zinc */
+  --color-text-secondary: #52525b;
+  /* Slate Gray */
+  --color-text-muted: #8e8e93;
+  /* Muted Soft Gray */
+  --color-border: #ebe7e0;
+  /* Warm Accent Beige Border */
+
   --font-display: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
   --font-body: var(--font-dm), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-serif), Georgia, serif;
@@ -88,11 +99,11 @@
     background-clip: text;
     display: inline-block;
   }
-  
+
   .bg-pastel-gradient {
     background: radial-gradient(circle at 10% 10%, rgba(124, 58, 237, 0.08) 0%, transparent 60%),
-                radial-gradient(circle at 90% 90%, rgba(236, 72, 153, 0.07) 0%, transparent 60%),
-                radial-gradient(circle at 50% 30%, rgba(14, 165, 233, 0.04) 0%, transparent 50%);
+      radial-gradient(circle at 90% 90%, rgba(236, 72, 153, 0.07) 0%, transparent 60%),
+      radial-gradient(circle at 50% 30%, rgba(14, 165, 233, 0.04) 0%, transparent 50%);
     background-size: 150% 150%;
   }
 
@@ -102,7 +113,7 @@
     mask-image: radial-gradient(ellipse at 50% 50%, black 50%, transparent 100%);
     -webkit-mask-image: radial-gradient(ellipse at 50% 50%, black 50%, transparent 100%);
   }
-  
+
   .glass-panel {
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(16px);
@@ -137,11 +148,11 @@
     transform: translate(-2px, -2px);
     box-shadow: 6px 6px 0px 0px #09090b;
   }
-  
+
   .glow-border {
     position: relative;
   }
-  
+
   .glow-border::after {
     content: '';
     position: absolute;
@@ -152,31 +163,35 @@
     opacity: 0.08;
     transition: opacity 0.3s;
   }
-  
+
   .glow-border:hover::after {
     opacity: 0.18;
   }
-  
+
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
   }
+
   .hide-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  
+
   /* Custom sleek light scrollbar */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
+
   ::-webkit-scrollbar-track {
     background: rgba(9, 9, 11, 0.02);
   }
+
   ::-webkit-scrollbar-thumb {
     background: rgba(124, 58, 237, 0.15);
     border-radius: 10px;
   }
+
   ::-webkit-scrollbar-thumb:hover {
     background: rgba(124, 58, 237, 0.3);
   }
@@ -184,17 +199,33 @@
 
 /* Animations */
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-8px);
+  }
 }
+
 .animate-float {
   animation: float 6s ease-in-out infinite;
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(124, 58, 237, 0.04); }
-  50% { box-shadow: 0 0 35px rgba(124, 58, 237, 0.08), 0 0 50px rgba(236, 72, 153, 0.04); }
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(124, 58, 237, 0.04);
+  }
+
+  50% {
+    box-shadow: 0 0 35px rgba(124, 58, 237, 0.08), 0 0 50px rgba(236, 72, 153, 0.04);
+  }
 }
+
 .animate-pulse-glow {
   animation: pulse-glow 4s ease-in-out infinite;
 }
@@ -205,9 +236,11 @@
     transform: translateY(-20px) rotate(0deg) scale(1);
     opacity: 1;
   }
+
   50% {
     opacity: 0.8;
   }
+
   100% {
     transform: translateY(105vh) rotate(720deg) scale(0.5);
     opacity: 0;
@@ -229,6 +262,7 @@
   0% {
     background-position: -200% 0;
   }
+
   100% {
     background-position: 200% 0;
   }

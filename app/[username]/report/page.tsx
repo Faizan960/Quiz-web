@@ -60,11 +60,10 @@ function PasscodeGrid({ value, onChange, showPin, labelId }: { value: string; on
         return (
           <div
             key={idx}
-            className={`w-12 h-14 rounded-xl border-2 flex items-center justify-center text-lg font-bold transition-all duration-200 bg-[#fcfbf9] ${
-              isFocused 
-                ? 'border-text-primary shadow-[3px_3px_0px_0px_rgba(9,9,11,1)] scale-105' 
+            className={`w-12 h-14 rounded-xl border-2 flex items-center justify-center text-lg font-bold transition-all duration-200 bg-[#fcfbf9] ${isFocused
+                ? 'border-text-primary shadow-[3px_3px_0px_0px_rgba(9,9,11,1)] scale-105'
                 : 'border-border text-text-muted'
-            }`}
+              }`}
           >
             {char ? (
               showPin ? (
@@ -94,13 +93,13 @@ function TiltIdentityCard({ src }: { src: string }) {
     const rect = card.getBoundingClientRect()
     const x = e.clientX - rect.left
     const y = e.clientY - rect.top
-    
+
     const px = x / rect.width - 0.5
     const py = y / rect.height - 0.5
-    
+
     setRotateY(px * 16)
     setRotateX(-py * 16)
-    
+
     setSheenX((x / rect.width) * 100)
     setSheenY((y / rect.height) * 100)
   }
@@ -131,7 +130,7 @@ function TiltIdentityCard({ src }: { src: string }) {
         alt="Social Identity Card"
         className="w-full h-full object-cover select-none pointer-events-none"
       />
-      
+
       {/* Glare Sheen Overlay */}
       <motion.div
         className="absolute inset-0 pointer-events-none z-10 mix-blend-color-dodge transition-opacity duration-300"
@@ -327,7 +326,7 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
         setResponseCount(data.total ?? 0)
         setTimeline(data.responses ?? [])
       })
-      .catch(() => {})
+      .catch(() => { })
   }, [username])
 
   const handleUnlock = async (isRegen = false) => {
@@ -361,7 +360,7 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
               setResponseCount(d.total ?? 0)
               setTimeline(d.responses ?? [])
             })
-            .catch(() => {})
+            .catch(() => { })
 
           // Staggered reveal animation
           for (let i = 1; i <= 6; i++) {
@@ -376,7 +375,7 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
             setResponseCount(d.total ?? 0)
             setTimeline(d.responses ?? [])
           })
-          .catch(() => {})
+          .catch(() => { })
       }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
@@ -444,7 +443,7 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden text-text-primary">
         <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-90" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
-        
+
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
@@ -453,7 +452,7 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
           <div className="w-12 h-12 bg-[#fcfbf9] border-2 border-text-primary rounded-2xl flex items-center justify-center mx-auto mb-5 text-text-primary shadow-[2.5px_2.5px_0px_0px_rgba(9,9,11,1)]">
             <Lock className="w-5 h-5" />
           </div>
-          
+
           <h1 className="font-display text-xl md:text-2xl font-black mb-2 text-text-primary tracking-tight">Unlock Your Report</h1>
           <p className="text-text-secondary text-xs mb-6 font-semibold">
             Enter the access PIN you set during creation.
@@ -464,7 +463,7 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
             inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold mb-7 border-2 border-text-primary font-mono bg-white shadow-[1.5px_1.5px_0px_0px_rgba(9,9,11,1)]
             ${responseCount >= 3 ? 'text-emerald-600' : 'text-pink-500'}
           `}>
-            {responseCount >= 3 ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> : <span className="text-xs">⏳</span>} 
+            {responseCount >= 3 ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> : <span className="text-xs">⏳</span>}
             <span>{responseCount} response{responseCount !== 1 ? 's' : ''} collected</span>
             {responseCount < 3 && <span className="opacity-75 font-semibold">({3 - responseCount} more needed)</span>}
           </div>
@@ -477,8 +476,8 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
                 showPin={showPin}
                 labelId="report-pin"
               />
-              <button 
-                onClick={() => setShowPin(!showPin)} 
+              <button
+                onClick={() => setShowPin(!showPin)}
                 className="mt-3.5 text-xs text-text-muted hover:text-text-primary transition-colors cursor-pointer flex items-center gap-1.5 font-bold font-mono"
                 type="button"
               >
@@ -499,11 +498,10 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
             <button
               onClick={() => handleUnlock(false)}
               disabled={loading || pin.length !== 4}
-              className={`w-full py-3.5 rounded-2xl font-black text-xs md:text-sm transition-all cursor-pointer ${
-                (loading || pin.length !== 4)
+              className={`w-full py-3.5 rounded-2xl font-black text-xs md:text-sm transition-all cursor-pointer ${(loading || pin.length !== 4)
                   ? 'bg-zinc-150 text-zinc-400 border border-zinc-200 cursor-not-allowed shadow-none'
                   : 'btn-premium-solid'
-              }`}
+                }`}
             >
               {loading ? 'Unlocking...' : 'Unlock Report 🪞'}
             </button>
@@ -552,7 +550,7 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
       </nav>
 
       <main className="flex-1 max-w-3xl mx-auto w-full px-6 py-12 relative z-10">
-        
+
         {/* Archetype Hero */}
         {revealStep >= 1 && (
           <motion.div
@@ -580,11 +578,10 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
-              className={`flex-1 relative flex items-center justify-center gap-1.5 py-3 rounded-xl text-xs md:text-sm font-bold transition-colors duration-300 cursor-pointer ${
-                tab === t.id 
-                  ? 'text-white' 
+              className={`flex-1 relative flex items-center justify-center gap-1.5 py-3 rounded-xl text-xs md:text-sm font-bold transition-colors duration-300 cursor-pointer ${tab === t.id
+                  ? 'text-white'
                   : 'text-text-secondary hover:bg-zinc-150'
-              }`}
+                }`}
               style={{ color: tab === t.id ? '#faf8f5' : 'var(--color-text-secondary)' }}
             >
               {tab === t.id && (
@@ -808,23 +805,23 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
                     <div className="md:col-span-5 flex justify-center">
                       <TiltIdentityCard src={`/api/profiles/${username}/card?pin=${encodeURIComponent(pin)}`} />
                     </div>
-                    
+
                     <div className="md:col-span-7 space-y-4">
                       <h4 className="font-display text-lg md:text-xl font-black text-text-primary tracking-tight">Export Your Card</h4>
                       <p className="text-xs text-text-secondary leading-relaxed font-semibold">
                         Download your server-rendered Social Identity Card in high definition. Formatted perfectly for sharing on Instagram stories, Snapchat, or save it to your phone.
                       </p>
-                      
+
                       {/* Actions */}
                       <div className="flex flex-col sm:flex-row gap-3 pt-2 relative z-10 w-full">
-                        <button 
-                          onClick={() => handleDownloadCard('standard')} 
+                        <button
+                          onClick={() => handleDownloadCard('standard')}
                           className="btn-premium-solid flex items-center justify-center gap-1.5 py-3 px-5 rounded-xl text-xs font-bold cursor-pointer animate-none transition-all"
                         >
                           <Download className="w-4 h-4" /> Download Card
                         </button>
-                        <button 
-                          onClick={() => handleDownloadCard('story')} 
+                        <button
+                          onClick={() => handleDownloadCard('story')}
                           className="btn-premium-outline flex items-center justify-center gap-1.5 py-3 px-5 rounded-xl text-xs font-bold cursor-pointer"
                         >
                           <Camera className="w-4 h-4 text-text-primary" /> Story (9:16)
@@ -907,7 +904,7 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
             className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-background/95 backdrop-blur-md text-text-primary"
           >
             <div className="absolute inset-0 pointer-events-none bg-dot-grid opacity-80" />
-            
+
             <div className="relative flex flex-col items-center text-center px-6">
               {/* Pulsing mirror emoji inside a glowing ring */}
               <div className="relative mb-8">
@@ -925,7 +922,7 @@ export default function ReportPage({ params }: { params: Promise<{ username: str
                   className="absolute inset-0 rounded-full border border-text-primary pointer-events-none"
                 />
               </div>
-              
+
               <motion.h2
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}

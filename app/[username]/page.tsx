@@ -8,7 +8,7 @@ import { TiltCard } from '@/components/TiltCard'
 
 function Confetti() {
   const [pieces, setPieces] = useState<{ id: number; left: string; delay: string; size: string; color: string }[]>([])
-  
+
   useEffect(() => {
     const colors = ['#7c3aed', '#8b5cf6', '#ec4899', '#0ea5e9', '#ffb703', '#fb8500', '#2ec4b6']
     const newPieces = Array.from({ length: 45 }).map((_, i) => ({
@@ -126,7 +126,7 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
             setTeaser(data)
           }
         })
-        .catch(() => {})
+        .catch(() => { })
     }
   }, [submitted, username])
 
@@ -151,8 +151,8 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
       if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') return
 
       const key = e.key.toUpperCase()
-      const index = ['A', 'B', 'C', 'D'].indexOf(key) !== -1 
-        ? ['A', 'B', 'C', 'D'].indexOf(key) 
+      const index = ['A', 'B', 'C', 'D'].indexOf(key) !== -1
+        ? ['A', 'B', 'C', 'D'].indexOf(key)
         : ['1', '2', '3', '4'].indexOf(key)
 
       if (index !== -1 && question.options && question.options[index]) {
@@ -240,7 +240,7 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
         <Confetti />
         <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-80" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
-        
+
         <TiltCard
           initial={{ opacity: 0, scale: 0.96, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -251,21 +251,21 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
           className="relative z-10 max-w-md w-full"
         >
           <div className="glass-card p-6 md:p-8 text-center border border-border bg-surface h-full">
-            <motion.div 
+            <motion.div
               initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, type: 'spring' }}
               className="w-12 h-12 bg-[#fcfbf9] border-2 border-text-primary rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-[2.5px_2.5px_0px_0px_rgba(9,9,11,1)]"
             >
               <Heart className="w-6 h-6 text-text-primary" />
             </motion.div>
-            
-            <motion.h1 
+
+            <motion.h1
               initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
               className="font-display text-xl md:text-2xl font-black mb-2 text-text-primary tracking-tight"
             >
               You&apos;re amazing!
             </motion.h1>
-            
-            <motion.p 
+
+            <motion.p
               initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
               className="text-text-secondary text-xs md:text-sm leading-relaxed mb-6 font-semibold"
             >
@@ -351,7 +351,7 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 relative overflow-hidden">
         <div className="absolute inset-0 z-0 pointer-events-none bg-dot-grid opacity-80" />
         <div className="absolute inset-0 z-0 pointer-events-none bg-pastel-gradient opacity-90" />
-        
+
         <TiltCard
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
@@ -388,21 +388,19 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
               <div className="flex gap-3 mb-1">
                 <button
                   onClick={() => setIsAnonymous(true)}
-                  className={`flex-1 py-3 px-3.5 rounded-xl text-xs md:text-sm font-bold transition-all border-2 flex items-center justify-center gap-1.5 cursor-pointer ${
-                    isAnonymous 
-                      ? 'bg-text-primary border-text-primary text-background shadow-[2px_2px_0px_0px_rgba(9,9,11,0.15)]' 
+                  className={`flex-1 py-3 px-3.5 rounded-xl text-xs md:text-sm font-bold transition-all border-2 flex items-center justify-center gap-1.5 cursor-pointer ${isAnonymous
+                      ? 'bg-text-primary border-text-primary text-background shadow-[2px_2px_0px_0px_rgba(9,9,11,0.15)]'
                       : 'bg-[#fcfbf9] border-border text-text-secondary hover:bg-white hover:border-text-primary'
-                  }`}
+                    }`}
                 >
                   🕶️ Anonymous
                 </button>
                 <button
                   onClick={() => setIsAnonymous(false)}
-                  className={`flex-1 py-3 px-3.5 rounded-xl text-xs md:text-sm font-bold transition-all border-2 flex items-center justify-center gap-1.5 cursor-pointer ${
-                    !isAnonymous 
-                      ? 'bg-text-primary border-text-primary text-background shadow-[2px_2px_0px_0px_rgba(9,9,11,0.15)]' 
+                  className={`flex-1 py-3 px-3.5 rounded-xl text-xs md:text-sm font-bold transition-all border-2 flex items-center justify-center gap-1.5 cursor-pointer ${!isAnonymous
+                      ? 'bg-text-primary border-text-primary text-background shadow-[2px_2px_0px_0px_rgba(9,9,11,0.15)]'
                       : 'bg-[#fcfbf9] border-border text-text-secondary hover:bg-white hover:border-text-primary'
-                  }`}
+                    }`}
                 >
                   <User className="w-3.5 h-3.5" /> With Name
                 </button>
@@ -423,11 +421,10 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
             <button
               onClick={() => setStarted(true)}
               disabled={!isAnonymous && !respondentName.trim()}
-              className={`flex items-center justify-center gap-1.5 w-full py-3.5 rounded-xl text-xs md:text-sm font-black transition-all cursor-pointer ${
-                (!isAnonymous && !respondentName.trim()) 
-                  ? 'bg-zinc-150 text-zinc-400 border border-zinc-200 cursor-not-allowed shadow-none' 
+              className={`flex items-center justify-center gap-1.5 w-full py-3.5 rounded-xl text-xs md:text-sm font-black transition-all cursor-pointer ${(!isAnonymous && !respondentName.trim())
+                  ? 'bg-zinc-150 text-zinc-400 border border-zinc-200 cursor-not-allowed shadow-none'
                   : 'btn-premium-solid'
-              }`}
+                }`}
             >
               Start Answering <ArrowRight className="w-4 h-4" />
             </button>
@@ -500,8 +497,8 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
                     onClick={() => handleAnswer(question.id, opt.text, i)}
                     className={`
                       w-full flex items-center gap-3.5 p-4 rounded-xl border-2 text-left transition-all duration-300 cursor-pointer
-                      ${isSelected 
-                        ? 'bg-white border-text-primary shadow-[3px_3px_0px_0px_rgba(9,9,11,1)] z-10 relative' 
+                      ${isSelected
+                        ? 'bg-white border-text-primary shadow-[3px_3px_0px_0px_rgba(9,9,11,1)] z-10 relative'
                         : 'bg-[#fcfbf9] border-border hover:border-text-primary hover:bg-white'}
                     `}
                   >
@@ -540,11 +537,10 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
                 <button
                   onClick={() => { if (answers[question.id]) { setDirection(1); setCurrentQ(q => q + 1) } }}
                   disabled={!answers[question.id]}
-                  className={`flex items-center justify-center gap-1.5 flex-1 rounded-xl py-3.5 text-xs md:text-sm font-bold transition-all cursor-pointer ${
-                    answers[question.id] 
-                      ? 'btn-premium-solid' 
+                  className={`flex items-center justify-center gap-1.5 flex-1 rounded-xl py-3.5 text-xs md:text-sm font-bold transition-all cursor-pointer ${answers[question.id]
+                      ? 'btn-premium-solid'
                       : 'bg-zinc-150 text-zinc-400 border border-zinc-200 cursor-not-allowed shadow-none'
-                  }`}
+                    }`}
                 >
                   Next <ArrowRight className="w-4 h-4" />
                 </button>
@@ -552,11 +548,10 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
                 <button
                   onClick={handleSubmit}
                   disabled={submitting}
-                  className={`flex items-center justify-center gap-1.5 flex-1 rounded-xl py-3.5 text-xs md:text-sm font-bold transition-all cursor-pointer ${
-                    submitting 
-                      ? 'opacity-40 cursor-not-allowed bg-zinc-150 text-zinc-450 border border-zinc-200' 
+                  className={`flex items-center justify-center gap-1.5 flex-1 rounded-xl py-3.5 text-xs md:text-sm font-bold transition-all cursor-pointer ${submitting
+                      ? 'opacity-40 cursor-not-allowed bg-zinc-150 text-zinc-450 border border-zinc-200'
                       : 'btn-premium-solid'
-                  }`}
+                    }`}
                 >
                   {submitting ? 'Submitting...' : 'Submit Responses'} <Sparkles className="w-4 h-4" />
                 </button>
@@ -566,7 +561,7 @@ export default function AnswerPage({ params }: { params: Promise<{ username: str
                 </button>
               )}
             </div>
-            
+
             {/* Keyboard tips */}
             <div className="hidden sm:block text-center mt-6 text-[10px] text-text-muted font-bold font-mono">
               💡 Tip: Use keyboard keys <span className="px-1.5 py-0.5 rounded border-2 border-text-primary bg-white text-text-primary font-black shadow-[1.5px_1.5px_0px_0px_rgba(9,9,11,1)]">A</span> - <span className="px-1.5 py-0.5 rounded border-2 border-text-primary bg-white text-text-primary font-black shadow-[1.5px_1.5px_0px_0px_rgba(9,9,11,1)]">D</span> to answer quickly.
