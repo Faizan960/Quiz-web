@@ -1,34 +1,129 @@
 @import "tailwindcss";
 
+/* ─── Quizly Design System — Cyber-Cream Minimalist ──────────── */
 @theme {
-  --color-primary: #c77dff;
-  --color-secondary: #ff6b9d;
+  /* Primary palette */
+  --color-canvas: #FAF8F5;
+  --color-surface: #FFFFFF;
+  --color-surface-hover: #F7F5F2;
+
+  /* Border */
+  --color-border: #EBE7E0;
+  --color-border-strong: #D4CFC8;
+
+  /* Text */
+  --color-text-primary: #0F0D0B;
+  --color-text-secondary: #6B6560;
+  --color-text-muted: #A39E99;
+
+  /* Purple scale */
+  --color-purple-50: #EDE9FE;
+  --color-purple-100: #DDD6FE;
+  --color-purple-200: #C4B5FD;
+  --color-purple-400: #A78BFA;
+  --color-purple-500: #8B5CF6;
+  --color-purple-600: #7C3AED;
+  --color-purple-700: #6D28D9;
+  --color-purple-900: #4C1D95;
+
+  /* Pink scale */
+  --color-pink-50: #FCE7F3;
+  --color-pink-100: #FBCFE8;
+  --color-pink-400: #F472B6;
+  --color-pink-500: #EC4899;
+  --color-pink-600: #DB2777;
+  --color-pink-900: #831843;
+
+  /* Semantic colors */
+  --color-success: #059669;
+  --color-success-light: #D1FAE5;
+  --color-error: #DC2626;
+  --color-error-light: #FEE2E2;
+  --color-warning: #D97706;
+  --color-warning-light: #FEF3C7;
+
+  /* Fonts */
   --font-display: var(--font-syne), ui-sans-serif, system-ui, sans-serif;
   --font-body: var(--font-dm), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-dm-mono), ui-monospace, SFMono-Regular, monospace;
+
+  /* Border radius */
+  --radius-card: 16px;
+  --radius-btn: 12px;
+  --radius-pill: 9999px;
+  --radius-input: 10px;
+  --radius-icon: 10px;
 }
 
 @layer base {
-  :root {
-    --bg: #0a0a0f;
-    --surface: #12121a;
-    --surface2: #1a1a24;
-    --text: #f0f0f5;
-    --muted: #8e8e9e;
-    --border: rgba(255, 255, 255, 0.08);
-    --pink: #ff6b9d;
-    --purple: #c77dff;
-    --green: #06d6a0;
-    --red: #ff4d6d;
-    --yellow: #ffd700;
-    --cyan: #48cae4;
+  * {
+    border-color: var(--color-border);
   }
 
   body {
-    background-color: var(--bg);
-    color: var(--text);
+    background-color: var(--color-canvas);
+    color: var(--color-text-primary);
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
+  }
+
+  /* Focus ring utility */
+  :focus-visible {
+    outline: 2px solid var(--color-purple-600);
+    outline-offset: 2px;
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Selection color */
+  ::selection {
+    background-color: var(--color-purple-100);
+    color: var(--color-purple-900);
+  }
+}
+
+@layer utilities {
+  /* Text gradient utility */
+  .text-gradient {
+    background: linear-gradient(135deg, var(--color-purple-600) 0%, var(--color-pink-500) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Shimmer animation for skeletons */
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 1.5s infinite;
+  }
+
+  /* Shake animation for error states */
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+
+  .animate-shake {
+    animation: shake 0.3s ease-in-out;
+  }
+
+  /* Fade in animation */
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.4s ease-out;
   }
 }

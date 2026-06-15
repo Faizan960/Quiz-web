@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Syne, DM_Sans, Instrument_Serif } from 'next/font/google'
+import { Syne, DM_Sans, DM_Mono } from 'next/font/google'
 import './globals.css'
 
 const syne = Syne({
@@ -16,30 +16,46 @@ const dmSans = DM_Sans({
   display: 'swap',
 })
 
-const instrumentSerif = Instrument_Serif({
+const dmMono = DM_Mono({
   subsets: ['latin'],
-  weight: ['400'],
-  style: ['normal', 'italic'],
-  variable: '--font-serif',
+  weight: ['400', '500'],
+  variable: '--font-dm-mono',
   display: 'swap',
 })
 
 export const metadata: Metadata = {
-  title: 'Quizly — Create an anonymous quiz about yourself',
-  description: 'Share your Quizly link on Instagram/Snapchat stories to see what your friends really think and unlock a personalized AI-generated personality radar report.',
-  keywords: ['quizly', 'personality quiz', 'friend quiz', 'social identity', 'anonymous quiz'],
+  title: {
+    default: 'Quizly — Create an anonymous quiz about yourself',
+    template: '%s | Quizly',
+  },
+  description:
+    'Share your Quizly link on Instagram & Snapchat stories. Friends answer anonymously, and you unlock a personalized AI-generated personality radar report.',
+  keywords: [
+    'quizly',
+    'personality quiz',
+    'anonymous quiz',
+    'friend quiz',
+    'social identity',
+    'personality report',
+  ],
   openGraph: {
     title: 'Quizly',
     description: 'Create an anonymous quiz about yourself.',
     type: 'website',
+    siteName: 'Quizly',
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Quizly',
+    description: 'Create an anonymous quiz about yourself.',
+  },
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${syne.variable} ${dmSans.variable} ${instrumentSerif.variable}`}>
+    <html lang="en" className={`${syne.variable} ${dmSans.variable} ${dmMono.variable}`}>
       <body>{children}</body>
     </html>
   )
 }
-
