@@ -241,7 +241,6 @@ function QuestionCard({ q, index, onChange, onDelete }: {
 
 /* ─── main component ─────────────────────────────────────────── */
 export function QuizCreatorUI() {
-  const [activeTab, setActiveTab] = useState<'home' | 'create' | 'profile'>('create')
   const [title, setTitle]         = useState('')
   const [desc, setDesc]           = useState('')
   const [category, setCategory]   = useState('Personality')
@@ -570,7 +569,7 @@ export function QuizCreatorUI() {
         )}
       </div>
 
-      <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+      <BottomNav />
     </div>
   )
 }

@@ -59,7 +59,6 @@ function fmt(n: number) {
 
 /* ─── component ─────────────────────────────────────────────── */
 export function ProfileUI() {
-  const [activeTab, setActiveTab] = useState<'home' | 'create' | 'profile'>('profile')
   const [settingsOpen, setSettingsOpen] = useState(false)
 
   return (
@@ -492,7 +491,7 @@ export function ProfileUI() {
       </section>
 
       {/* ── Bottom Nav ──────────────────────────────────────── */}
-      <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+      <BottomNav />
     </div>
   )
 }

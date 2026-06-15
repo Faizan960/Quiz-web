@@ -66,7 +66,6 @@ const STATS = [['24K+', 'Quizzes'], ['180K+', 'Plays'], ['92K+', 'Players']] as 
 
 /* ─── component ─────────────────────────────────────────────── */
 export function HomeUI() {
-  const [activeTab, setActiveTab] = useState<'home' | 'create' | 'profile'>('home')
   const [activeCategory, setActiveCategory] = useState<Category>('All')
 
   const filtered =
@@ -348,7 +347,7 @@ export function HomeUI() {
       </section>
 
       {/* ── Bottom Nav ──────────────────────────────────────── */}
-      <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+      <BottomNav />
     </div>
   )
 }

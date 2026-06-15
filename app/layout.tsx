@@ -25,12 +25,12 @@ const instrumentSerif = Instrument_Serif({
 })
 
 export const metadata: Metadata = {
-  title: 'Social Mirror — Discover how people really see you',
-  description: 'An AI-powered social insight platform where friends anonymously answer questions about you and you get personality reports, social identity cards, roasts, and compliments.',
-  keywords: ['social mirror', 'personality quiz', 'friend quiz', 'social identity', 'personality insights', 'roast me', 'compliment me'],
+  title: 'Quizly — Create an anonymous quiz about yourself',
+  description: 'Share your Quizly link on Instagram/Snapchat stories to see what your friends really think and unlock a personalized AI-generated personality radar report.',
+  keywords: ['quizly', 'personality quiz', 'friend quiz', 'social identity', 'anonymous quiz'],
   openGraph: {
-    title: 'Social Mirror',
-    description: 'Discover how people really see you.',
+    title: 'Quizly',
+    description: 'Create an anonymous quiz about yourself.',
     type: 'website',
   },
 }
