@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef } from 'react'
 
 interface PinEntryProps {
   value: string
@@ -15,7 +15,13 @@ export const PinEntry: React.FC<PinEntryProps> = ({
   error = false,
   disabled = false,
 }) => {
-  const [pin, setPin] = useState<string[]>(['', '', '', ''])
+  const pin = [
+    value[0] || '',
+    value[1] || '',
+    value[2] || '',
+    value[3] || '',
+  ]
+
   const inputRefs = [
     useRef<HTMLInputElement>(null),
     useRef<HTMLInputElement>(null),
@@ -23,23 +29,12 @@ export const PinEntry: React.FC<PinEntryProps> = ({
     useRef<HTMLInputElement>(null),
   ]
 
-  // Sync state from prop
-  useEffect(() => {
-    const parsedVal = (value || '').slice(0, 4).split('')
-    const newPin = ['', '', '', '']
-    parsedVal.forEach((char, i) => {
-      newPin[i] = char
-    })
-    setPin(newPin)
-  }, [value])
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const val = e.target.value
     if (!/^[0-9]?$/.test(val)) return // Only allow single digits
 
     const newPin = [...pin]
     newPin[index] = val
-    setPin(newPin)
     onChange(newPin.join(''))
 
     // Move focus to next input if filled
@@ -54,14 +49,12 @@ export const PinEntry: React.FC<PinEntryProps> = ({
         // If current is empty, delete previous and focus it
         const newPin = [...pin]
         newPin[index - 1] = ''
-        setPin(newPin)
         onChange(newPin.join(''))
         inputRefs[index - 1].current?.focus()
       } else {
         // Delete current
         const newPin = [...pin]
         newPin[index] = ''
-        setPin(newPin)
         onChange(newPin.join(''))
       }
     }
@@ -71,12 +64,7 @@ export const PinEntry: React.FC<PinEntryProps> = ({
     e.preventDefault()
     const pastedData = e.clipboardData.getData('text').replace(/[^0-9]/g, '').slice(0, 4)
     if (pastedData) {
-      const newPin = ['', '', '', '']
-      pastedData.split('').forEach((char, i) => {
-        newPin[i] = char
-      })
-      setPin(newPin)
-      onChange(newPin.join(''))
+      onChange(pastedData)
       
       // Focus the last input or the next empty one
       const focusIndex = Math.min(pastedData.length, 3)

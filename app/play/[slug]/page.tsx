@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation'
 import { createAdminClient } from '@/lib/supabase/server'
 import { QuizUI } from '@/components/QuizUI'
-import { TriviaQuestion } from '@/types/quiz'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -61,8 +60,14 @@ export default async function PlayTriviaPage({ params }: PageProps) {
   }
 
   // Parse questions column
-  const rawQuestions = trivia.questions as any[]
-  const parsedQuestions = rawQuestions.map((q: any, i: number) => ({
+  const rawQuestions = trivia.questions as {
+    question?: string
+    question_text?: string
+    options?: string[]
+    correct_index?: number
+  }[]
+
+  const parsedQuestions = rawQuestions.map((q, i) => ({
     id: String(i + 1),
     question_text: q.question || q.question_text || '',
     options: q.options || [],

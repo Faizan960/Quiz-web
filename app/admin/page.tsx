@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import { Lock, Eye, EyeOff, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
@@ -52,8 +52,9 @@ export default function AdminLoginPage() {
       document.cookie = `quizly_admin_token=${data.token}; path=/; max-age=86400; SameSite=Strict`
       
       router.push('/admin/dashboard')
-    } catch (err: any) {
-      toastError(err.message || 'Incorrect password')
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Incorrect password'
+      toastError(message)
       setPassword('')
       setIsLoggingIn(false)
     }
@@ -91,6 +92,7 @@ export default function AdminLoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={isLoggingIn}
                   required
+                  className=""
                 />
                 <button
                   type="button"

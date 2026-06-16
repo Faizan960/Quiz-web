@@ -44,7 +44,7 @@ export async function GET(request: NextRequest, { params }: PageParams) {
 
     let archetype = 'Radar Pending... 🪞'
     let roast = `Waiting for responses. Help unlock their profile by rating them anonymously!`
-    let scores: DimensionScores = {
+    const scores: DimensionScores = {
       charisma: 50,
       resilience: 50,
       loyalty: 50,
@@ -65,8 +65,9 @@ export async function GET(request: NextRequest, { params }: PageParams) {
         wit: 0,
       }
 
-      responses!.forEach((resp) => {
-        const s = resp.dimension_scores as Record<DimensionKey, number>
+      const scoresData = responses as unknown as { dimension_scores: Record<DimensionKey, number> }[]
+      scoresData.forEach((resp) => {
+        const s = resp.dimension_scores
         Object.keys(totals).forEach((key) => {
           totals[key as DimensionKey] += s[key as DimensionKey] ?? 50
         })
@@ -93,7 +94,7 @@ export async function GET(request: NextRequest, { params }: PageParams) {
       type: 'og',
     })
 
-    return new NextResponse(pngBuffer, {
+    return new NextResponse(new Uint8Array(pngBuffer), {
       headers: {
         'Content-Type': 'image/png',
         'Cache-Control': 'public, max-age=60, s-maxage=60',

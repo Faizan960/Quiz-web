@@ -1,11 +1,16 @@
 import { createAdminClient } from '@/lib/supabase/server'
 import { LandingUI } from '@/components/LandingUI'
-import { ToastProvider } from '@/components/ui/Toast'
 
 export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {
-  let triviaList: any[] = []
+  let triviaList: {
+    id: string
+    slug: string
+    title: string
+    category: string
+    play_count: number
+  }[] = []
 
   try {
     const supabase = createAdminClient()
@@ -24,8 +29,6 @@ export default async function HomePage() {
   }
 
   return (
-    <ToastProvider>
-      <LandingUI initialTrivia={triviaList} />
-    </ToastProvider>
+    <LandingUI initialTrivia={triviaList} />
   )
 }

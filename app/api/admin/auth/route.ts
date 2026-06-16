@@ -16,8 +16,7 @@ export async function POST(request: NextRequest) {
     // Validate request body
     const parsedInput = AdminLoginSchema.safeParse(body)
     if (!parsedInput.success) {
-      const issues = parsedInput.error.format()
-      const firstError = Object.values(issues).find((v: any) => v && v._errors)?._errors?.[0]
+      const firstError = parsedInput.error.issues[0]?.message
       throw new ValidationError(firstError || 'Invalid input data')
     }
 

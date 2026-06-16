@@ -78,10 +78,12 @@ export async function POST(request: NextRequest) {
       throw new Error(`Failed to load questions for scoring: ${qError?.message}`)
     }
 
+    const questionsData = dbQuestions as { id: string; dimension: string }[]
+
     // 2. Score the dimensions and overall index
     const dimensionScores = calculateDimensionScores(
       answers,
-      dbQuestions.map((q) => ({ id: q.id, dimension: q.dimension as DimensionKey }))
+      questionsData.map((q) => ({ id: q.id, dimension: q.dimension as DimensionKey }))
     )
     const overallScore = calculateOverallScore(dimensionScores)
 
@@ -125,15 +127,16 @@ export async function POST(request: NextRequest) {
         wit: 0,
       }
       
-      allResponses.forEach((resp) => {
-        const scores = resp.dimension_scores as Record<DimensionKey, number>
+      const responsesData = allResponses as unknown as { dimension_scores: Record<DimensionKey, number> }[]
+      responsesData.forEach((resp) => {
+        const scores = resp.dimension_scores
         Object.keys(totals).forEach((key) => {
           totals[key as DimensionKey] += scores[key as DimensionKey] ?? 50
         })
       })
 
       const count = allResponses.length
-      const averages: Record<DimensionKey, number> = {} as any
+      const averages = {} as Record<DimensionKey, number>
       Object.keys(totals).forEach((key) => {
         averages[key as DimensionKey] = Math.round(totals[key as DimensionKey] / count)
       })

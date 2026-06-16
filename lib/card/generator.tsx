@@ -150,7 +150,7 @@ export async function generateStoryCard({
           }}
         >
           <span style={{ fontSize: '20px', fontWeight: 'bold', color: '#6B6560', marginBottom: '8px' }}>
-            @{username} is classified as:
+            {displayName} (@{username}) is classified as:
           </span>
           <h1 style={{ fontSize: type === 'story' ? '56px' : '44px', fontFamily: 'Syne', fontWeight: 'bold', color: '#0F0D0B', margin: '0 0 16px 0', lineHeight: 1.15 }}>
             {archetype}
@@ -170,7 +170,7 @@ export async function generateStoryCard({
               width: '100%',
             }}
           >
-            <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#DDD6FE', textTransform: 'uppercase', tracking: '0.1em', marginBottom: '8px' }}>
+            <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#DDD6FE', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>
               The Friendly Roast 🔥
             </span>
             <span style={{ fontSize: '18px', fontWeight: 'bold', lineHeight: 1.4, fontStyle: 'italic' }}>

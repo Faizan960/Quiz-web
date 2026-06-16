@@ -53,8 +53,9 @@ export const LandingUI: React.FC<LandingUIProps> = ({ initialTrivia }) => {
       toastSuccess('Access granted! Loading your report...')
       // Redirect to report page with the session token
       window.location.href = `/${data.username}/report?token=${data.token}`
-    } catch (err: any) {
-      toastError(err.message || 'Incorrect username or PIN')
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Incorrect username or PIN'
+      toastError(message)
       setIsUnlocking(false)
     }
   }

@@ -1,5 +1,4 @@
 import { OnboardingUI } from '@/components/OnboardingUI'
-import { ToastProvider } from '@/components/ui/Toast'
 
 export const metadata = {
   title: 'Join Quizly — Claim Your Link 🪞',
@@ -8,8 +7,6 @@ export const metadata = {
 
 export default function CreatePage() {
   return (
-    <ToastProvider>
-      <OnboardingUI />
-    </ToastProvider>
+    <OnboardingUI />
   )
 }

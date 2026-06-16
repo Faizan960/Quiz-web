@@ -52,7 +52,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     return (
       <motion.button
-        ref={ref as any}
+        ref={ref as React.Ref<HTMLButtonElement>}
         disabled={disabled || isLoading}
         whileTap={disabled || isLoading ? undefined : whileTap}
         whileHover={disabled || isLoading ? undefined : whileHover}

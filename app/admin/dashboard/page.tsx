@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useRouter } from 'next/navigation'
 import {
   BarChart3, Megaphone, ShieldAlert, Users, Settings, LogOut,
-  Ban, ShieldCheck, Play, Plus, Trash2, CheckCircle2, AlertTriangle, HelpCircle
+  Ban, Plus, Trash2, HelpCircle
 } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
@@ -77,7 +77,9 @@ export default function AdminDashboardPage() {
       router.push('/admin')
       return
     }
-    setToken(savedToken)
+    setTimeout(() => {
+      setToken(savedToken)
+    }, 0)
   }, [router])
 
   // 2. Fetch admin data once token is verified
@@ -108,7 +110,7 @@ export default function AdminDashboardPage() {
         setUsers(usersData.users || [])
         setTrivia(triviaData.trivia || [])
         setAdSettings(adsData.ads || {})
-      } catch (err) {
+      } catch {
         toastError('Failed to retrieve administrative records.')
       } finally {
         setIsLoading(false)
@@ -146,8 +148,9 @@ export default function AdminDashboardPage() {
         prev.map((u) => (u.id === userId ? { ...u, is_suspended: !currentStatus } : u))
       )
       toastSuccess(`User ${action}ed successfully.`)
-    } catch (err: any) {
-      toastError(err.message || 'Error updating user.')
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Error updating user.'
+      toastError(message)
     }
   }
 
@@ -172,8 +175,9 @@ export default function AdminDashboardPage() {
         prev.map((t) => (t.id === triviaId ? { ...t, is_banned: !currentStatus } : t))
       )
       toastSuccess(`Trivia ${action}ed successfully.`)
-    } catch (err: any) {
-      toastError(err.message || 'Error updating trivia.')
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Error updating trivia.'
+      toastError(message)
     }
   }
 
@@ -198,8 +202,9 @@ export default function AdminDashboardPage() {
       }
 
       toastSuccess('Advertising configurations updated.')
-    } catch (err: any) {
-      toastError(err.message || 'Error saving settings.')
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Error saving settings.'
+      toastError(message)
     } finally {
       setIsSavingAds(false)
     }
@@ -218,7 +223,7 @@ export default function AdminDashboardPage() {
     setNewQuestions((prev) => prev.filter((_, i) => i !== index))
   }
 
-  const handleQuestionChange = (index: number, field: string, val: any) => {
+  const handleQuestionChange = (index: number, field: string, val: string | number) => {
     setNewQuestions((prev) =>
       prev.map((q, i) => (i === index ? { ...q, [field]: val } : q))
     )
@@ -277,8 +282,9 @@ export default function AdminDashboardPage() {
       setTrivia((prev) => [data.trivia, ...prev])
       setNewTriviaTitle('')
       setNewQuestions([{ question: '', options: ['', '', '', ''], correct_index: 0 }])
-    } catch (err: any) {
-      toastError(err.message || 'Error creating trivia')
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Error creating trivia'
+      toastError(message)
     } finally {
       setIsAddingTrivia(false)
     }
@@ -318,19 +324,21 @@ export default function AdminDashboardPage() {
       <main className="relative z-10 flex-grow max-w-6xl w-full mx-auto px-6 py-8 grid grid-cols-1 md:grid-cols-4 gap-6">
         {/* Left column sidebar Navigation */}
         <aside className="md:col-span-1 flex flex-col gap-2">
-          {[
-            { id: 'analytics', icon: BarChart3, label: 'Analytics' },
-            { id: 'ads', icon: Megaphone, label: 'Ad Slots' },
-            { id: 'users', icon: Users, label: 'User Accounts' },
-            { id: 'trivia', icon: ShieldAlert, label: 'Trivia Index' },
-            { id: 'settings', icon: Settings, label: 'Settings' },
-          ].map((navTab) => {
+          {(
+            [
+              { id: 'analytics', icon: BarChart3, label: 'Analytics' },
+              { id: 'ads', icon: Megaphone, label: 'Ad Slots' },
+              { id: 'users', icon: Users, label: 'User Accounts' },
+              { id: 'trivia', icon: ShieldAlert, label: 'Trivia Index' },
+              { id: 'settings', icon: Settings, label: 'Settings' },
+            ] as const
+          ).map((navTab) => {
             const Icon = navTab.icon
             const isActive = activeTab === navTab.id
             return (
               <button
                 key={navTab.id}
-                onClick={() => setActiveTab(navTab.id as any)}
+                onClick={() => setActiveTab(navTab.id)}
                 className={`
                   w-full px-4 py-3.5 rounded-input font-bold text-sm cursor-pointer border flex items-center gap-3 transition-all duration-200
                   ${

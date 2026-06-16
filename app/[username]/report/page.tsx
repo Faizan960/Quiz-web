@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation'
 import { createAdminClient } from '@/lib/supabase/server'
 import { ReportDashboardUI } from '@/components/ReportDashboardUI'
-import { ToastProvider } from '@/components/ui/Toast'
 import { PublicProfile } from '@/types/quiz'
 
 interface PageProps {
@@ -63,9 +62,7 @@ export default async function ReportPage({ params, searchParams }: PageProps) {
 
       {/* Main Dashboard Panel */}
       <main className="relative z-10 flex-1 flex items-center justify-center p-6">
-        <ToastProvider>
-          <ReportDashboardUI profile={profile} initialToken={token} />
-        </ToastProvider>
+        <ReportDashboardUI profile={profile} initialToken={token} />
       </main>
 
       {/* Footer */}

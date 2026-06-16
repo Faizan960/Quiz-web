@@ -2,12 +2,13 @@
 
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Key, ShieldCheck, Download, Copy, Check, MessageSquare, AlertCircle, Eye, Calendar, Sparkles, RefreshCw } from 'lucide-react'
+import { Key, Download, Copy, Check, Eye, Calendar, Sparkles } from 'lucide-react'
 import { Button } from './ui/Button'
 import { Card, CardContent, CardHeader } from './ui/Card'
 import { Badge } from './ui/Badge'
 import { PinEntry } from './ui/PinEntry'
 import { useToast } from './ui/Toast'
+import { Skeleton } from './ui/Skeleton'
 import { PublicProfile } from '@/types/quiz'
 
 // 7 dimensions for radar chart
@@ -75,8 +76,9 @@ export const ReportDashboardUI: React.FC<ReportDashboardUIProps> = ({ profile, i
           throw new Error(data.error || 'Failed to fetch report')
         }
         setReportData(data)
-      } catch (err: any) {
-        toastError(err.message || 'Error loading dashboard')
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Error loading dashboard'
+        toastError(message)
         setIsAuthenticated(false)
         setToken('')
         localStorage.removeItem(`quizly_session_${profile.username}`)
@@ -93,8 +95,10 @@ export const ReportDashboardUI: React.FC<ReportDashboardUIProps> = ({ profile, i
     if (initialToken) return
     const cachedToken = localStorage.getItem(`quizly_session_${profile.username}`)
     if (cachedToken) {
-      setToken(cachedToken)
-      setIsAuthenticated(true)
+      setTimeout(() => {
+        setToken(cachedToken)
+        setIsAuthenticated(true)
+      }, 0)
     }
   }, [profile.username, initialToken])
 
@@ -123,8 +127,9 @@ export const ReportDashboardUI: React.FC<ReportDashboardUIProps> = ({ profile, i
       setToken(data.token)
       setIsAuthenticated(true)
       localStorage.setItem(`quizly_session_${profile.username}`, data.token)
-    } catch (err: any) {
-      toastError(err.message || 'Incorrect PIN')
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Incorrect PIN'
+      toastError(message)
       setPin('')
     } finally {
       setIsVerifying(false)

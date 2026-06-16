@@ -23,23 +23,15 @@ export const Card: React.FC<CardProps> = ({
   const glassStyles = glass ? 'backdrop-blur-md bg-white/70 border-white/20' : ''
   const hoverStyles = interactive ? 'cursor-pointer hover:border-border-strong transition-all duration-200' : ''
 
-  if (interactive) {
-    return (
-      <motion.div
-        whileHover={whileHover || { y: -4, scale: 1.01, boxShadow: '0 12px 24px rgba(15,13,11,0.04)' }}
-        whileTap={whileTap || { scale: 0.99 }}
-        className={`${baseStyles} ${glassStyles} ${hoverStyles} ${className}`}
-        {...props}
-      >
-        {children}
-      </motion.div>
-    )
-  }
-
   return (
-    <div className={`${baseStyles} ${glassStyles} ${className}`} {...(props as any)}>
+    <motion.div
+      whileHover={interactive ? (whileHover || { y: -4, scale: 1.01, boxShadow: '0 12px 24px rgba(15,13,11,0.04)' }) : undefined}
+      whileTap={interactive ? (whileTap || { scale: 0.99 }) : undefined}
+      className={`${baseStyles} ${glassStyles} ${hoverStyles} ${className}`}
+      {...props}
+    >
       {children}
-    </div>
+    </motion.div>
   )
 }
 

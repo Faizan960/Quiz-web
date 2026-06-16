@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation'
 import { createAdminClient } from '@/lib/supabase/server'
 import { PlayDeckUI } from '@/components/PlayDeckUI'
-import { ToastProvider } from '@/components/ui/Toast'
 import { PublicProfile } from '@/types/quiz'
 
 interface PageProps {
@@ -69,9 +68,7 @@ export default async function PlayPage({ params }: PageProps) {
 
       {/* Main Questionnaire */}
       <main className="relative z-10 flex-1 flex items-center justify-center p-6">
-        <ToastProvider>
-          <PlayDeckUI profile={profile} />
-        </ToastProvider>
+        <PlayDeckUI profile={profile} />
       </main>
 
       {/* Footer */}

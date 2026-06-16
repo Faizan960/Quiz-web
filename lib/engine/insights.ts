@@ -134,7 +134,8 @@ const SURPRISING_COMBOS: Array<{
  */
 export function generateInsights(
   scores: DimensionScores,
-  _archetype: Archetype
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  archetype: Archetype
 ): InsightCard[] {
   const insights: InsightCard[] = []
 

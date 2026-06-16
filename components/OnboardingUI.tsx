@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowLeft, ArrowRight, Sparkles, Copy, Check, Download, AlertCircle, Share2 } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Sparkles, Copy, Check, Download, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from './ui/Button'
 import { Input } from './ui/Input'
@@ -101,8 +101,9 @@ export const OnboardingUI: React.FC = () => {
       const origin = typeof window !== 'undefined' ? window.location.origin : ''
       setShareLink(`${origin}/${data.username}`)
       setStep(4)
-    } catch (err: any) {
-      toastError(err.message || 'An error occurred during registration')
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'An error occurred during registration'
+      toastError(message)
     } finally {
       setIsSubmitting(false)
     }

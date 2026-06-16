@@ -318,7 +318,7 @@ const DEFAULT_QUESTIONS = [
       A: "❤️ / 😘 (Hearts and kisses)",
       B: "🥰 / Hugs",
       C: "😊 / Grins",
-      *D: "👍 / Cool"
+      D: "👍 / Cool"
     }
   },
 
@@ -471,8 +471,9 @@ async function seed() {
 
     console.log('\n✨ Database seeding completed successfully!')
     process.exit(0)
-  } catch (err: any) {
-    console.error(`\n❌ Seeding failed: ${err.message}`)
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    console.error(`\n❌ Seeding failed: ${message}`)
     process.exit(1)
   }
 }

@@ -77,6 +77,14 @@ export async function GET(request: NextRequest, { params }: PageParams) {
       wit: 50,
     }
 
+    const responseData = (responses || []) as unknown as {
+      id: string
+      completed_at: string
+      overall_score: number
+      dimension_scores: Record<DimensionKey, number>
+      answers: Record<string, string>
+    }[]
+
     // If less than 3 responses, return locked report data
     if (responseCount < 3) {
       return NextResponse.json({
@@ -84,7 +92,7 @@ export async function GET(request: NextRequest, { params }: PageParams) {
         archetype: null,
         insights: [],
         responseCount,
-        responses: (responses || []).map((r) => ({
+        responses: responseData.map((r) => ({
           id: r.id,
           completed_at: r.completed_at,
           overall_score: r.overall_score,
@@ -106,14 +114,14 @@ export async function GET(request: NextRequest, { params }: PageParams) {
       wit: 0,
     }
 
-    responses!.forEach((resp) => {
-      const scores = resp.dimension_scores as Record<DimensionKey, number>
+    responseData.forEach((resp) => {
+      const scores = resp.dimension_scores
       Object.keys(totals).forEach((key) => {
         totals[key as DimensionKey] += scores[key as DimensionKey] ?? 50
       })
     })
 
-    const averageScores: DimensionScores = {} as any
+    const averageScores = {} as DimensionScores
     Object.keys(totals).forEach((key) => {
       averageScores[key as DimensionKey] = Math.round(totals[key as DimensionKey] / responseCount)
     })

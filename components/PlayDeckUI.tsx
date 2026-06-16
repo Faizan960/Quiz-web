@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { CheckCircle2, AlertTriangle, Play, Sparkles, ChevronRight, Zap } from 'lucide-react'
+import { CheckCircle2, AlertTriangle, Sparkles, Zap } from 'lucide-react'
 import Link from 'next/link'
 import { nanoid } from 'nanoid'
 import { PublicProfile, Question, AnswerKey } from '@/types/quiz'
@@ -34,7 +34,9 @@ export const PlayDeckUI: React.FC<PlayDeckUIProps> = ({ profile }) => {
       token = `resp_${nanoid(16)}`
       localStorage.setItem('quizly_respondent_token', token)
     }
-    setRespondentToken(token)
+    setTimeout(() => {
+      setRespondentToken(token)
+    }, 0)
   }, [])
 
   // 2. Fetch questions once respondentToken is ready
@@ -49,8 +51,9 @@ export const PlayDeckUI: React.FC<PlayDeckUIProps> = ({ profile }) => {
           throw new Error(data.error || 'Failed to fetch questions')
         }
         setQuestions(data.questions || [])
-      } catch (err: any) {
-        toastError(err.message || 'Error loading questions')
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err)
+        toastError(message)
       } finally {
         setIsLoading(false)
       }
@@ -61,13 +64,21 @@ export const PlayDeckUI: React.FC<PlayDeckUIProps> = ({ profile }) => {
 
   const currentQuestion = questions[currentIndex]
 
+  const isCompletedStateChange = useCallback(() => {
+    setIsSubmitting(false)
+    setIsCompleted(true)
+  }, [])
+
   // 3. Handle answer selection
   const handleAnswerSelect = useCallback(
     async (optionKey: AnswerKey) => {
       if (selectedOpt || isSubmitting || isCompleted) return
       setSelectedOpt(optionKey)
 
-      const newAnswers = { ...answers, [currentQuestion.id]: optionKey }
+      const questionId = questions[currentIndex]?.id
+      if (!questionId) return
+
+      const newAnswers = { ...answers, [questionId]: optionKey }
       setAnswers(newAnswers)
 
       // Small delay for answer highlight transition
@@ -97,19 +108,15 @@ export const PlayDeckUI: React.FC<PlayDeckUIProps> = ({ profile }) => {
 
           toastSuccess('Responses submitted anonymously! 🎉')
           isCompletedStateChange()
-        } catch (err: any) {
-          toastError(err.message || 'Error submitting response')
+        } catch (err) {
+          const message = err instanceof Error ? err.message : String(err)
+          toastError(message || 'Error submitting response')
           setIsSubmitting(false)
         }
       }
     },
-    [currentIndex, questions, answers, selectedOpt, isSubmitting, isCompleted, profile.id, respondentToken, toastSuccess, toastError]
+    [currentIndex, questions, answers, selectedOpt, isSubmitting, isCompleted, profile.id, respondentToken, toastSuccess, toastError, isCompletedStateChange]
   )
-
-  const isCompletedStateChange = () => {
-    setIsSubmitting(false)
-    setIsCompleted(true)
-  }
 
   // 4. Keyboard shortcuts (A-D or 1-4)
   useEffect(() => {
