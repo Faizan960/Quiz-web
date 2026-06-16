@@ -1,28 +1,21 @@
 import { notFound } from 'next/navigation'
 import { createAdminClient } from '@/lib/supabase/server'
-import { PlayDeckUI } from '@/components/PlayDeckUI'
+import { ReportDashboardUI } from '@/components/ReportDashboardUI'
 import { ToastProvider } from '@/components/ui/Toast'
 import { PublicProfile } from '@/types/quiz'
 
 interface PageProps {
   params: Promise<{ username: string }>
+  searchParams: Promise<{ token?: string }>
 }
 
 export const dynamic = 'force-dynamic'
 
-export async function generateMetadata({ params }: PageProps) {
+export async function generateMetadata({ params }: { params: Promise<{ username: string }> }) {
   const { username } = await params
-  const profile = await getProfile(username)
-  
-  if (!profile) {
-    return {
-      title: 'Profile Not Found — Quizly',
-    }
-  }
-
   return {
-    title: `How do you perceive ${profile.display_name}? 👀 — Quizly`,
-    description: `Answer 10 quick anonymous questions about ${profile.display_name} to update their personality radar.`,
+    title: `${username.charAt(0).toUpperCase() + username.slice(1)}'s Personality Radar — Quizly`,
+    description: `Unlock and view ${username}'s personality report on Quizly.`,
   }
 }
 
@@ -45,8 +38,9 @@ async function getProfile(username: string): Promise<PublicProfile | null> {
   }
 }
 
-export default async function PlayPage({ params }: PageProps) {
+export default async function ReportPage({ params, searchParams }: PageProps) {
   const { username } = await params
+  const { token } = await searchParams
   const profile = await getProfile(username)
 
   if (!profile) {
@@ -63,20 +57,20 @@ export default async function PlayPage({ params }: PageProps) {
       <header className="relative z-10 w-full px-6 py-5 border-b border-border bg-white/40 backdrop-blur-md flex items-center justify-between">
         <span className="font-display font-extrabold text-xl text-gradient">Quizly✦</span>
         <span className="text-xs font-bold text-text-muted bg-surface px-3 py-1 rounded-pill border border-border">
-          Anonymous Friend Q&A
+          Radar Report Dashboard
         </span>
       </header>
 
-      {/* Main Questionnaire */}
+      {/* Main Dashboard Panel */}
       <main className="relative z-10 flex-1 flex items-center justify-center p-6">
         <ToastProvider>
-          <PlayDeckUI profile={profile} />
+          <ReportDashboardUI profile={profile} initialToken={token} />
         </ToastProvider>
       </main>
 
       {/* Footer */}
       <footer className="py-6 border-t border-border bg-white/20 text-center text-xs text-text-muted relative z-10">
-        Quizly✦ Q&A Questionnaire · Strictly Anonymous
+        Quizly✦ Dashboard · Secure PIN Protection
       </footer>
     </div>
   )

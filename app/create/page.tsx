@@ -1,11 +1,15 @@
-import { QuizCreatorUI } from '@/components/QuizCreatorUI'
-import { BottomNav } from '@/components/BottomNav'
+import { OnboardingUI } from '@/components/OnboardingUI'
+import { ToastProvider } from '@/components/ui/Toast'
+
+export const metadata = {
+  title: 'Join Quizly — Claim Your Link 🪞',
+  description: 'Create your anonymous personality Q&A page, share with friends, and view your insights radar.',
+}
 
 export default function CreatePage() {
   return (
-    <>
-      <QuizCreatorUI />
-      <BottomNav />
-    </>
+    <ToastProvider>
+      <OnboardingUI />
+    </ToastProvider>
   )
 }
