@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 /**
- * proxy.ts — Next.js 16 Proxy (formerly middleware)
+ * middleware.ts — Next.js Middleware
  *
  * Responsibilities:
  * 1. Protect /admin/dashboard routes by verifying admin session cookies
@@ -12,15 +12,15 @@ import { NextRequest, NextResponse } from 'next/server'
 
 const ADMIN_PATHS = ['/admin']
 
-export function proxy(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // 1. Protect admin dashboard routes
   if (pathname.startsWith('/admin/dashboard')) {
     const adminToken = request.cookies.get('quizly_admin_token')?.value
-    const expectedToken = process.env.ADMIN_SECRET_TOKEN || 'fallback-admin-token'
+    const expectedToken = process.env.ADMIN_SECRET_TOKEN
 
-    if (!adminToken || adminToken !== expectedToken) {
+    if (!expectedToken || !adminToken || adminToken !== expectedToken) {
       const loginUrl = new URL('/admin', request.url)
       return NextResponse.redirect(loginUrl)
     }
