@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 /**
- * middleware.ts — Next.js Middleware
+ * proxy.ts — Next.js 16 Proxy (formerly middleware)
  *
  * Responsibilities:
  * 1. Protect /admin/dashboard routes by verifying admin session cookies
@@ -12,7 +12,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 const ADMIN_PATHS = ['/admin']
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // 1. Protect admin dashboard routes
