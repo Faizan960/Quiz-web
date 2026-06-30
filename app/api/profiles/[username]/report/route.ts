@@ -27,7 +27,10 @@ export async function GET(request: NextRequest, { params }: PageParams) {
     }
 
     // 1. Verify token
-    const secret = process.env.SUPABASE_SERVICE_ROLE_KEY || 'quizly-jwt-secret'
+    const secret = process.env.SUPABASE_SERVICE_ROLE_KEY
+    if (!secret) {
+      throw new Error('Supabase service role key is not configured')
+    }
     const payload = verifyJWT(token, secret)
 
     if (!payload || payload.username !== username.toLowerCase()) {

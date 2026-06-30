@@ -49,7 +49,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Sign a lightweight JWT token (valid for 24 hours)
-    const secret = process.env.SUPABASE_SERVICE_ROLE_KEY || 'quizly-jwt-secret'
+    const secret = process.env.SUPABASE_SERVICE_ROLE_KEY
+    if (!secret) {
+      throw new Error('Supabase service role key is not configured')
+    }
     const token = signJWT(
       { profileId: profile.id, username: profile.username },
       secret,
